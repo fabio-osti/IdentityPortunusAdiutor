@@ -361,3 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Doxygen files
+html
+latex
+doxyFile
+
+# Editor files
+.vscode/tasks.json
+.editorconfig
