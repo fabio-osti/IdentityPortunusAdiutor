@@ -11,7 +11,17 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="7.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.1" />
   </ItemGroup>
-  
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <PackageId>TokenAuthenticationHelper</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>fabio-osti</Authors>
+    <Company>GitHub</Company>
+    <PackageDescription>A helper with setting up JWT authorization.</PackageDescription>
+    <RepositoryUrl>https://github.com/fabio-osti/TokenAuthenticationHelper.git</RepositoryUrl>
+  </PropertyGroup>
+
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
