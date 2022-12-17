@@ -17,8 +17,6 @@ public class IdentityUserPbkdf2
 	///		that will be set as <see cref="IdentityUser{TKey}.PasswordHash"/>
 	///	</summary>
 	public static int HashedSize { get; set; } = 128;
-
-
 } 
 
 

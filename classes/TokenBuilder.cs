@@ -8,13 +8,23 @@ namespace PortunusAdiutor;
 ///	</summary>
 public interface ITokenBuilder
 {
-
+	///	<summary>
+	///		Builds a token with the specified claims.
+	///	</summary>
+	///	<param name="claims">The claims the token should carry.</param>
+	///	<returns>
+	///		A JWT string containing the provided <paramref name="claims"/>.
+	///	</returns>
+	string BuildToken(Claim[] claims);
 	///	<summary>
 	///		Builds a token with the specified parameters.
 	///	</summary>
-	///	<param name="claims">The claims the token should carry.</param>
 	///	<param name="tokenDescriptor">Token generation configuration.</param>
-	string BuildToken(Claim[] claims, SecurityTokenDescriptor tokenDescriptor);
+	///	<returns>
+	///		A JWT string containing the provided <paramref name="tokenDescriptor"/>
+	///		configurations.
+	///	</returns>
+	string BuildToken(SecurityTokenDescriptor tokenDescriptor);
 }
 
 ///	<summary>
@@ -36,17 +46,35 @@ public class TokenBuilder : ITokenBuilder
 		_key = key;
 	}
 	///	<summary>
-	///		Builds a token with the specified parameters.
+	///		Builds a token with the specified claims.
 	///	</summary>
 	///	<param name="claims">The claims the token should carry.</param>
-	///	<param name="tokenDescriptor">Token generation configuration.</param>
 	///	<returns>
 	///		A JWT string containing the provided <paramref name="claims"/>.
 	///	</returns>
-	public string BuildToken(
-		Claim[] claims,
-		SecurityTokenDescriptor tokenDescriptor
-	)
+	public string BuildToken(Claim[] claims)
+	{
+		var tokenDescriptor = new SecurityTokenDescriptor
+		{
+			Expires = DateTime.UtcNow.AddHours(2),
+			Subject = new(claims),
+			SigningCredentials = new SigningCredentials(
+				new SymmetricSecurityKey(_key),
+				SecurityAlgorithms.HmacSha256Signature
+			),
+		};
+		var handler = new JwtSecurityTokenHandler();
+		return handler.WriteToken(handler.CreateToken(tokenDescriptor));
+	}
+	///	<summary>
+	///		Builds a token with the specified parameters.
+	///	</summary>
+	///	<param name="tokenDescriptor">Token generation configuration.</param>
+	///	<returns>
+	///		A JWT string containing the provided <paramref name="tokenDescriptor"/>
+	///		configurations.
+	///	</returns>
+	public string BuildToken(SecurityTokenDescriptor tokenDescriptor)
 	{
 		tokenDescriptor.SigningCredentials = new SigningCredentials(
 			new SymmetricSecurityKey(_key),
