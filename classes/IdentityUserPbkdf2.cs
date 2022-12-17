@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
 
-namespace TokenAuthenticationHelper;
+namespace PortunusAdiutor;
 
 /// <summary>
 /// 	An implementation of <see cref="IdentityUser{TKey}"/>

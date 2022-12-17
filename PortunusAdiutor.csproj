@@ -14,7 +14,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <PackageId>TokenAuthenticationHelper</PackageId>
+    <PackageId>PortunusAdiutor</PackageId>
     <Version>0.1.1</Version>
     <Authors>fabio-osti</Authors>
     <Company>GitHub</Company>
