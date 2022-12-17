@@ -12,8 +12,15 @@ namespace PortunusAdiutor;
 public class IdentityUserPbkdf2<TKey> : IdentityUser<TKey>
 	where TKey : IEquatable<TKey>
 {
-	private const int IterationCount = UInt16.MaxValue;
-	private const int HashedSize = 128;
+	/// <summary>
+	/// 	Number of times the <see cref="KeyDerivation.Pbkdf2"/> function should run.
+	/// </summary>
+	public static int IterationCount { get; set; } = 262140;
+	/// <summary>
+	/// 	The size of the <see cref="Array"/> returned from the <see cref="KeyDerivation.Pbkdf2"/>
+	/// 	that will be set as <see cref="IdentityUser{TKey}.PasswordHash"/>
+	/// </summary>
+	public static int HashedSize { get; set; } = 128;
 
 	/// <summary>
 	/// 	Initialize a new instance of <see cref="IdentityUserPbkdf2{TKey}"/>.

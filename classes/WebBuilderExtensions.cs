@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,11 +20,13 @@ static public class WebBuilderExtensions
 	/// 	The <see cref="AuthenticationBuilder"/> for further configurations.
 	/// </returns>
 	static public AuthenticationBuilder ConfigureTokenServices(
-		this IServiceCollection builder,
+		this WebApplicationBuilder builder,
 		byte[] key
 	)
 	{
-		return builder
+		SetPbkdf2Params(builder);
+		
+		return builder.Services
 			.AddSingleton<ITokenBuilder>(new TokenBuilder(key))
 			.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			.AddJwtBearer(opt =>
@@ -55,19 +58,21 @@ static public class WebBuilderExtensions
 	/// 	The <see cref="AuthenticationBuilder"/> for further configurations.
 	/// </returns>
 	static public AuthenticationBuilder ConfigureTokenServices(
-		this IServiceCollection builder,
+		this WebApplicationBuilder builder,
 		byte[] key,
 		Action<JwtBearerOptions> configurator
 	)
 	{
+		SetPbkdf2Params(builder);
+
 		var hijackedConfigurator = (JwtBearerOptions opt) =>
 		{
 			configurator(opt);
 			opt.TokenValidationParameters.ValidateIssuerSigningKey = true;
-			opt.TokenValidationParameters.IssuerSigningKey = 
+			opt.TokenValidationParameters.IssuerSigningKey =
 				new SymmetricSecurityKey(key);
 		};
-		return builder
+		return builder.Services
 			.AddSingleton<ITokenBuilder>(new TokenBuilder(key))
 			.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			.AddJwtBearer(hijackedConfigurator);
@@ -91,14 +96,16 @@ static public class WebBuilderExtensions
 	/// 	The <see cref="AuthenticationBuilder"/> for further configurations.
 	/// </returns>
 	static public AuthenticationBuilder ConfigureTokenServices(
-		this IServiceCollection builder,
+		this WebApplicationBuilder builder,
 		byte[] key,
 		TokenValidationParameters validationParams
 	)
 	{
+		SetPbkdf2Params(builder);
+
 		validationParams.ValidateIssuerSigningKey = true;
 		validationParams.IssuerSigningKey = new SymmetricSecurityKey(key);
-		return builder
+		return builder.Services
 			.AddSingleton<ITokenBuilder>(new TokenBuilder(key))
 			.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			.AddJwtBearer(opt =>
@@ -106,5 +113,20 @@ static public class WebBuilderExtensions
 				opt.SaveToken = true;
 				opt.TokenValidationParameters = validationParams;
 			});
+	}
+
+	private static void SetPbkdf2Params(WebApplicationBuilder builder)
+	{
+		// Sets the IterationCount to what's in the appsetting.json or the default value; 
+		var iterCount = builder.Configuration["PBKDF2_ITER_COUNT"];
+		if (iterCount is not null) {
+			IdentityUserPbkdf2<byte>.IterationCount = int.Parse(iterCount);
+		}
+
+		// Sets the HashedSize to what's in the appsetting.json or the default value; 
+		var hashedSize = builder.Configuration["PBKDF2_HASHED_SIZE"];
+		if (hashedSize is not null) {
+			IdentityUserPbkdf2<byte>.HashedSize = int.Parse(hashedSize);
+		}
 	}
 }
