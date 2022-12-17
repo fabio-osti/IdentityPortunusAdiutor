@@ -72,6 +72,7 @@ static public class WebBuilderExtensions
 			opt.TokenValidationParameters.IssuerSigningKey =
 				new SymmetricSecurityKey(key);
 		};
+
 		return builder.Services
 			.AddSingleton<ITokenBuilder>(new TokenBuilder(key))
 			.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -105,6 +106,7 @@ static public class WebBuilderExtensions
 
 		validationParams.ValidateIssuerSigningKey = true;
 		validationParams.IssuerSigningKey = new SymmetricSecurityKey(key);
+
 		return builder.Services
 			.AddSingleton<ITokenBuilder>(new TokenBuilder(key))
 			.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -118,15 +120,13 @@ static public class WebBuilderExtensions
 	private static void SetPbkdf2Params(WebApplicationBuilder builder)
 	{
 		// Sets the IterationCount to what's in the appsetting.json or the default value; 
-		var iterCount = builder.Configuration["PBKDF2_ITER_COUNT"];
-		if (iterCount is not null) {
-			IdentityUserPbkdf2<byte>.IterationCount = int.Parse(iterCount);
+		if (int.TryParse(builder.Configuration["PBKDF2_ITER_COUNT"], out var iterCount)) {
+			IdentityUserPbkdf2.IterationCount = iterCount;
 		}
 
 		// Sets the HashedSize to what's in the appsetting.json or the default value; 
-		var hashedSize = builder.Configuration["PBKDF2_HASHED_SIZE"];
-		if (hashedSize is not null) {
-			IdentityUserPbkdf2<byte>.HashedSize = int.Parse(hashedSize);
+		if (int.TryParse(builder.Configuration["PBKDF2_HASHED_SIZE"], out var hashedSize)) {
+			IdentityUserPbkdf2.HashedSize = hashedSize;
 		}
 	}
 }

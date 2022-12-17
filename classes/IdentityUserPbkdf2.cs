@@ -3,14 +3,10 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
 
 namespace PortunusAdiutor;
-
 /// <summary>
-/// 	An implementation of <see cref="IdentityUser{TKey}"/>
-/// 	that uses the Pbkdf2 salt and hash algorithim to
-///		store the password.
+/// 	Non-generic container for the static values.
 /// </summary>
-public class IdentityUserPbkdf2<TKey> : IdentityUser<TKey>
-	where TKey : IEquatable<TKey>
+public class IdentityUserPbkdf2 
 {
 	/// <summary>
 	/// 	Number of times the <see cref="KeyDerivation.Pbkdf2"/> function should run.
@@ -21,6 +17,19 @@ public class IdentityUserPbkdf2<TKey> : IdentityUser<TKey>
 	/// 	that will be set as <see cref="IdentityUser{TKey}.PasswordHash"/>
 	/// </summary>
 	public static int HashedSize { get; set; } = 128;
+
+
+} 
+
+
+/// <summary>
+/// 	An implementation of <see cref="IdentityUser{TKey}"/>
+/// 	that uses the Pbkdf2 salt and hash algorithim to
+///		store the password.
+/// </summary>
+public class IdentityUserPbkdf2<TKey> : IdentityUser<TKey>
+	where TKey : IEquatable<TKey>
+{
 
 	/// <summary>
 	/// 	Initialize a new instance of <see cref="IdentityUserPbkdf2{TKey}"/>.
@@ -76,8 +85,8 @@ public class IdentityUserPbkdf2<TKey> : IdentityUser<TKey>
 			pswrd,
 			Salt,
 			KeyDerivationPrf.HMACSHA256,
-			IterationCount,
-			HashedSize
+			IdentityUserPbkdf2.IterationCount,
+			IdentityUserPbkdf2.HashedSize
 		);
 		return Convert.ToBase64String(hashed);
 	}

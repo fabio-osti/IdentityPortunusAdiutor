@@ -15,7 +15,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <PackageId>PortunusAdiutor</PackageId>
-    <Version>0.1.1</Version>
+    <Version>0.2.1</Version>
     <Authors>fabio-osti</Authors>
     <Company>GitHub</Company>
     <PackageDescription>A helper with setting up JWT authorization.</PackageDescription>
