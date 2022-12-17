@@ -370,3 +370,7 @@ doxyFile
 # Editor files
 .vscode/tasks.json
 .editorconfig
+
+# Secrets
+pat
+nuget.config

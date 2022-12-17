@@ -16,6 +16,7 @@ public interface ITokenBuilder
 	/// <param name="tokenDescriptor">Token generation configuration.</param>
 	string BuildToken(Claim[] claims, SecurityTokenDescriptor tokenDescriptor);
 }
+
 /// <summary>
 /// 	Default ITokenBuilder implementation.
 /// </summary>
@@ -27,7 +28,7 @@ public class TokenBuilder : ITokenBuilder
 {
 	private readonly byte[] _key;
 	/// <summary>
-	/// 	Creates the token builder.
+	/// 	Initiazlize a new instance of <see cref="TokenBuilder"/>.
 	/// </summary>
 	/// <param name="key">Secret string used for the token encryption.</param>
 	public TokenBuilder(byte[] key)

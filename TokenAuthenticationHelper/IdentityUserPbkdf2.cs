@@ -16,6 +16,23 @@ public class IdentityUserPbkdf2<TKey> : IdentityUser<TKey>
 	private const int HashedSize = 128;
 
 	/// <summary>
+	/// 	Initialize a new instance of <see cref="IdentityUserPbkdf2{TKey}"/>.
+	/// </summary>
+	public IdentityUserPbkdf2() : base()
+	{
+		CreationDate = DateTime.UtcNow;
+	}
+
+	/// <summary>
+	/// 	Initialize a new instance of <see cref="IdentityUserPbkdf2{TKey}"/>.
+	/// </summary>
+	/// <param name="userName">This user's name.</param>
+	public IdentityUserPbkdf2(string userName) : base(userName)
+	{
+		CreationDate = DateTime.UtcNow;
+	}
+
+	/// <summary>
 	/// 	UTC <see cref="DateTime"/> of this 
 	/// 	<see cref="IdentityUserPbkdf2{TKey}"/> creation.
 	/// </summary>
@@ -65,8 +82,7 @@ public class IdentityUserPbkdf2<TKey> : IdentityUser<TKey>
 	{
 		get
 		{
-			using (var sha = SHA256.Create())
-			{
+			using (var sha = SHA256.Create()) {
 				return sha.ComputeHash(
 					BitConverter.GetBytes(
 						CreationDate.ToBinary()));
