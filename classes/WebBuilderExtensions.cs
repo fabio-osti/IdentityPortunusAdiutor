@@ -6,19 +6,19 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace PortunusAdiutor;
 
-/// <summary>
-/// 	Helper to configure the services.
-/// </summary>
+///	<summary>
+///		Helper to configure the services.
+///	</summary>
 static public class WebBuilderExtensions
 {
-	/// <summary>
-	/// 	Configures all needed services for token authentication.
-	/// </summary>
-	/// <param name="builder">The services injector.</param>
-	/// <param name="key">The secret key used for encription.</param>
-	/// <returns>
-	/// 	The <see cref="AuthenticationBuilder"/> for further configurations.
-	/// </returns>
+	///	<summary>
+	///		Configures all needed services for token authentication.
+	///	</summary>
+	///	<param name="builder">The services injector.</param>
+	///	<param name="key">The secret key used for encription.</param>
+	///	<returns>
+	///		The <see cref="AuthenticationBuilder"/> for further configurations.
+	///	</returns>
 	static public AuthenticationBuilder ConfigureTokenServices(
 		this WebApplicationBuilder builder,
 		byte[] key
@@ -40,23 +40,23 @@ static public class WebBuilderExtensions
 			});
 	}
 
-	/// <summary>
-	/// 	Configures all needed services for token authentication.
-	/// </summary>
-	/// <param name="builder">The services injector.</param>
-	/// <param name="key">The secret key used for encription.</param>
-	/// <param name="configurator">
-	/// 	Configures the <see cref="JwtBearerOptions"/>
-	/// </param>
-	/// <remarks>
-	/// 	<see cref="TokenValidationParameters.ValidateIssuerSigningKey"/>
-	/// 	and 
-	/// 	<see cref="TokenValidationParameters.IssuerSigningKey"/>
-	/// 	will be overwritten.
-	/// </remarks>
-	/// <returns>
-	/// 	The <see cref="AuthenticationBuilder"/> for further configurations.
-	/// </returns>
+	///	<summary>
+	///		Configures all needed services for token authentication.
+	///	</summary>
+	///	<param name="builder">The services injector.</param>
+	///	<param name="key">The secret key used for encription.</param>
+	///	<param name="configurator">
+	///		Configures the <see cref="JwtBearerOptions"/>
+	///	</param>
+	///	<remarks>
+	///		<see cref="TokenValidationParameters.ValidateIssuerSigningKey"/>
+	///		and 
+	///		<see cref="TokenValidationParameters.IssuerSigningKey"/>
+	///		will be overwritten.
+	///	</remarks>
+	///	<returns>
+	///		The <see cref="AuthenticationBuilder"/> for further configurations.
+	///	</returns>
 	static public AuthenticationBuilder ConfigureTokenServices(
 		this WebApplicationBuilder builder,
 		byte[] key,
@@ -79,23 +79,23 @@ static public class WebBuilderExtensions
 			.AddJwtBearer(hijackedConfigurator);
 	}
 
-	/// <summary>
-	/// 	Configures all needed services for token authentication.
-	/// </summary>
-	/// <param name="builder">The services injector.</param>
-	/// <param name="key">The secret key used for encription.</param>
-	/// <param name="validationParams">
-	/// 	<see cref="SecurityTokenHandler"/>'s validation parameters.
-	/// </param>
-	/// <remarks>
-	/// 	<see cref="TokenValidationParameters.ValidateIssuerSigningKey"/>
-	/// 	and 
-	/// 	<see cref="TokenValidationParameters.IssuerSigningKey"/>
-	/// 	will be overwritten.
-	/// </remarks>
-	/// <returns>
-	/// 	The <see cref="AuthenticationBuilder"/> for further configurations.
-	/// </returns>
+	///	<summary>
+	///		Configures all needed services for token authentication.
+	///	</summary>
+	///	<param name="builder">The services injector.</param>
+	///	<param name="key">The secret key used for encription.</param>
+	///	<param name="validationParams">
+	///		<see cref="SecurityTokenHandler"/>'s validation parameters.
+	///	</param>
+	///	<remarks>
+	///		<see cref="TokenValidationParameters.ValidateIssuerSigningKey"/>
+	///		and 
+	///		<see cref="TokenValidationParameters.IssuerSigningKey"/>
+	///		will be overwritten.
+	///	</remarks>
+	///	<returns>
+	///		The <see cref="AuthenticationBuilder"/> for further configurations.
+	///	</returns>
 	static public AuthenticationBuilder ConfigureTokenServices(
 		this WebApplicationBuilder builder,
 		byte[] key,
