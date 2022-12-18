@@ -40,15 +40,15 @@ A class inheriting IdentityUser\<TKey> that automatically processes the password
  -  **Hashed Size:** "PBKDF2_HASHED_SIZE" key's value on appsettings.json. Defaults to 128.
 It should be inherited and used like so:
 ```
-public class  User : IdentityUserPbkdf2<Guid>
+public class User : IdentityUserPbkdf2<Guid>
 {
-	public  User(string userName, string password) : base(userName)
+	public User(string userName, string password) : base(userName)
 	{
 		Id = Guid.NewGuid();
 		SetPassword(password);
 	}
 
-	public  bool IsAdmin { get; set; }
+	public bool IsAdmin { get; set; }
 }
 ```
 and it's usage:
