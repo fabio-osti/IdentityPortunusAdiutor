@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
+using System.Security;
 
 namespace PortunusAdiutor;
 
@@ -73,7 +75,7 @@ static public class WebBuilderExtensions
 	{
 		var signSymKey = new SymmetricSecurityKey(signingKey);
 		var cryptSymKey = new SymmetricSecurityKey(encryptionKey);
-		
+
 		var hijackedConfigurator = (JwtBearerOptions opt) =>
 		{
 			configurator(opt);
@@ -136,20 +138,60 @@ static public class WebBuilderExtensions
 	/// <param name="builder">
 	/// 	The <see cref="WebApplicationBuilder"/> to access appsetting.json.
 	/// </param>
-	public static void SetPbkdf2Params(this WebApplicationBuilder builder)
+	/// <param name="iterCount"></param>
+	/// <param name="hashedSize"></param>
+	public static void SetPbkdf2Params(
+		this WebApplicationBuilder builder,
+		int? iterCount = null,
+		int? hashedSize = null)
 	{
-		if (int.TryParse(
-			builder.Configuration["PBKDF2_ITER_COUNT"],
-			out var iterCount)
+		if (iterCount != null) {
+			Pbkdf2IdentityUser.IterationCount = iterCount.Value;
+		} else if (
+			int.TryParse(
+				builder.Configuration["PBKDF2_ITER_COUNT"],	
+				out var _iterCount
+			)
 		) {
-			Pbkdf2IdentityUser.IterationCount = iterCount;
+			Pbkdf2IdentityUser.IterationCount = _iterCount;
 		}
 
-		if (int.TryParse(
-			builder.Configuration["PBKDF2_HASHED_SIZE"],
-			out var hashedSize)
+		if (hashedSize != null) {
+			Pbkdf2IdentityUser.HashedSize = hashedSize.Value;
+		} else if (
+			int.TryParse(
+				builder.Configuration["PBKDF2_HASHED_SIZE"], 
+				out var _hashedSize
+			)
 		) {
-			Pbkdf2IdentityUser.HashedSize = hashedSize;
+			Pbkdf2IdentityUser.HashedSize = _hashedSize;
 		}
+	}
+
+	/// <summary>
+	/// 	Sets Smtp parameters according to appsetting.json definitions
+	/// 	or, if undefined, default values.
+	/// </summary>
+	/// <param name="builder">
+	/// 	The <see cref="WebApplicationBuilder"/> to access appsetting.json.
+	/// </param>
+	/// <param name="uri"></param>
+	/// <param name="user"></param>
+	/// <param name="password"></param>
+	public static void SetSmtpParams(
+		this WebApplicationBuilder builder,
+		string? uri = null,
+		string? user = null,
+		SecureString? password = null
+	)
+	{
+		uri ??= builder.Configuration["SMTP_URI"];
+		if (uri != null) {
+			EmailSenderIdentityUser.SmtpUri = new(uri);
+		}
+		
+		user ??= builder.Configuration["SMTP_USER"];
+		EmailSenderIdentityUser.SmtpCredentials =
+			new NetworkCredential(user,password);
 	}
 }
