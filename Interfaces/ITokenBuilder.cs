@@ -2,8 +2,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-
-
 ///	<summary>
 ///		Class to build a token accordingly.
 ///	</summary>
@@ -39,22 +37,23 @@ public interface ITokenBuilder
 	/// 
 	/// </summary>
 	/// <param name="token"></param>
+	/// <param name="validationParameters"></param>
+	/// <returns></returns>
+	Claim[]? ValidateToken(
+		string token, 
+		TokenValidationParameters? validationParameters = null
+	);
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="token"></param>
 	/// <param name="tokenType"></param>
 	/// <param name="validationParameters"></param>
 	/// <returns></returns>
 	Claim[]? ValidateCustomTypeToken(
 		string token,
 		string tokenType,
-		TokenValidationParameters? validationParameters = null
-	);
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="token"></param>
-	/// <param name="validationParameters"></param>
-	/// <returns></returns>
-	Claim[]? ValidateToken(
-		string token, 
 		TokenValidationParameters? validationParameters = null
 	);
 }
