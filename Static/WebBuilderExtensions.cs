@@ -17,8 +17,8 @@ static public class WebBuilderExtensions
 	///		Configures all needed services for token authentication.
 	///	</summary>
 	///	<param name="builder">The services injector.</param>
-	/// <param name="signingKey"></param>
-	/// <param name="encryptionKey"></param>
+	///	<param name="signingKey">The secret key used for signing.</param>
+	/// <param name="encryptionKey">The secret key used for encryption.</param>
 	///	<returns>
 	///		The <see cref="AuthenticationBuilder"/> for further configurations.
 	///	</returns>
@@ -59,8 +59,8 @@ static public class WebBuilderExtensions
 	///	</param>
 	///	<remarks>
 	///		<see cref="TokenValidationParameters.ValidateIssuerSigningKey"/>
-	///		and 
-	///		<see cref="TokenValidationParameters.IssuerSigningKey"/>
+	///		and <see cref="TokenValidationParameters.IssuerSigningKey"/>
+	///		and <see cref="TokenValidationParameters.TokenDecryptionKey"/>
 	///		will be overwritten.
 	///	</remarks>
 	///	<returns>
@@ -101,8 +101,8 @@ static public class WebBuilderExtensions
 	///	</param>
 	///	<remarks>
 	///		<see cref="TokenValidationParameters.ValidateIssuerSigningKey"/>
-	///		and 
-	///		<see cref="TokenValidationParameters.IssuerSigningKey"/>
+	///		and <see cref="TokenValidationParameters.IssuerSigningKey"/>
+	///		and <see cref="TokenValidationParameters.TokenDecryptionKey"/>
 	///		will be overwritten.
 	///	</remarks>
 	///	<returns>
@@ -114,7 +114,7 @@ static public class WebBuilderExtensions
 		byte[] encryptionKey,
 		TokenValidationParameters validationParams
 	)
-	{		
+	{
 		var signSymKey = new SymmetricSecurityKey(signingKey);
 		var cryptSymKey = new SymmetricSecurityKey(encryptionKey);
 		validationParams.ValidateIssuerSigningKey = true;
@@ -167,8 +167,8 @@ static public class WebBuilderExtensions
 	/// <param name="builder">
 	/// 	The <see cref="WebApplicationBuilder"/> to access appsetting.json.
 	/// </param>
-	/// <param name="iterCount"></param>
-	/// <param name="hashedSize"></param>
+	/// <param name="iterCount">How many iterations should be run.</param>
+	/// <param name="hashedSize">The size of the derived key.</param>
 	public static void SetPbkdf2Params(
 		this WebApplicationBuilder builder,
 		int? iterCount = null,
@@ -178,7 +178,7 @@ static public class WebBuilderExtensions
 			Pbkdf2IdentityUser.IterationCount = iterCount.Value;
 		} else if (
 			int.TryParse(
-				builder.Configuration["PBKDF2_ITER_COUNT"],	
+				builder.Configuration["PBKDF2_ITER_COUNT"],
 				out var _iterCount
 			)
 		) {
@@ -189,7 +189,7 @@ static public class WebBuilderExtensions
 			Pbkdf2IdentityUser.HashedSize = hashedSize.Value;
 		} else if (
 			int.TryParse(
-				builder.Configuration["PBKDF2_HASHED_SIZE"], 
+				builder.Configuration["PBKDF2_HASHED_SIZE"],
 				out var _hashedSize
 			)
 		) {
@@ -249,9 +249,9 @@ static public class WebBuilderExtensions
 		if (uri != null) {
 			EmailSenderIdentityUser.SmtpUri = new(uri);
 		}
-		
+
 		user ??= builder.Configuration["SMTP_USER"];
 		EmailSenderIdentityUser.SmtpCredentials =
-			new NetworkCredential(user,password);
+			new NetworkCredential(user, password);
 	}
 }
