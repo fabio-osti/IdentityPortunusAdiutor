@@ -1,6 +1,7 @@
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity;
 using MimeKit;
+using System.Net;
 using System.Security.Claims;
 
 /// <summary>
@@ -19,6 +20,17 @@ public static class EmailSenderIdentityUser
 	/// </summary>
 	static public Func<string, string, MimeMessage> ValidateEmailMessageBuilder
 	{ get; set; } = defaultValidateEmailMessageBuilder;
+
+	/// <summary>
+	/// 
+	/// </summary>
+	static public ICredentials SmtpCredentials
+	{ get; set; } = new NetworkCredential();
+
+	/// <summary>
+	/// 
+	/// </summary>
+	static public Uri SmtpUri	{ get; set; } = new Uri("http://localhost:2525");
 
 	static MimeMessage defaultForgotPasswordMessageBuilder(
 		string email,
@@ -87,7 +99,7 @@ where TKey : IEquatable<TKey>
 	///		<see cref="EmailSenderIdentityUser{TKey}"/>.
 	///	</summary>
 	/// <param name="email">This user's email.</param>
-	protected EmailSenderIdentityUser(string email) : base() 
+	protected EmailSenderIdentityUser(string email) : base()
 	{
 		Email = email;
 	}
@@ -99,7 +111,7 @@ where TKey : IEquatable<TKey>
 	/// <param name="email">This user's email.</param>
 	///	<param name="userName">This user's name.</param>
 	protected EmailSenderIdentityUser(string email, string userName)
-	: base(userName) 
+	: base(userName)
 	{
 		Email = email;
 	}
@@ -117,17 +129,12 @@ where TKey : IEquatable<TKey>
 		var message = EmailSenderIdentityUser.ValidateEmailMessageBuilder(
 			Email!,
 			tokenBuilder.BuildCustomTypeToken(
-				new[] { new Claim(ClaimTypes.Email, Email!) }, 
+				new[] { new Claim(ClaimTypes.Email, Email!) },
 				JwtCustomTypes.EmailValidation
 			)
 		);
 
-		using (var client = new SmtpClient()) {
-			client.Connect("", 0, false);
-			client.Authenticate("", "");
-			client.Send(message);
-			client.Disconnect(true);
-		}
+		SendMail(message);
 	}
 
 	/// <summary>
@@ -148,9 +155,14 @@ where TKey : IEquatable<TKey>
 			)
 		);
 
+		SendMail(message);
+	}
+
+	private void SendMail(MimeMessage message)
+	{
 		using (var client = new SmtpClient()) {
-			client.Connect("", 0, false);
-			client.Authenticate("", "");
+			client.Connect(EmailSenderIdentityUser.SmtpUri);
+			client.Authenticate(EmailSenderIdentityUser.SmtpCredentials);
 			client.Send(message);
 			client.Disconnect(true);
 		}
