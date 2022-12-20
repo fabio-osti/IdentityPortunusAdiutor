@@ -105,7 +105,8 @@ where TKey : IEquatable<TKey>
 	///		<see cref="EmailSenderIdentityUser{TKey}"/>.
 	///	</summary>
 	/// <param name="email">This user's email.</param>
-	public EmailSenderIdentityUser(string email) : base()
+	public EmailSenderIdentityUser(string email) 
+	: base()
 	{
 		Email = email;
 	}
@@ -115,9 +116,9 @@ where TKey : IEquatable<TKey>
 	///		<see cref="EmailSenderIdentityUser{TKey}"/>.
 	///	</summary>
 	/// <param name="email">This user's email.</param>
-	///	<param name="userName">This user's name.</param>
-	public EmailSenderIdentityUser(string email, string userName)
-	: base(userName)
+	///	<param name="username">This user's name.</param>
+	public EmailSenderIdentityUser(string email, string username)
+	: base(username)
 	{
 		Email = email;
 	}
