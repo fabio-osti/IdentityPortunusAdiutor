@@ -72,7 +72,6 @@ public class TokenBuilder : ITokenBuilder
 		return BuildToken(tokenDescriptor);
 	}
 
-
 	/// <summary>
 	/// 
 	/// </summary>
@@ -87,6 +86,40 @@ public class TokenBuilder : ITokenBuilder
 			TokenType = tokenType,
 			Expires = DateTime.UtcNow.AddMinutes(15),
 		});
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="token"></param>
+	/// <param name="validationParameters"></param>
+	/// <returns></returns>
+	public Claim[]? ValidateToken(
+		string token,
+		TokenValidationParameters? validationParameters = null
+	)
+	{
+		try {
+			validationParameters ??= new TokenValidationParameters
+			{
+				ValidateIssuer = false,
+				ValidateAudience = false
+			};
+			validationParameters.ValidateIssuerSigningKey = true;
+			validationParameters.IssuerSigningKey = _signingKey;
+			validationParameters.TokenDecryptionKey = _encryptKey;
+
+			var handler = new JwtSecurityTokenHandler();
+			var claims = handler.ValidateToken(
+				token,
+				validationParameters,
+				out var tokenSecure
+			);
+
+			return claims.Claims.ToArray();
+		} catch {
+			return null;
+		}
 	}
 
 	/// <summary>
@@ -110,43 +143,9 @@ public class TokenBuilder : ITokenBuilder
 			ValidateAudience = false,
 		};
 
-		validationParameters.ValidateIssuerSigningKey = true;
-		validationParameters.IssuerSigningKey = _signingKey;
 		validationParameters.ValidTypes = new List<string> { tokenType };
 
 		return ValidateToken(token, validationParameters);
 	}
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="token"></param>
-	/// <param name="validationParameters"></param>
-	/// <returns></returns>
-	public Claim[]? ValidateToken(
-		string token,
-		TokenValidationParameters? validationParameters = null
-	)
-	{
-		try {
-			validationParameters ??= new TokenValidationParameters
-			{
-				ValidateIssuer = false,
-				ValidateAudience = false
-			};
-			validationParameters.ValidateIssuerSigningKey = true;
-			validationParameters.IssuerSigningKey = _signingKey;
-
-			var handler = new JwtSecurityTokenHandler();
-			var claims = handler.ValidateToken(
-				token,
-				validationParameters,
-				out var tokenSecure
-			);
-
-			return claims.Claims.ToArray();
-		} catch {
-			return null;
-		}
-	}
 }
