@@ -3,29 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace PortunusAdiutor;
-///	<summary>
-///		Class to build a token accordingly.
-///	</summary>
-public interface ITokenBuilder
-{
-	///	<summary>
-	///		Builds a token with the specified claims.
-	///	</summary>
-	///	<param name="claims">The claims the token should carry.</param>
-	///	<returns>
-	///		A JWT string containing the provided <paramref name="claims"/>.
-	///	</returns>
-	string BuildToken(Claim[] claims);
-	///	<summary>
-	///		Builds a token with the specified parameters.
-	///	</summary>
-	///	<param name="tokenDescriptor">Token generation configuration.</param>
-	///	<returns>
-	///		A JWT string containing the provided <paramref name="tokenDescriptor"/>
-	///		configurations.
-	///	</returns>
-	string BuildToken(SecurityTokenDescriptor tokenDescriptor);
-}
 
 ///	<summary>
 ///		Default ITokenBuilder implementation.
@@ -36,15 +13,48 @@ public interface ITokenBuilder
 ///	</remarks>
 public class TokenBuilder : ITokenBuilder
 {
-	private readonly byte[] _key;
+	private readonly SymmetricSecurityKey _signingKey;
+	private readonly SymmetricSecurityKey _encryptKey;
+
+
 	///	<summary>
 	///		Initiazlize a new instance of <see cref="TokenBuilder"/>.
 	///	</summary>
-	///	<param name="key">Secret string used for the token encryption.</param>
-	public TokenBuilder(byte[] key)
+	/// <param name="signingKey">Secret string used for the token signing.</param>
+	/// <param name="encryptKey">Secret string used for the token encryption.</param>
+	public TokenBuilder(
+		SymmetricSecurityKey signingKey,
+		SymmetricSecurityKey encryptKey
+	)
 	{
-		_key = key;
+		_encryptKey = encryptKey;
+		_signingKey = signingKey;
 	}
+
+	///	<summary>
+	///		Builds a token with the specified parameters.
+	///	</summary>
+	///	<param name="tokenDescriptor">Token generation configuration.</param>
+	///	<returns>
+	///		A JWT string containing the provided <paramref name="tokenDescriptor"/>
+	///		configurations.
+	///	</returns>
+	public string BuildToken(SecurityTokenDescriptor tokenDescriptor)
+	{
+		tokenDescriptor.SigningCredentials = new SigningCredentials(
+			_signingKey,
+			SecurityAlgorithms.HmacSha256Signature
+		);
+		tokenDescriptor.EncryptingCredentials = new EncryptingCredentials(
+			_encryptKey,
+			JwtConstants.DirectKeyUseAlg,
+			SecurityAlgorithms.Aes128CbcHmacSha256
+		);
+
+		var handler = new JwtSecurityTokenHandler();
+		return handler.WriteToken(handler.CreateToken(tokenDescriptor));
+	}
+
 	///	<summary>
 	///		Builds a token with the specified claims.
 	///	</summary>
@@ -57,31 +67,86 @@ public class TokenBuilder : ITokenBuilder
 		var tokenDescriptor = new SecurityTokenDescriptor
 		{
 			Expires = DateTime.UtcNow.AddHours(2),
-			Subject = new(claims),
-			SigningCredentials = new SigningCredentials(
-				new SymmetricSecurityKey(_key),
-				SecurityAlgorithms.HmacSha256Signature
-			),
+			Subject = new(claims)
 		};
-		var handler = new JwtSecurityTokenHandler();
-		return handler.WriteToken(handler.CreateToken(tokenDescriptor));
+		return BuildToken(tokenDescriptor);
 	}
-	///	<summary>
-	///		Builds a token with the specified parameters.
-	///	</summary>
-	///	<param name="tokenDescriptor">Token generation configuration.</param>
-	///	<returns>
-	///		A JWT string containing the provided <paramref name="tokenDescriptor"/>
-	///		configurations.
-	///	</returns>
-	public string BuildToken(SecurityTokenDescriptor tokenDescriptor)
-	{
-		tokenDescriptor.SigningCredentials = new SigningCredentials(
-			new SymmetricSecurityKey(_key),
-			SecurityAlgorithms.HmacSha256Signature
-		);
 
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="claims"></param>
+	/// <param name="tokenType"></param>
+	/// <returns></returns>
+	public string BuildCustomTypeToken(Claim[] claims, string tokenType)
+	{
+		return BuildToken(new SecurityTokenDescriptor
+		{
+			Subject = new(claims),
+			TokenType = tokenType,
+			Expires = DateTime.UtcNow.AddMinutes(15),
+		});
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="token"></param>
+	/// <param name="tokenType"></param>
+	/// <param name="validationParameters"></param>
+	/// <returns></returns>
+	public Claim[]? ValidateCustomTypeToken(
+		string token,
+		string tokenType,
+		TokenValidationParameters? validationParameters = null
+	)
+	{
 		var handler = new JwtSecurityTokenHandler();
-		return handler.WriteToken(handler.CreateToken(tokenDescriptor));
+
+		validationParameters ??= new TokenValidationParameters
+		{
+			ValidateIssuer = false,
+			ValidateAudience = false,
+		};
+
+		validationParameters.ValidateIssuerSigningKey = true;
+		validationParameters.IssuerSigningKey = _signingKey;
+		validationParameters.ValidTypes = new List<string> { tokenType };
+
+		return ValidateToken(token, validationParameters);
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="token"></param>
+	/// <param name="validationParameters"></param>
+	/// <returns></returns>
+	public Claim[]? ValidateToken(
+		string token,
+		TokenValidationParameters? validationParameters = null
+	)
+	{
+		try {
+			validationParameters ??= new TokenValidationParameters
+			{
+				ValidateIssuer = false,
+				ValidateAudience = false
+			};
+			validationParameters.ValidateIssuerSigningKey = true;
+			validationParameters.IssuerSigningKey = _signingKey;
+
+			var handler = new JwtSecurityTokenHandler();
+			var claims = handler.ValidateToken(
+				token,
+				validationParameters,
+				out var tokenSecure
+			);
+
+			return claims.Claims.ToArray();
+		} catch {
+			return null;
+		}
 	}
 }

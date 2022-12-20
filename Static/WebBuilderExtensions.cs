@@ -15,19 +15,22 @@ static public class WebBuilderExtensions
 	///		Configures all needed services for token authentication.
 	///	</summary>
 	///	<param name="builder">The services injector.</param>
-	///	<param name="key">The secret key used for encription.</param>
+	/// <param name="signingKey"></param>
+	/// <param name="encryptionKey"></param>
 	///	<returns>
 	///		The <see cref="AuthenticationBuilder"/> for further configurations.
 	///	</returns>
 	static public AuthenticationBuilder ConfigureTokenServices(
 		this WebApplicationBuilder builder,
-		byte[] key
+		byte[] signingKey,
+		byte[] encryptionKey
 	)
 	{
-		SetPbkdf2Params(builder);
-		
+		var signSymKey = new SymmetricSecurityKey(signingKey);
+		var cryptSymKey = new SymmetricSecurityKey(encryptionKey);
+
 		return builder.Services
-			.AddSingleton<ITokenBuilder>(new TokenBuilder(key))
+			.AddSingleton<ITokenBuilder>(new TokenBuilder(signSymKey, cryptSymKey))
 			.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			.AddJwtBearer(opt =>
 			{
@@ -35,7 +38,10 @@ static public class WebBuilderExtensions
 				opt.TokenValidationParameters = new TokenValidationParameters
 				{
 					ValidateIssuerSigningKey = true,
-					IssuerSigningKey = new SymmetricSecurityKey(key),
+					IssuerSigningKey = signSymKey,
+					TokenDecryptionKey = cryptSymKey,
+					ValidateAudience = false,
+					ValidateIssuer = false,
 				};
 			});
 	}
@@ -44,7 +50,8 @@ static public class WebBuilderExtensions
 	///		Configures all needed services for token authentication.
 	///	</summary>
 	///	<param name="builder">The services injector.</param>
-	///	<param name="key">The secret key used for encription.</param>
+	///	<param name="signingKey">The secret key used for signing.</param>
+	/// <param name="encryptionKey">The secret key used for encryption.</param>
 	///	<param name="configurator">
 	///		Configures the <see cref="JwtBearerOptions"/>
 	///	</param>
@@ -59,22 +66,24 @@ static public class WebBuilderExtensions
 	///	</returns>
 	static public AuthenticationBuilder ConfigureTokenServices(
 		this WebApplicationBuilder builder,
-		byte[] key,
+		byte[] signingKey,
+		byte[] encryptionKey,
 		Action<JwtBearerOptions> configurator
 	)
 	{
-		SetPbkdf2Params(builder);
-
+		var signSymKey = new SymmetricSecurityKey(signingKey);
+		var cryptSymKey = new SymmetricSecurityKey(encryptionKey);
+		
 		var hijackedConfigurator = (JwtBearerOptions opt) =>
 		{
 			configurator(opt);
 			opt.TokenValidationParameters.ValidateIssuerSigningKey = true;
-			opt.TokenValidationParameters.IssuerSigningKey =
-				new SymmetricSecurityKey(key);
+			opt.TokenValidationParameters.IssuerSigningKey = signSymKey;
+			opt.TokenValidationParameters.TokenDecryptionKey = cryptSymKey;
 		};
 
 		return builder.Services
-			.AddSingleton<ITokenBuilder>(new TokenBuilder(key))
+			.AddSingleton<ITokenBuilder>(new TokenBuilder(signSymKey, cryptSymKey))
 			.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			.AddJwtBearer(hijackedConfigurator);
 	}
@@ -83,7 +92,8 @@ static public class WebBuilderExtensions
 	///		Configures all needed services for token authentication.
 	///	</summary>
 	///	<param name="builder">The services injector.</param>
-	///	<param name="key">The secret key used for encription.</param>
+	/// <param name="signingKey"></param>
+	/// <param name="encryptionKey"></param>
 	///	<param name="validationParams">
 	///		<see cref="SecurityTokenHandler"/>'s validation parameters.
 	///	</param>
@@ -98,17 +108,19 @@ static public class WebBuilderExtensions
 	///	</returns>
 	static public AuthenticationBuilder ConfigureTokenServices(
 		this WebApplicationBuilder builder,
-		byte[] key,
+		byte[] signingKey,
+		byte[] encryptionKey,
 		TokenValidationParameters validationParams
 	)
-	{
-		SetPbkdf2Params(builder);
-
+	{		
+		var signSymKey = new SymmetricSecurityKey(signingKey);
+		var cryptSymKey = new SymmetricSecurityKey(encryptionKey);
 		validationParams.ValidateIssuerSigningKey = true;
-		validationParams.IssuerSigningKey = new SymmetricSecurityKey(key);
+		validationParams.IssuerSigningKey = signSymKey;
+		validationParams.TokenDecryptionKey = cryptSymKey;
 
 		return builder.Services
-			.AddSingleton<ITokenBuilder>(new TokenBuilder(key))
+			.AddSingleton<ITokenBuilder>(new TokenBuilder(signSymKey, cryptSymKey))
 			.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			.AddJwtBearer(opt =>
 			{
@@ -117,16 +129,27 @@ static public class WebBuilderExtensions
 			});
 	}
 
-	private static void SetPbkdf2Params(WebApplicationBuilder builder)
+	/// <summary>
+	/// 	Sets Pbkdf2 parameters according to appsetting.json definitions
+	/// 	or, if undefined, default values.
+	/// </summary>
+	/// <param name="builder">
+	/// 	The <see cref="WebApplicationBuilder"/> to access appsetting.json.
+	/// </param>
+	public static void SetPbkdf2Params(this WebApplicationBuilder builder)
 	{
-		// Sets the IterationCount to what's in the appsetting.json or the default value; 
-		if (int.TryParse(builder.Configuration["PBKDF2_ITER_COUNT"], out var iterCount)) {
-			IdentityUserPbkdf2.IterationCount = iterCount;
+		if (int.TryParse(
+			builder.Configuration["PBKDF2_ITER_COUNT"],
+			out var iterCount)
+		) {
+			Pbkdf2IdentityUser.IterationCount = iterCount;
 		}
 
-		// Sets the HashedSize to what's in the appsetting.json or the default value; 
-		if (int.TryParse(builder.Configuration["PBKDF2_HASHED_SIZE"], out var hashedSize)) {
-			IdentityUserPbkdf2.HashedSize = hashedSize;
+		if (int.TryParse(
+			builder.Configuration["PBKDF2_HASHED_SIZE"],
+			out var hashedSize)
+		) {
+			Pbkdf2IdentityUser.HashedSize = hashedSize;
 		}
 	}
 }
