@@ -10,7 +10,7 @@ using System.Security.Claims;
 /// </summary>
 public static class EmailSenderIdentityUser
 {
-	private const string UriString = "http://localhost:2525";
+	private const string UriString = "smtp://localhost:2525";
 
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent
