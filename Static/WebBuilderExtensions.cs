@@ -94,8 +94,8 @@ static public class WebBuilderExtensions
 	///		Configures all needed services for token authentication.
 	///	</summary>
 	///	<param name="builder">The services injector.</param>
-	/// <param name="signingKey"></param>
-	/// <param name="encryptionKey"></param>
+	///	<param name="signingKey">The secret key used for signing.</param>
+	/// <param name="encryptionKey">The secret key used for encryption.</param>
 	///	<param name="validationParams">
 	///		<see cref="SecurityTokenHandler"/>'s validation parameters.
 	///	</param>
