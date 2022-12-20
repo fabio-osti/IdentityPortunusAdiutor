@@ -132,8 +132,37 @@ static public class WebBuilderExtensions
 	}
 
 	/// <summary>
-	/// 	Sets Pbkdf2 parameters according to appsetting.json definitions
-	/// 	or, if undefined, default values.
+	/// 	Sets Pbkdf2 parameters according to, in this order of precedence:
+	/// 	<list type="table">
+	/// 		<listheader>
+	/// 			<term>Nº</term>
+	/// 			<term>Iteration Count</term>
+	/// 			<term>Hashed Size Result</term>
+	/// 		</listheader>
+	/// 		<item>
+	/// 			<term>1</term>
+	/// 			<term><paramref name="iterCount"/></term>
+	/// 			<term><paramref name="hashedSize"/></term>
+	/// 		</item>
+	/// 		<item>
+	/// 			<term>2</term>
+	/// 			<term>
+	/// 				<c>
+	/// 					"PBKDF2_ITER_COUNT" configuration's value.
+	/// 				</c>
+	/// 			</term>
+	/// 			<term>
+	/// 				<c>
+	/// 					"PBKDF2_HASHED_SIZE" configuration's value.
+	/// 				</c>
+	/// 			</term>
+	/// 		</item>
+	/// 		<item>
+	/// 			<term>3</term>
+	/// 			<term><see cref="Pbkdf2IdentityUser.DefaultIterCount"/></term>
+	/// 			<term><see cref="Pbkdf2IdentityUser.DefaultHashedSize"/></term>
+	/// 		</item>
+	/// 	</list>
 	/// </summary>
 	/// <param name="builder">
 	/// 	The <see cref="WebApplicationBuilder"/> to access appsetting.json.
@@ -169,15 +198,46 @@ static public class WebBuilderExtensions
 	}
 
 	/// <summary>
-	/// 	Sets Smtp parameters according to appsetting.json definitions
-	/// 	or, if undefined, default values.
+	/// 	Sets Smtp parameters according to, in this order of precedence:
+	/// 	<list type="table">
+	/// 		<listheader>
+	/// 			<term>Nº</term>
+	/// 			<term>Uri</term>
+	/// 			<term>Username</term>
+	/// 			<term>Password</term>
+	/// 		</listheader>
+	/// 		<item>
+	/// 			<term>1</term>
+	/// 			<term><paramref name="uri"/></term>
+	/// 			<term><paramref name="user"/></term>
+	/// 			<term><paramref name="password"/></term>
+	/// 		</item>
+	/// 		<item>
+	/// 			<term>2</term>
+	/// 			<term>
+	/// 				"SMTP_URI" configuration's value.
+	/// 			</term>
+	/// 			<term>
+	/// 				"SMTP_USER" configuration's value.
+	/// 			</term>
+	/// 			<term>
+	/// 				NULL
+	/// 			</term>
+	/// 		</item>
+	/// 		<item>
+	/// 			<term>3</term>
+	/// 			<term><see cref="EmailSenderIdentityUser.UriString"/></term>
+	/// 			<term>NULL</term>
+	/// 			<term>NULL</term>
+	/// 		</item>
+	/// 	</list>
 	/// </summary>
 	/// <param name="builder">
 	/// 	The <see cref="WebApplicationBuilder"/> to access appsetting.json.
 	/// </param>
-	/// <param name="uri"></param>
-	/// <param name="user"></param>
-	/// <param name="password"></param>
+	/// <param name="uri">SMTP address.</param>
+	/// <param name="user">SMTP username.</param>
+	/// <param name="password">SMTP password.</param>
 	public static void SetSmtpParams(
 		this WebApplicationBuilder builder,
 		string? uri = null,

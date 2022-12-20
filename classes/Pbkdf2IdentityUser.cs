@@ -5,23 +5,28 @@ using Microsoft.AspNetCore.Identity;
 namespace PortunusAdiutor;
 
 ///	<summary>
-///		Non-generic container for the static values.
+///		An implementation of <see cref="EmailSenderIdentityUser{TKey}"/>
+///		that uses the Pbkdf2 salt and hash algorithim to
+///		store the password.
 ///	</summary>
 public static class Pbkdf2IdentityUser
 {
+	private const int DefaultIterCount = 262140;
+	private const int DefaultHashedSize = 128;
+
 	///	<summary>
 	///		Number of times the <see cref="KeyDerivation.Pbkdf2"/> function should run.
 	///	</summary>
-	public static int IterationCount { get; set; } = 262140;
+	public static int IterationCount { get; set; } = DefaultIterCount;
 	///	<summary>
 	///		The size of the <see cref="Array"/> returned from the <see cref="KeyDerivation.Pbkdf2"/>
 	///		that will be set as <see cref="IdentityUser{TKey}.PasswordHash"/>
 	///	</summary>
-	public static int HashedSize { get; set; } = 128;
+	public static int HashedSize { get; set; } = DefaultHashedSize;
 }
 
 ///	<summary>
-///		An implementation of <see cref="IdentityUser{TKey}"/>
+///		An implementation of <see cref="EmailSenderIdentityUser{TKey}"/>
 ///		that uses the Pbkdf2 salt and hash algorithim to
 ///		store the password.
 ///	</summary>

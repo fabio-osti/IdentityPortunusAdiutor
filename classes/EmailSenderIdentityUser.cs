@@ -5,10 +5,13 @@ using System.Net;
 using System.Security.Claims;
 
 /// <summary>
-/// 	Non-generic container for the static values.
+///		An implementation of <see cref="IdentityUser{TKey}"/>
+///		that sends confirmation and password reseting emails.
 /// </summary>
 public static class EmailSenderIdentityUser
 {
+	private const string UriString = "http://localhost:2525";
+
 	/// <summary>
 	/// 
 	/// </summary>
@@ -30,7 +33,7 @@ public static class EmailSenderIdentityUser
 	/// <summary>
 	/// 
 	/// </summary>
-	static public Uri SmtpUri	{ get; set; } = new Uri("http://localhost:2525");
+	static public Uri SmtpUri	{ get; set; } = new Uri(UriString);
 
 	static MimeMessage defaultForgotPasswordMessageBuilder(
 		string email,
@@ -88,10 +91,11 @@ public static class EmailSenderIdentityUser
 }
 
 /// <summary>
-/// 
+///		An implementation of <see cref="IdentityUser{TKey}"/>
+///		that sends confirmation and password reseting emails.
 /// </summary>
-/// <typeparam name="TKey"></typeparam>
-abstract public class EmailSenderIdentityUser<TKey> : IdentityUser<TKey>
+/// <typeparam name="TKey">IdentityUser primary key type.</typeparam>
+public class EmailSenderIdentityUser<TKey> : IdentityUser<TKey>
 where TKey : IEquatable<TKey>
 {
 	///	<summary>
@@ -99,7 +103,7 @@ where TKey : IEquatable<TKey>
 	///		<see cref="EmailSenderIdentityUser{TKey}"/>.
 	///	</summary>
 	/// <param name="email">This user's email.</param>
-	protected EmailSenderIdentityUser(string email) : base()
+	public EmailSenderIdentityUser(string email) : base()
 	{
 		Email = email;
 	}
@@ -110,7 +114,7 @@ where TKey : IEquatable<TKey>
 	///	</summary>
 	/// <param name="email">This user's email.</param>
 	///	<param name="userName">This user's name.</param>
-	protected EmailSenderIdentityUser(string email, string userName)
+	public EmailSenderIdentityUser(string email, string userName)
 	: base(userName)
 	{
 		Email = email;
