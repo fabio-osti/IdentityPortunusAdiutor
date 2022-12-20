@@ -15,8 +15,8 @@ public interface ITokenBuilder
 	///		A JWT string containing the provided <paramref name="tokenDescriptor"/>
 	///		configurations.
 	///	</returns>
-
 	string BuildToken(SecurityTokenDescriptor tokenDescriptor);
+
 	///	<summary>
 	///		Builds a token with the specified claims.
 	///	</summary>
@@ -25,6 +25,15 @@ public interface ITokenBuilder
 	///		A JWT string containing the provided <paramref name="claims"/>.
 	///	</returns>
 	string BuildToken(Claim[] claims);
+
+	///	<summary>
+	///		Builds a token with the specified claims.
+	///	</summary>
+	///	<param name="claims">The claims the token should carry.</param>
+	///	<returns>
+	///		A JWT string containing the provided <paramref name="claims"/>.
+	///	</returns>
+	string BuildToken(IDictionary<string, object> claims);
 
 	/// <summary>
 	/// 	Builds a token with a custom header "typ".

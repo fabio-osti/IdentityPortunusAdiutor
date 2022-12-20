@@ -71,6 +71,23 @@ public class TokenBuilder : ITokenBuilder
 		};
 		return BuildToken(tokenDescriptor);
 	}
+	
+	///	<summary>
+	///		Builds a token with the specified claims.
+	///	</summary>
+	///	<param name="claims">The claims the token should carry.</param>
+	///	<returns>
+	///		A JWT string containing the provided <paramref name="claims"/>.
+	///	</returns>
+	public string BuildToken(IDictionary<string, object> claims)
+	{
+		var tokenDescriptor = new SecurityTokenDescriptor
+		{
+			Expires = DateTime.UtcNow.AddHours(2),
+			Claims = claims
+		};
+		return BuildToken(tokenDescriptor);
+	}
 
 	/// <summary>
 	/// 	Builds a token with a custom header "typ".
