@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +20,8 @@ public static class Pbkdf2IdentityUser
 	///	</summary>
 	public static int IterationCount { get; set; } = DefaultIterCount;
 	///	<summary>
-	///		The size of the <see cref="Array"/> returned from the <see cref="KeyDerivation.Pbkdf2"/>
+	///		The size of the <see cref="Array"/> 
+	///		returned from the <see cref="KeyDerivation.Pbkdf2"/>
 	///		that will be set as <see cref="IdentityUser{TKey}.PasswordHash"/>
 	///	</summary>
 	public static int HashedSize { get; set; } = DefaultHashedSize;
@@ -33,31 +35,39 @@ public static class Pbkdf2IdentityUser
 public class Pbkdf2IdentityUser<TKey> : EmailSenderIdentityUser<TKey>
 where TKey : IEquatable<TKey>
 {
-
 	///	<summary>
 	///		Initialize a new instance of <see cref="Pbkdf2IdentityUser{TKey}"/>.
 	///	</summary>
 	/// <param name="email">This user's email.</param>
-	public Pbkdf2IdentityUser(string email) : base(email)
+	/// <param name="salt">This user's salt</param>
+	public Pbkdf2IdentityUser(string email, byte[] salt) 
+	: base(email)
 	{
-		CreationDate = DateTime.UtcNow;
+		Salt = salt;
 	}
 
 	///	<summary>
 	///		Initialize a new instance of <see cref="Pbkdf2IdentityUser{TKey}"/>.
 	///	</summary>
 	/// <param name="email">This user's email.</param>
-	///	<param name="userName">This user's name.</param>
-	public Pbkdf2IdentityUser(string email, string userName) : base(email, userName)
+	/// <param name="password"></param>
+	public Pbkdf2IdentityUser(string email, string password) 
+	: base(email)
 	{
-		CreationDate = DateTime.UtcNow;
+		SetPassword(password);
 	}
 
 	///	<summary>
-	///		UTC <see cref="DateTime"/> of this 
-	///		<see cref="Pbkdf2IdentityUser{TKey}"/> creation.
+	///		Initialize a new instance of <see cref="Pbkdf2IdentityUser{TKey}"/>.
 	///	</summary>
-	public DateTime CreationDate { get; set; }
+	/// <param name="email">This user's email.</param>
+	/// <param name="password"></param>
+	///	<param name="username">This user's name.</param>
+	public Pbkdf2IdentityUser(string email, string password, string username) 
+	: base(email, username)
+	{
+		SetPassword(password);
+	}
 
 	///	<summary>
 	///		Sets <see cref="IdentityUser{TKey}.PasswordHash"/> for this
@@ -65,9 +75,15 @@ where TKey : IEquatable<TKey>
 	///		of <see cref="KeyDerivation.Pbkdf2"/>.
 	///	</summary>
 	///	<param name="password">Clear text password.</param>
+	[MemberNotNull(nameof(Salt))]
 	public void SetPassword(string password)
 	{
+		using (var sha = SHA256.Create()) {
+			Salt =
+				sha.ComputeHash(BitConverter.GetBytes(DateTime.UtcNow.ToBinary()));
+		}
 		PasswordHash = DeriveKey(password);
+		return;
 	}
 
 	///	<summary>
@@ -85,7 +101,7 @@ where TKey : IEquatable<TKey>
 	{
 		var hashed = KeyDerivation.Pbkdf2(
 			pswrd,
-			GetSalt(),
+			Salt,
 			KeyDerivationPrf.HMACSHA256,
 			Pbkdf2IdentityUser.IterationCount,
 			Pbkdf2IdentityUser.HashedSize
@@ -96,10 +112,5 @@ where TKey : IEquatable<TKey>
 	///	<summary>
 	///		Gets the salt for this <see cref="Pbkdf2IdentityUser{TKey}"/>
 	///	</summary>
-	public byte[] GetSalt()
-	{
-		using (var sha = SHA256.Create()) {
-			return sha.ComputeHash(BitConverter.GetBytes(CreationDate.ToBinary()));
-		}
-	}
+	public byte[] Salt { get; set; }
 }
