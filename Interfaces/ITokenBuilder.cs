@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 ///	<summary>
-///		Class to build a token accordingly.
+///		Interface to define the TokenBuilder service necessary methods.
 ///	</summary>
 public interface ITokenBuilder
 {
@@ -26,7 +26,7 @@ public interface ITokenBuilder
 	string BuildToken(SecurityTokenDescriptor tokenDescriptor);
 
 	/// <summary>
-	/// 	Builds a token with a custom typ header.
+	/// 	Builds a token with a custom header "typ".
 	/// </summary>
 	/// <param name="claims"></param>
 	/// <param name="tokenType"></param>
@@ -34,10 +34,11 @@ public interface ITokenBuilder
 	string BuildCustomTypeToken(Claim[] claims, string tokenType);
 
 	/// <summary>
-	/// 
+	/// 	Validates a <paramref name="token"/> 
+	/// 	with <paramref name="validationParameters"/>
 	/// </summary>
-	/// <param name="token"></param>
-	/// <param name="validationParameters"></param>
+	/// <param name="token">Token to validate.</param>
+	/// <param name="validationParameters">Parameters of validation.</param>
 	/// <returns></returns>
 	Claim[]? ValidateToken(
 		string token, 

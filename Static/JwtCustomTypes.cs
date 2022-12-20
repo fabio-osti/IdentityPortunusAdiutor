@@ -1,5 +1,5 @@
 /// <summary>
-/// 	Class to define JWT custom typ headers.
+/// 	Class to define JWT header custom "typ".
 /// </summary>
 public static class JwtCustomTypes
 {

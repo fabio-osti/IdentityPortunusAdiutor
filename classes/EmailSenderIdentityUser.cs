@@ -13,25 +13,27 @@ public static class EmailSenderIdentityUser
 	private const string UriString = "http://localhost:2525";
 
 	/// <summary>
-	/// 
+	///		Sets or gets the builder of the email that should be sent
+	///		if the user forgets his password.
 	/// </summary>
 	static public Func<string, string, MimeMessage> ForgotPasswordMessageBuilder
 	{ get; set; } = defaultForgotPasswordMessageBuilder;
 
 	/// <summary>
-	/// 
+	///		Sets or gets the builder of the email that should be sent
+	///		when the user is registered.
 	/// </summary>
 	static public Func<string, string, MimeMessage> ValidateEmailMessageBuilder
 	{ get; set; } = defaultValidateEmailMessageBuilder;
 
 	/// <summary>
-	/// 
+	/// 	Credentials used for the SMTP server.
 	/// </summary>
 	static public ICredentials SmtpCredentials
 	{ get; set; } = new NetworkCredential();
 
 	/// <summary>
-	/// 
+	/// 	Uri used for the SMTP server.
 	/// </summary>
 	static public Uri SmtpUri	{ get; set; } = new Uri(UriString);
 
@@ -121,10 +123,10 @@ where TKey : IEquatable<TKey>
 	}
 
 	/// <summary>
-	/// 
+	/// 	Sends an email to this user with a link for verifying his account.
 	/// </summary>
-	/// <param name="tokenBuilder"></param>
-	/// <param name="baseAddress"></param>
+	/// <param name="tokenBuilder">The app's <see cref="ITokenBuilder"/>.</param>
+	/// <param name="baseAddress">The app's base address.</param>
 	public void SendVerificationEmail(
 		ITokenBuilder tokenBuilder,
 		string baseAddress
@@ -142,10 +144,10 @@ where TKey : IEquatable<TKey>
 	}
 
 	/// <summary>
-	/// 
+	/// 	Sends an email to this user with a link for reseting his password.
 	/// </summary>
-	/// <param name="tokenBuilder"></param>
-	/// <param name="baseAddress"></param>
+	/// <param name="tokenBuilder">The app's <see cref="ITokenBuilder"/>.</param>
+	/// <param name="baseAddress">The app's base address.</param>
 	public void SendPasswordResetEmail(
 		ITokenBuilder tokenBuilder,
 		string baseAddress

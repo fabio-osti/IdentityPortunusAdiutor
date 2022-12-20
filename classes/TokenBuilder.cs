@@ -73,7 +73,7 @@ public class TokenBuilder : ITokenBuilder
 	}
 
 	/// <summary>
-	/// 
+	/// 	Builds a token with a custom header "typ".
 	/// </summary>
 	/// <param name="claims"></param>
 	/// <param name="tokenType"></param>
@@ -89,10 +89,11 @@ public class TokenBuilder : ITokenBuilder
 	}
 
 	/// <summary>
-	/// 
+	/// 	Validates a <paramref name="token"/> 
+	/// 	with <paramref name="validationParameters"/>
 	/// </summary>
-	/// <param name="token"></param>
-	/// <param name="validationParameters"></param>
+	/// <param name="token">Token to validate.</param>
+	/// <param name="validationParameters">Parameters of validation.</param>
 	/// <returns></returns>
 	public Claim[]? ValidateToken(
 		string token,
