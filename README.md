@@ -4,6 +4,7 @@ A small helper with token authentication.
 ## ITokenBuilder
 Class to build the tokens using a secret key.
 Add it on your services like so:
+
 ```csharp
 builder.ConfigureTokenServices(
 	"B4nTg#8reNm7b23vvT@b68GT#kuw3psX" // Example key
@@ -11,6 +12,7 @@ builder.ConfigureTokenServices(
 ```
 
 and then inject it on your controller to use:
+
 ```csharp
 class AuthorizationController : ControllerBase
 {
@@ -24,6 +26,7 @@ class AuthorizationController : ControllerBase
 ```
 
 and to use it:
+
 ```csharp
 string GenToken(Claim[] claims)
 {
@@ -42,6 +45,7 @@ A class inheriting IdentityUser\<TKey> that automatically processes the password
  -	**Iteration Count:** "PBKDF2_ITER_COUNT" key's value on appsetings.json. Defaults to 262140.
  -	**Hashed Size:** "PBKDF2_HASHED_SIZE" key's value on appsettings.json. Defaults to 128.
 It should be inherited and used like so:
+
 ```csharp
 public class User : IdentityUserPbkdf2<Guid>
 {
@@ -56,6 +60,7 @@ public class User : IdentityUserPbkdf2<Guid>
 ```
 
 and it's usage:
+
 ```csharp
 user.SetPassword("Pass123$");
 user.ValidatePassword("Pass123$"); // returns True;
