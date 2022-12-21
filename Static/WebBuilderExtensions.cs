@@ -172,7 +172,8 @@ static public class WebBuilderExtensions
 	public static void SetPbkdf2Params(
 		this WebApplicationBuilder builder,
 		int? iterCount = null,
-		int? hashedSize = null)
+		int? hashedSize = null
+	)
 	{
 		if (iterCount != null) {
 			Pbkdf2IdentityUser.IterationCount = iterCount.Value;
@@ -205,12 +206,16 @@ static public class WebBuilderExtensions
 	/// 			<term>Uri</term>
 	/// 			<term>Username</term>
 	/// 			<term>Password</term>
+	/// 			<term>Email Validation Endpoint</term>
+	/// 			<term>Password Redefinition Endpoint</term>
 	/// 		</listheader>
 	/// 		<item>
 	/// 			<term>1</term>
-	/// 			<term><paramref name="uri"/></term>
-	/// 			<term><paramref name="user"/></term>
-	/// 			<term><paramref name="password"/></term>
+	/// 			<term><paramref name="smtpUri"/></term>
+	/// 			<term><paramref name="smtpUser"/></term>
+	/// 			<term><paramref name="smtpPassword"/></term>
+	/// 			<term><paramref name="emailValidationEndpoint"/></term>
+	/// 			<term><paramref name="passwordRedefinitionEndpoint"/></term>
 	/// 		</item>
 	/// 		<item>
 	/// 			<term>2</term>
@@ -221,12 +226,18 @@ static public class WebBuilderExtensions
 	/// 				"SMTP_USER" configuration's value.
 	/// 			</term>
 	/// 			<term>
-	/// 				NULL
+	/// 				"SMTP_PSWRD" configuration's value.
+	/// 			</term>
+	/// 			<term>
+	/// 				"SMTP_EVE" configuration's value.
+	/// 			</term>
+	/// 			<term>
+	/// 				"SMTP_PRE" configuration's value.
 	/// 			</term>
 	/// 		</item>
 	/// 		<item>
 	/// 			<term>3</term>
-	/// 			<term><see cref="EmailSenderIdentityUser.UriString"/></term>
+	/// 			<term><see cref="EmailSenderIdentityUser.defaultSmtpUriString"/></term>
 	/// 			<term>NULL</term>
 	/// 			<term>NULL</term>
 	/// 		</item>
@@ -235,23 +246,44 @@ static public class WebBuilderExtensions
 	/// <param name="builder">
 	/// 	The <see cref="WebApplicationBuilder"/> to access appsetting.json.
 	/// </param>
-	/// <param name="uri">SMTP address.</param>
-	/// <param name="user">SMTP username.</param>
-	/// <param name="password">SMTP password.</param>
+	/// <param name="smtpUri">SMTP address.</param>
+	/// <param name="smtpUser">SMTP username.</param>
+	/// <param name="smtpPassword">SMTP password.</param>
+	/// <param name="emailValidationEndpoint">
+	/// 	Endpoint that should be sent to user's email for validation.
+	/// </param>
+	/// <param name="passwordRedefinitionEndpoint">
+	/// 	Endpoint that should be sent to user's email for password redefinition.
+	/// </param>
 	public static void SetSmtpParams(
 		this WebApplicationBuilder builder,
-		string? uri = null,
-		string? user = null,
-		SecureString? password = null
+		string? smtpUri = null,
+		string? smtpUser = null,
+		string? smtpPassword = null,
+		string? emailValidationEndpoint = null,
+		string? passwordRedefinitionEndpoint = null
 	)
 	{
-		uri ??= builder.Configuration["SMTP_URI"];
-		if (uri != null) {
-			EmailSenderIdentityUser.SmtpUri = new(uri);
+		smtpUri ??= builder.Configuration["SMTP_URI"];
+		if (smtpUri != null) {
+			EmailSenderIdentityUser.SmtpUri = new(smtpUri);
 		}
 
-		user ??= builder.Configuration["SMTP_USER"];
-		EmailSenderIdentityUser.SmtpCredentials =
-			new NetworkCredential(user, password);
+		smtpUser ??= builder.Configuration["SMTP_USER"];
+		if (smtpUser != null) {
+			smtpPassword ??= builder.Configuration["SMTP_PSWRD"];
+			EmailSenderIdentityUser.SmtpCredentials = 
+				new NetworkCredential(smtpUser, smtpPassword);
+		}
+
+		emailValidationEndpoint ??= builder.Configuration["SMTP_EVE"];
+		if (emailValidationEndpoint != null) {
+			EmailSenderIdentityUser.EmailValidationEndpoint = emailValidationEndpoint;
+		}
+		
+		passwordRedefinitionEndpoint ??= builder.Configuration["SMTP_PRE"];
+		if (passwordRedefinitionEndpoint != null) {
+			EmailSenderIdentityUser.PasswordRedefinitionEndpoint = passwordRedefinitionEndpoint;
+		}
 	}
 }
