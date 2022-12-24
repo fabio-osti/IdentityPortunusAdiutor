@@ -6,33 +6,38 @@ using Microsoft.AspNetCore.Identity;
 namespace PortunusAdiutor;
 
 ///	<summary>
-///		An implementation of <see cref="EmailSenderIdentityUser{TKey}"/>
+///		An implementation of <see cref="EmailingIdentityUser{TKey}"/>
 ///		that uses the Pbkdf2 salt and hash algorithim to
 ///		store the password.
 ///	</summary>
 public static class Pbkdf2IdentityUser
 {
-	private const int DefaultIterCount = 262140;
-	private const int DefaultHashedSize = 128;
+	private const KeyDerivationPrf defaultPrf = KeyDerivationPrf.HMACSHA256;
+	private const int defaultIterCount = 262140;
+	private const int defaultHashedSize = 128;
 
+	///	<summary>
+	///		The <see cref="KeyDerivationPrf"/> function the should be run.
+	///	</summary>
+	public static KeyDerivationPrf PseudoRandomFunction { get; set; } = defaultPrf;
 	///	<summary>
 	///		Number of times the <see cref="KeyDerivation.Pbkdf2"/> function should run.
 	///	</summary>
-	public static int IterationCount { get; set; } = DefaultIterCount;
+	public static int IterationCount { get; set; } = defaultIterCount;
 	///	<summary>
 	///		The size of the <see cref="Array"/> 
 	///		returned from the <see cref="KeyDerivation.Pbkdf2"/>
 	///		that will be set as <see cref="IdentityUser{TKey}.PasswordHash"/>
 	///	</summary>
-	public static int HashedSize { get; set; } = DefaultHashedSize;
+	public static int HashedSize { get; set; } = defaultHashedSize;
 }
 
 ///	<summary>
-///		An implementation of <see cref="EmailSenderIdentityUser{TKey}"/>
+///		An implementation of <see cref="EmailingIdentityUser{TKey}"/>
 ///		that uses the Pbkdf2 salt and hash algorithim to
 ///		store the password.
 ///	</summary>
-public class Pbkdf2IdentityUser<TKey> : EmailSenderIdentityUser<TKey>
+public class Pbkdf2IdentityUser<TKey> : EmailingIdentityUser<TKey>
 where TKey : IEquatable<TKey>
 {
 	///	<summary>

@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 ///		An implementation of <see cref="IdentityUser{TKey}"/> that sends confirmation
 ///		and password reseting emails.
 /// </summary>
-public static class EmailSenderIdentityUser
+public static class EmailingIdentityUser
 {
 
 	/// <summary>
@@ -125,25 +125,25 @@ public static class EmailSenderIdentityUser
 ///		that sends confirmation and password reseting emails.
 /// </summary>
 /// <typeparam name="TKey">IdentityUser primary key type.</typeparam>
-public class EmailSenderIdentityUser<TKey> : IdentityUser<TKey>
+public class EmailingIdentityUser<TKey> : IdentityUser<TKey>
 where TKey : IEquatable<TKey>
 {
 
 	///	<summary>
-	///		Initialize a new instance of <see cref="EmailSenderIdentityUser{TKey}"/>.
+	///		Initialize a new instance of <see cref="EmailingIdentityUser{TKey}"/>.
 	///	</summary>
 	/// <param name="email">This user's email.</param>
-	public EmailSenderIdentityUser(string email) : base()
+	public EmailingIdentityUser(string email) : base()
 	{
 		Email = email;
 	}
 
 	///	<summary>
-	///		Initialize a new instance of <see cref="EmailSenderIdentityUser{TKey}"/>.
+	///		Initialize a new instance of <see cref="EmailingIdentityUser{TKey}"/>.
 	///	</summary>
 	/// <param name="email">This user's email.</param>
 	///	<param name="username">This user's name.</param>
-	public EmailSenderIdentityUser(string email, string username) : base(username)
+	public EmailingIdentityUser(string email, string username) : base(username)
 	{
 		Email = email;
 	}
@@ -161,15 +161,13 @@ where TKey : IEquatable<TKey>
 	/// 	Sends an email to this user with a link for verifying his account.
 	/// </summary>
 	/// <param name="tokenBuilder">The app's <see cref="ITokenBuilder"/>.</param>
-	/// <param name="baseAddress">The app's base address.</param>
 	public void SendEmailValidationMessage(
-		ITokenBuilder tokenBuilder,
-		string baseAddress
+		ITokenBuilder tokenBuilder
 	)
 	{
-		var message = EmailSenderIdentityUser.ValidateEmailMessageBuilder(
+		var message = EmailingIdentityUser.ValidateEmailMessageBuilder(
 			Email!,
-			EmailSenderIdentityUser.EmailValidationEndpoint
+			EmailingIdentityUser.EmailValidationEndpoint
 				+ tokenBuilder.BuildCustomTypeToken(
 					new[] { new Claim(ClaimTypes.Email, Email!) },
 					JwtCustomTypes.EmailValidation
@@ -183,15 +181,13 @@ where TKey : IEquatable<TKey>
 	/// 	Sends an email to this user with a link for reseting his password.
 	/// </summary>
 	/// <param name="tokenBuilder">The app's <see cref="ITokenBuilder"/>.</param>
-	/// <param name="baseAddress">The app's base address.</param>
 	public void SendPasswordRedefinitionMessage(
-		ITokenBuilder tokenBuilder,
-		string baseAddress
+		ITokenBuilder tokenBuilder
 	)
 	{
-		var message = EmailSenderIdentityUser.PasswordRedefinitionMessageBuilder(
+		var message = EmailingIdentityUser.PasswordRedefinitionMessageBuilder(
 			Email!,
-			EmailSenderIdentityUser.PasswordRedefinitionEndpoint
+			EmailingIdentityUser.PasswordRedefinitionEndpoint
 				+ tokenBuilder.BuildCustomTypeToken(
 					new[] { new Claim(ClaimTypes.Email, Email!) },
 					JwtCustomTypes.PasswordRedefinition
@@ -204,8 +200,8 @@ where TKey : IEquatable<TKey>
 	private void SendMessage(MimeMessage message)
 	{
 		using (var client = new SmtpClient()) {
-			client.Connect(EmailSenderIdentityUser.SmtpUri);
-			client.Authenticate(EmailSenderIdentityUser.SmtpCredentials);
+			client.Connect(EmailingIdentityUser.SmtpUri);
+			client.Authenticate(EmailingIdentityUser.SmtpCredentials);
 			client.Send(message);
 			client.Disconnect(true);
 		}

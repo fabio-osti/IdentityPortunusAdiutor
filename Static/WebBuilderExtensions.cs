@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
@@ -136,45 +137,60 @@ static public class WebBuilderExtensions
 	/// 	<list type="table">
 	/// 		<listheader>
 	/// 			<term>Nº</term>
+	/// 			<term>Pseudo Random Function</term>
 	/// 			<term>Iteration Count</term>
 	/// 			<term>Hashed Size Result</term>
 	/// 		</listheader>
 	/// 		<item>
 	/// 			<term>1</term>
+	/// 			<term><paramref name="prf"/></term>
 	/// 			<term><paramref name="iterCount"/></term>
 	/// 			<term><paramref name="hashedSize"/></term>
 	/// 		</item>
 	/// 		<item>
 	/// 			<term>2</term>
 	/// 			<term>
-	/// 				<c>
-	/// 					"PBKDF2_ITER_COUNT" configuration's value.
-	/// 				</c>
+	/// 				"PBKDF2_PRF_ENUM" configuration's value.
 	/// 			</term>
 	/// 			<term>
-	/// 				<c>
-	/// 					"PBKDF2_HASHED_SIZE" configuration's value.
-	/// 				</c>
+	/// 				"PBKDF2_ITER_COUNT" configuration's value.
+	/// 			</term>
+	/// 			<term>
+	/// 				"PBKDF2_HASHED_SIZE" configuration's value.
 	/// 			</term>
 	/// 		</item>
 	/// 		<item>
 	/// 			<term>3</term>
-	/// 			<term><see cref="Pbkdf2IdentityUser.DefaultIterCount"/></term>
-	/// 			<term><see cref="Pbkdf2IdentityUser.DefaultHashedSize"/></term>
+	/// 			<term><see cref="KeyDerivationPrf.HMACSHA256"/></term>
+	/// 			<term><see cref="Pbkdf2IdentityUser.defaultIterCount"/></term>
+	/// 			<term><see cref="Pbkdf2IdentityUser.defaultHashedSize"/></term>
 	/// 		</item>
 	/// 	</list>
 	/// </summary>
 	/// <param name="builder">
 	/// 	The <see cref="WebApplicationBuilder"/> to access appsetting.json.
 	/// </param>
+	/// <param name="prf">Which pseudo random function should be used for key derivation.</param>
 	/// <param name="iterCount">How many iterations should be run.</param>
 	/// <param name="hashedSize">The size of the derived key.</param>
 	public static void SetPbkdf2Params(
 		this WebApplicationBuilder builder,
+		KeyDerivationPrf? prf = null,
 		int? iterCount = null,
 		int? hashedSize = null
 	)
 	{
+		if (prf != null) {
+			Pbkdf2IdentityUser.PseudoRandomFunction = prf.Value;
+		} else if (
+			Enum.TryParse<KeyDerivationPrf>(
+				builder.Configuration["PBKDF2_PRF_ENUM"], 
+				out var _prf
+			)
+		) {
+			Pbkdf2IdentityUser.PseudoRandomFunction = _prf;
+		}
+
 		if (iterCount != null) {
 			Pbkdf2IdentityUser.IterationCount = iterCount.Value;
 		} else if (
@@ -237,7 +253,7 @@ static public class WebBuilderExtensions
 	/// 		</item>
 	/// 		<item>
 	/// 			<term>3</term>
-	/// 			<term><see cref="EmailSenderIdentityUser.defaultSmtpUriString"/></term>
+	/// 			<term><see cref="EmailingIdentityUser.defaultSmtpUriString"/></term>
 	/// 			<term>NULL</term>
 	/// 			<term>NULL</term>
 	/// 		</item>
@@ -266,24 +282,24 @@ static public class WebBuilderExtensions
 	{
 		smtpUri ??= builder.Configuration["SMTP_URI"];
 		if (smtpUri != null) {
-			EmailSenderIdentityUser.SmtpUri = new(smtpUri);
+			EmailingIdentityUser.SmtpUri = new(smtpUri);
 		}
 
 		smtpUser ??= builder.Configuration["SMTP_USER"];
 		if (smtpUser != null) {
 			smtpPassword ??= builder.Configuration["SMTP_PSWRD"];
-			EmailSenderIdentityUser.SmtpCredentials = 
+			EmailingIdentityUser.SmtpCredentials =
 				new NetworkCredential(smtpUser, smtpPassword);
 		}
 
 		emailValidationEndpoint ??= builder.Configuration["SMTP_EVE"];
 		if (emailValidationEndpoint != null) {
-			EmailSenderIdentityUser.EmailValidationEndpoint = emailValidationEndpoint;
+			EmailingIdentityUser.EmailValidationEndpoint = emailValidationEndpoint;
 		}
-		
+
 		passwordRedefinitionEndpoint ??= builder.Configuration["SMTP_PRE"];
 		if (passwordRedefinitionEndpoint != null) {
-			EmailSenderIdentityUser.PasswordRedefinitionEndpoint = passwordRedefinitionEndpoint;
+			EmailingIdentityUser.PasswordRedefinitionEndpoint = passwordRedefinitionEndpoint;
 		}
 	}
 }

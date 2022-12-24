@@ -6,6 +6,7 @@ Class to build the tokens using a secret key.
 Add it on your services like so:
 
 ```csharp
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.ConfigureTokenServices(
 	"B4nTg#8reNm7b23vvT@b68GT#kuw3psX" // Example key
 );
@@ -38,12 +39,49 @@ string GenToken(Claim[] claims)
 }
 ```
 
-## IdentityUserPbfdk2\<TKey>
-A class inheriting IdentityUser\<TKey> that automatically processes the password using the Pbfdk2 algorithim with the following parameters:
+## EmailingIdentityUser\<TKey>
+A class inheriting IdentityUser\<TKey> with methods for sending emails to validate the email and redefine the password using an SMTP server with the following parameters:
+ - **URI:** The URI address of the server. Defaults to `smtp://localhost:2525`.
+ - **User:** The username for authentication with the server. Defaults to `null`.
+ - **Password:** The user password for authentication with the server. Defaults to `null`.
+ - **emailValidationEndpoint:** The app's endpoint for email validation. Defaults to `http://localhost:8080/Authorization/ValidateEmail?token=`.
+ - **passwordRedefinitionEndpoint:** The app's endpoint for email redefinition. Defaults to `http://localhost:8080/Authorization/RedefinePassword?token=`
+
+The endpoints should have the token as the last parameter so that it may be appendended by this class.
+
+Setting the parameters:
+
+```csharp
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.SetSmtpParams(
+	smtpUri: "smtp://postoffice:2525",
+	smtpUser: "Bob",
+	smtpPassword: "aliceIsAcute314",
+	emailValidationEndpoint: "https://gatesofapp.com/valmail?token=",
+	passwordRedefinitionEndpoint: "https://gatesofapp.com/repswr?token="
+);
+```
+
+This class is inherited by Pbfdk2IdentityUser\<TKey>, prefer to use it instead.
+
+## Pbfdk2IdentityUser\<TKey>
+A class inheriting EmailingIdentityUser\<TKey> that automatically processes the password using the Pbfdk2 algorithm with the following parameters:
  -	**Salt:** The user creation UTC DateTime to binary, hashed with SHA256.
- -	**Pseudo Random Function:** HMACSHA256.
- -	**Iteration Count:** "PBKDF2_ITER_COUNT" key's value on appsetings.json. Defaults to 262140.
- -	**Hashed Size:** "PBKDF2_HASHED_SIZE" key's value on appsettings.json. Defaults to 128.
+ -	**Pseudo Random Function:** "PBKDF2_PRF_ENUM" key's value on appsetings.json. Defaults to `HMACSHA256`.
+ -	**Iteration Count:** "PBKDF2_ITER_COUNT" key's value on appsetings.json. Defaults to `262140`.
+ -	**Hashed Size:** "PBKDF2_HASHED_SIZE" key's value on appsettings.json. Defaults to `128`.
+
+Setting the parameters:
+
+```csharp
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.SetPbkdf2Params(
+	prf: KeyDerivationPrf.HMACSHA512,
+	iterCount: 524288,
+	hashedSize: 1024
+);
+```
+
 It should be inherited and used like so:
 
 ```csharp
@@ -59,7 +97,7 @@ public class User : IdentityUserPbkdf2<Guid>
 }
 ```
 
-and it's usage:
+and its usage:
 
 ```csharp
 user.SetPassword("Pass123$");
