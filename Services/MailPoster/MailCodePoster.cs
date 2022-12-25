@@ -26,6 +26,7 @@ where TKey : IEquatable<TKey>
 	/// <param name="context">Context service for keeping the sent codes.</param>
 	public MailCodePoster(MailCodePosterParams posterParams, CodeBasedIdentityDbContext<TUser, TRole, TKey> context)
 	{
+		throw new NotImplementedException();
 		_posterParams = posterParams;
 		_context = context;
 	}
@@ -48,7 +49,6 @@ where TKey : IEquatable<TKey>
 			Type = MessageType.EmailConfirmation
 		});
 		_context.SaveChanges();
-		throw new NotImplementedException();
 	}
 	///	<inheritdoc/>
 	public void SendPasswordRedefinitionMessage(TUser user)

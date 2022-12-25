@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using PortunusAdiutor.Models;
-using PortunusAdiutor.Services.UserManager;
+using PortunusAdiutor.Services.UsersManager;
 
 namespace PortunusAdiutor.Extensions;
 
@@ -70,7 +70,7 @@ static public partial class WebBuilderExtensions
 			default:
 				break;
 		}
-		builder.Services.AddSingleton<IUserManager<TUser, TRole, TKey>, UserManager<TContext, TUser, TRole, TKey>>();
+		builder.Services.AddSingleton<IUsersManager<TUser, TRole, TKey>, UsersManager<TContext, TUser, TRole, TKey>>();
 		return authBuilder;
 	}
 

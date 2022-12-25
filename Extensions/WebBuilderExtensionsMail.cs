@@ -49,7 +49,7 @@ namespace PortunusAdiutor.Extensions
 		/// 				"SMTP_PSWRD" configuration's value.
 		/// 			</term>
 		/// 			<term>
-		/// 				"SMTP_EVE" configuration's value.
+		/// 				"SMTP_ECE" configuration's value.
 		/// 			</term>
 		/// 			<term>
 		/// 				"SMTP_PRE" configuration's value.
@@ -115,7 +115,7 @@ namespace PortunusAdiutor.Extensions
 					new NetworkCredential(smtpUser, smtpPassword);
 			}
 
-			emailConfirmationEndpoint ??= builder.Configuration["SMTP_EVE"];
+			emailConfirmationEndpoint ??= builder.Configuration["SMTP_ECE"];
 			if (emailConfirmationEndpoint != null) {
 				mailParams.EmailConfirmationEndpoint = emailConfirmationEndpoint;
 			}
