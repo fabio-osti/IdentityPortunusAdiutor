@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 /// </summary>
 /// <typeparam name="TUser">Type of <see cref="IdentityUser{TKey}"/> used by the identity system.</typeparam>
 /// <typeparam name="TKey">The type used for the primary key for the <typeparamref name="TUser"/>.</typeparam>
-public class EmailCode<TUser, TKey>
+public class MailCodePost<TUser, TKey>
 where TUser : IdentityUser<TKey>
 where TKey : IEquatable<TKey>
 {

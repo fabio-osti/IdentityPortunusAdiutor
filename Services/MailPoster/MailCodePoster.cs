@@ -37,7 +37,7 @@ where TKey : IEquatable<TKey>
 	///	<inheritdoc/>
 	public void SendEmailConfirmationMessage(TUser user)
 	{
-		_context.EmailCodes.Add(new EmailCode<TUser, TKey>()
+		_context.EmailCodes.Add(new MailCodePost<TUser, TKey>()
 		{
 			UserId = user.Id,
 			Code = RandomNumberGenerator.GetInt32(1000000).ToString(),

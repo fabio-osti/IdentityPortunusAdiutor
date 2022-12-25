@@ -1,6 +1,142 @@
 # PortunusAdiutor
 A small helper with token authentication.
 
+Examples are worth a thousand comments, so this is an example of the configuration to be called at the WebApplicationBuilder:
+
+```csharp
+var authParams = new AuthenticationConfigurationParams()
+{
+	SigningKey = Encoding.UTF8.GetBytes(builder.Configuration["SigningKey"]!),
+	EncryptionKey = Encoding.UTF8.GetBytes(builder.Configuration["EncryptKey"]!),
+	DbContextConfigurator = 
+		options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")),
+	LinkPosterParams = builder.GetMailLinkPosterParams(
+		smtpUri:"smtp://localhost:2525",
+		emailConfirmationEndpoint:"http://localhost/authorization/confirmemail?token=",
+		passwordRedefinitionEndpoint:"http://localhost/authorization/redefinepassword?token="
+	)
+};
+builder.ConfigureAuthentication<ApplicationIdentityDbContext, ApplicationUser, IdentityRole<Guid>, Guid>(authParams);
+```
+
+And a controller that uses the services:
+
+```csharp
+[ApiController]
+[Route("[controller]/[action]")]
+public class AuthorizationController : ControllerBase
+{
+	readonly ITokenBuilder _tokenBuilder;
+	readonly IUserManager<ApplicationUser, IdentityRole<Guid>, Guid> _userManager;
+
+	public AuthorizationController(
+		ITokenBuilder tokenBuilder,
+		IUserManager<ApplicationUser, IdentityRole<Guid>, Guid> userManager
+	)
+	{
+		_tokenBuilder = tokenBuilder;
+		_userManager = userManager;
+	}
+
+	[HttpPost]
+	public IActionResult SignUp([FromBody] CredentialsDto credentials)
+	{
+		try {
+			var user = _userManager.CreateUser(
+				e => e.Email == credentials.Email,
+				() => new ApplicationUser(credentials.Email!, credentials.Password!)
+			);
+
+			return user == null 
+				? Problem("Email already registered.") 
+				: Ok(_tokenBuilder.BuildToken(user.GetClaims()));
+		} catch (Exception e) {
+			return Problem(e.Message);
+		}
+	}
+
+	[HttpPost]
+	public IActionResult SignIn([FromBody] CredentialsDto credentials)
+	{
+		try {
+			var user = _userManager.ValidateUser(
+				(e) => e.Email == credentials.Email, 
+				credentials.Password!
+			);
+
+			return user == null 
+				? Problem("User or Password not found.")
+				: Ok(_tokenBuilder.BuildToken(user.GetClaims()));
+		} catch (Exception e) {
+			return Problem(e.Message);
+		}
+	}
+
+	[HttpGet]
+	public IActionResult ConfirmEmail(string token)
+	{
+		try {
+			var userPk =
+				_tokenBuilder.ValidateCustomTypeToken(token, JwtCustomTypes.EmailConfirmation);
+			var user = _userManager.ConfirmEmail(u => u.Id.ToString() == userPk);
+			
+			return user == null ? NotFound() : Ok();
+		} catch (Exception e) {
+			return Problem(e.Message);
+		}
+	}
+
+	[HttpPost]
+	public IActionResult SendPasswordRedefinition([FromBody] CredentialsDto redefine)
+	{
+		try {
+			var user = 
+				_userManager.SendPasswordRedefinition(e => e.Email == redefine.Email);
+
+			return user == null ? NotFound() : Ok();
+		} catch (Exception e) {
+			return Problem(e.Message);
+		}
+	}
+
+	[HttpGet]
+	public IActionResult RedefinePassword(string token)
+	{
+		try {
+			var userPk =
+				_tokenBuilder.ValidateCustomTypeToken(token, JwtCustomTypes.PasswordRedefinition);
+			if (userPk == null) {
+				return NotFound();
+			}
+
+			var html = System.IO.File.ReadAllText("Content/redefine-password.html");
+			return Content(html, "text/html");
+		} catch (Exception e) {
+			return Problem(e.Message);
+		}
+	}
+
+	[HttpPost]
+	public IActionResult RedefinePassword([FromBody] CredentialsDto redefined, string token)
+	{
+		try {
+			var userPk =
+				_tokenBuilder.ValidateCustomTypeToken(token, JwtCustomTypes.PasswordRedefinition);
+			var user = _userManager.RedefinePassword(
+				u => u.Id.ToString() == userPk, 
+				redefined.Password!
+			);
+			
+			return user == null ? NotFound() : Ok();
+		} catch (Exception e) {
+
+			return Problem(e.Message);
+		}
+	}
+}
+```
+For a more in depth display of the components, keep reading.
+
 ## ITokenBuilder
 Class to build the tokens using a secret key.
 Add it on your services like so:
@@ -39,41 +175,8 @@ string GenToken(Claim[] claims)
 }
 ```
 
-## EmailingIdentityUser\<TKey>
-A class inheriting IdentityUser\<TKey> with methods for sending emails to validate the email and redefine the password using an SMTP server with the following parameters:
- - **URI:** The URI address of the server. Defaults to `smtp://localhost:2525`.
- - **User:** The username for authentication with the server. Defaults to `null`.
- - **Password:** The user password for authentication with the server. Defaults to `null`.
- - **Email Validation Endpoint:** The app's endpoint for email validation. Defaults to `http://localhost:8080/Authorization/ConfirmEmail?token=`.
- - **Password Redefinition Endpoint:** The app's endpoint for email redefinition. Defaults to `http://localhost:8080/Authorization/RedefinePassword?token=`.
-
-The endpoints should have the token as the last parameter so that it may be appendended by this class.
-
-Setting the parameters:
-
-```csharp
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.SetSmtpParams(
-	smtpUri: "smtp://postoffice:2525",
-	smtpUser: "Bob",
-	smtpPassword: "aliceIsAcute314",
-	EmailConfirmationEndpoint: "https://gatesofapp.com/valmail?token=",
-	passwordRedefinitionEndpoint: "https://gatesofapp.com/repswr?token="
-);
-```
-
-Usage example:
-
-```csharp
-user.SendEmailConfirmationMessage(tokenBuilder);
-user.SendPasswordRedefinitionMessage(tokenBuilder);
-```
-
-
-This class is inherited by Pbfdk2IdentityUser\<TKey>, prefer to use it instead.
-
 ## Pbfdk2IdentityUser\<TKey>
-A class inheriting EmailingIdentityUser\<TKey> that automatically processes the password using the Pbfdk2 algorithm with the following parameters:
+A class inheriting IdentityUser\<TKey> that automatically processes the password using the Pbfdk2 algorithm with the following parameters:
  -	**Salt:** The user creation UTC DateTime to binary, hashed with SHA256.
  -	**Pseudo Random Function:** `HMACSHA512`.
  -	**Iteration Count:** `262140`.
@@ -82,15 +185,12 @@ A class inheriting EmailingIdentityUser\<TKey> that automatically processes the 
 It should be inherited and used like so:
 
 ```csharp
-public class User : IdentityUserPbkdf2<Guid>
+public class ApplicationUser : IdentityUserPbkdf2<Guid>
 {
-	public User(string userName, string password) : base(userName)
+	public ApplicationUser(string email, string password) : base(email, password)
 	{
 		Id = Guid.NewGuid();
-		SetPassword(password);
 	}
-
-	public bool IsAdmin { get; set; }
 }
 ```
 

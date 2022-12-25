@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 /// <summary>
 /// 	Default implementaion of <see cref="IUserManager{TUser, TRole, TKey}"/>.
 /// </summary>
+/// <typeparam name="TContext">
+/// 	Type of <see cref="IdentityDbContext{TUser, TRole, TKey}"/> used by the identity system.
+/// </typeparam>
 /// <typeparam name="TUser">Type of <see cref="IdentityUser{TKey}"/> used by the identity system.</typeparam>
 /// <typeparam name="TRole">Type of <see cref="IdentityRole{TKey}"/> used by the identity system</typeparam>
 /// <typeparam name="TKey">The type used for the primary key for the <typeparamref name="TUser"/>.</typeparam>

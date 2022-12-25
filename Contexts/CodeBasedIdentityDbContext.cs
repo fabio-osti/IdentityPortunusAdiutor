@@ -15,9 +15,9 @@ where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
 {
 	/// <summary>
-	/// 	<see cref="DbSet{TEntity}"/> where each entry represents an <see cref="EmailCode{TUser, TKey}"/> sent.
+	/// 	<see cref="DbSet{TEntity}"/> where each entry represents an <see cref="MailCodePost{TUser, TKey}"/> sent.
 	/// </summary>
-	public DbSet<EmailCode<TUser, TKey>> EmailCodes { get; set; }
+	public DbSet<MailCodePost<TUser, TKey>> EmailCodes { get; set; }
 
 #pragma warning disable CS8618
 	/// <inheritdoc/>
@@ -31,9 +31,9 @@ where TKey : IEquatable<TKey>
 	{
 		base.OnModelCreating(builder);
 
-		builder.Entity<EmailCode<TUser,TKey>>()
+		builder.Entity<MailCodePost<TUser,TKey>>()
 			.HasKey(e => new { e.UserId, e.Code });
-		builder.Entity<EmailCode<TUser,TKey>>()
+		builder.Entity<MailCodePost<TUser,TKey>>()
 			.HasOne(e => e.User)
 			.WithMany();
 	}
