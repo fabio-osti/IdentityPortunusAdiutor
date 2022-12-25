@@ -4,6 +4,8 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
 
+using PortunusAdiutor.Models;
+
 namespace PortunusAdiutor;
 
 ///	<summary>

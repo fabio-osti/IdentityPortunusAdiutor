@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace PortunusAdiutor;
+using PortunusAdiutor.Services.TokenBuilder;
+
+namespace PortunusAdiutor.Extensions;
 
 static public partial class WebBuilderExtensions
 {

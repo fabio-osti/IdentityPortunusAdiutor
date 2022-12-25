@@ -1,7 +1,10 @@
-using System.Security.Claims;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
+using PortunusAdiutor.Models;
+using PortunusAdiutor.Services.MailPoster;
+using PortunusAdiutor.Services.TokenBuilder;
+using PortunusAdiutor.Services.UserManager;
 
 /// <summary>
 /// 	Default implementaion of <see cref="IUserManager{TUser, TRole, TKey}"/>.

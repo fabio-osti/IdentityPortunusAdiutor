@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+
+namespace PortunusAdiutor.Extensions;
 
 /// <summary>
 /// 	Class representing the parameters used for configuring all services at once.
@@ -22,7 +23,7 @@ public class AuthenticationConfigurationParams
 	/// 	Parameters for configuring <see cref="MailLinkPoster{TUser, TKey}"/>.
 	/// </summary>
 	/// <remarks>
-	/// 	If this is set, <see cref="AuthenticationConfigurationParams.CodePosterParams"/>
+	/// 	If this is set, <see cref="CodePosterParams"/>
 	/// 	is ignored
 	/// </remarks>
 	public MailLinkPosterParams? LinkPosterParams { get; set; }
@@ -30,7 +31,7 @@ public class AuthenticationConfigurationParams
 	/// 	Parameters for configuring <see cref="MailCodePoster{TUser, TRole, TKey}"/>.
 	/// </summary>
 	/// <remarks>
-	/// 	If <see cref="AuthenticationConfigurationParams.LinkPosterParams"/> is set,
+	/// 	If <see cref="LinkPosterParams"/> is set,
 	/// 	this is ignored
 	/// </remarks>
 
@@ -41,7 +42,7 @@ public class AuthenticationConfigurationParams
 	/// 	injector.
 	/// </summary>
 	/// <remarks>
-	/// 	If this is set, <see cref="AuthenticationConfigurationParams.ValidationParams"/>
+	/// 	If this is set, <see cref="ValidationParams"/>
 	/// 	is ignored
 	/// </remarks>
 	public Action<JwtBearerOptions>? JwtConfigurator { get; set; }
@@ -50,7 +51,7 @@ public class AuthenticationConfigurationParams
 	/// 	<see cref="JwtBearerExtensions.AddJwtBearer(AuthenticationBuilder, Action{JwtBearerOptions})"/>
 	/// </summary>	
 	///	<remarks>
-	/// 	If <see cref="AuthenticationConfigurationParams.JwtConfigurator"/> is set,
+	/// 	If <see cref="JwtConfigurator"/> is set,
 	/// 	this is ignored
 	/// </remarks>
 	public TokenValidationParameters? ValidationParams { get; set; }

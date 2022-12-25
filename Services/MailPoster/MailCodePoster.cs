@@ -2,6 +2,9 @@ using System.Security.Cryptography;
 
 using Microsoft.AspNetCore.Identity;
 
+using PortunusAdiutor.Contexts;
+using PortunusAdiutor.Services.MailPoster;
+
 /// <summary>
 /// 	Service for sending a <see cref="string"/> of length == 6
 /// 	to a <typeparamref name="TUser"/> for some special action.

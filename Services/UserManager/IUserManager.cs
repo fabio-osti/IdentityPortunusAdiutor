@@ -1,5 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 
+using PortunusAdiutor.Models;
+
+namespace PortunusAdiutor.Services.UserManager;
+
 /// <summary>
 /// 	An interface for a service that manages a <typeparamref name="TUser"/>.
 /// </summary>

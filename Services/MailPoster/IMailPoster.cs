@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 
+namespace PortunusAdiutor.Services.MailPoster;
+
 /// <summary>
 /// 	Interface to define a class that sends messages to a <typeparamref name="TUser"/>.
 /// </summary>

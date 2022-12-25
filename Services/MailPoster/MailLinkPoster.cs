@@ -1,11 +1,9 @@
-using System.Security.Claims;
-
 using Microsoft.AspNetCore.Identity;
 
 using MimeKit;
 using MailKit.Net.Smtp;
-
-using PortunusAdiutor;
+using PortunusAdiutor.Services.MailPoster;
+using PortunusAdiutor.Services.TokenBuilder;
 
 /// <summary>
 /// 	Service for sending a link with a jwt token to the user for some special action.

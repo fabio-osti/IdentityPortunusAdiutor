@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+
 using System.Security.Claims;
+
+namespace PortunusAdiutor.Services.TokenBuilder;
 
 ///	<summary>
 ///		Interface to define the TokenBuilder service necessary methods.
@@ -56,7 +59,7 @@ public interface ITokenBuilder
 	/// <param name="validationParameters">Parameters of validation.</param>
 	/// <returns>The <paramref name="token"/> claims.</returns>
 	Claim[]? ValidateToken(
-		string token, 
+		string token,
 		TokenValidationParameters? validationParameters = null
 	);
 

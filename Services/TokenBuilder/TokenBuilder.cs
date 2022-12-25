@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace PortunusAdiutor;
+namespace PortunusAdiutor.Services.TokenBuilder;
 
 ///	<summary>
 ///		Default ITokenBuilder implementation.
@@ -59,7 +60,7 @@ public class TokenBuilder : ITokenBuilder
 		};
 		return BuildToken(tokenDescriptor);
 	}
-	
+
 	///	<inheritdoc/>
 	public string BuildToken(IDictionary<string, object> claims)
 	{
@@ -78,7 +79,7 @@ public class TokenBuilder : ITokenBuilder
 	{
 		return BuildToken(new SecurityTokenDescriptor
 		{
-			Subject = new(new []{new Claim(ClaimTypes.PrimarySid, user.Id.ToString()!)}),
+			Subject = new(new[] { new Claim(ClaimTypes.PrimarySid, user.Id.ToString()!) }),
 			TokenType = tokenType,
 			Expires = DateTime.UtcNow.AddMinutes(15),
 		});

@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 
+namespace PortunusAdiutor.Models;
+
 /// <summary>
 /// 	An interface for types that implement some sort of password processing.
 /// </summary>

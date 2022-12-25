@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+namespace PortunusAdiutor.Contexts;
+
 /// <summary>
 /// 	<see cref="IdentityDbContext{TUser, TRole, TKey}"/> for 
 /// 	<see cref="MailCodePoster{TUser, TRole, TKey}"/> apps.
@@ -31,9 +33,9 @@ where TKey : IEquatable<TKey>
 	{
 		base.OnModelCreating(builder);
 
-		builder.Entity<MailCodePost<TUser,TKey>>()
+		builder.Entity<MailCodePost<TUser, TKey>>()
 			.HasKey(e => new { e.UserId, e.Code });
-		builder.Entity<MailCodePost<TUser,TKey>>()
+		builder.Entity<MailCodePost<TUser, TKey>>()
 			.HasOne(e => e.User)
 			.WithMany();
 	}

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 
+using PortunusAdiutor.Services.MailPoster;
+
 /// <summary>
 /// 	Class representing a code sent to the user for some special action.
 /// </summary>
