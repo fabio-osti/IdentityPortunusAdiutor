@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
+using PortunusAdiutor.Extensions;
+
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
