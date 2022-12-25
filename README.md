@@ -44,8 +44,8 @@ A class inheriting IdentityUser\<TKey> with methods for sending emails to valida
  - **URI:** The URI address of the server. Defaults to `smtp://localhost:2525`.
  - **User:** The username for authentication with the server. Defaults to `null`.
  - **Password:** The user password for authentication with the server. Defaults to `null`.
- - **emailValidationEndpoint:** The app's endpoint for email validation. Defaults to `http://localhost:8080/Authorization/ValidateEmail?token=`.
- - **passwordRedefinitionEndpoint:** The app's endpoint for email redefinition. Defaults to `http://localhost:8080/Authorization/RedefinePassword?token=`
+ - **Email Validation Endpoint:** The app's endpoint for email validation. Defaults to `http://localhost:8080/Authorization/ConfirmEmail?token=`.
+ - **Password Redefinition Endpoint:** The app's endpoint for email redefinition. Defaults to `http://localhost:8080/Authorization/RedefinePassword?token=`.
 
 The endpoints should have the token as the last parameter so that it may be appendended by this class.
 
@@ -57,30 +57,27 @@ builder.SetSmtpParams(
 	smtpUri: "smtp://postoffice:2525",
 	smtpUser: "Bob",
 	smtpPassword: "aliceIsAcute314",
-	emailValidationEndpoint: "https://gatesofapp.com/valmail?token=",
+	EmailConfirmationEndpoint: "https://gatesofapp.com/valmail?token=",
 	passwordRedefinitionEndpoint: "https://gatesofapp.com/repswr?token="
 );
 ```
+
+Usage example:
+
+```csharp
+user.SendEmailConfirmationMessage(tokenBuilder);
+user.SendPasswordRedefinitionMessage(tokenBuilder);
+```
+
 
 This class is inherited by Pbfdk2IdentityUser\<TKey>, prefer to use it instead.
 
 ## Pbfdk2IdentityUser\<TKey>
 A class inheriting EmailingIdentityUser\<TKey> that automatically processes the password using the Pbfdk2 algorithm with the following parameters:
  -	**Salt:** The user creation UTC DateTime to binary, hashed with SHA256.
- -	**Pseudo Random Function:** "PBKDF2_PRF_ENUM" key's value on appsetings.json. Defaults to `HMACSHA256`.
- -	**Iteration Count:** "PBKDF2_ITER_COUNT" key's value on appsetings.json. Defaults to `262140`.
- -	**Hashed Size:** "PBKDF2_HASHED_SIZE" key's value on appsettings.json. Defaults to `128`.
-
-Setting the parameters:
-
-```csharp
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.SetPbkdf2Params(
-	prf: KeyDerivationPrf.HMACSHA512,
-	iterCount: 524288,
-	hashedSize: 1024
-);
-```
+ -	**Pseudo Random Function:** `HMACSHA512`.
+ -	**Iteration Count:** `262140`.
+ -	**Hashed Size:** `128`.
 
 It should be inherited and used like so:
 

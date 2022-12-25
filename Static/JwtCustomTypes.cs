@@ -6,7 +6,7 @@ public static class JwtCustomTypes
 	/// <summary>
 	/// 	Email Validation Token
 	/// </summary>
-	public const string EmailValidation = "email-validation-token";
+	public const string EmailConfirmation = "email-confirmation-token";
 
 	/// <summary>
 	/// 	Password Redefinition Token

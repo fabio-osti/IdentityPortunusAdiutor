@@ -1,5 +1,5 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 ///	<summary>
@@ -38,13 +38,15 @@ public interface ITokenBuilder
 	/// <summary>
 	/// 	Builds a token with a custom header "typ".
 	/// </summary>
-	///	<param name="claims">The claims the token should carry.</param>
+	/// <param name="user"></param>
 	/// <param name="tokenType">The token header "typ" value.</param>
 	///	<returns>
 	///		A JWT string containing the provided 
-	///		<paramref name="claims"/> and <paramref name="tokenType"/>.
+	///		<paramref name="user"/> and <paramref name="tokenType"/>.
 	///	</returns>
-	string BuildCustomTypeToken(Claim[] claims, string tokenType);
+	string BuildCustomTypeToken<TUser, TKey>(TUser user, string tokenType)
+	where TUser : IdentityUser<TKey>
+	where TKey : IEquatable<TKey>;
 
 	/// <summary>
 	/// 	Validates a <paramref name="token"/> 
@@ -66,8 +68,8 @@ public interface ITokenBuilder
 	/// <param name="token">Token to validate.</param>
 	/// <param name="tokenType">Type for validation.</param>
 	/// <param name="validationParameters">Parameters of validation.</param>
-	/// <returns>The <paramref name="token"/> claims.</returns>
-	Claim[]? ValidateCustomTypeToken(
+	/// <returns>The <paramref name="token"/> <see cref="ClaimTypes.PrimarySid"/> claim value.</returns>
+	string? ValidateCustomTypeToken(
 		string token,
 		string tokenType,
 		TokenValidationParameters? validationParameters = null

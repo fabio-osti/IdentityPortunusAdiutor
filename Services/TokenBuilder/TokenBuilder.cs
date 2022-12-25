@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -31,14 +32,7 @@ public class TokenBuilder : ITokenBuilder
 		_signingKey = signingKey;
 	}
 
-	///	<summary>
-	///		Builds a token with the specified parameters.
-	///	</summary>
-	///	<param name="tokenDescriptor">Token generation configuration.</param>
-	///	<returns>
-	///		A JWT string containing the provided <paramref name="tokenDescriptor"/>
-	///		configurations.
-	///	</returns>
+	///	<inheritdoc/>
 	public string BuildToken(SecurityTokenDescriptor tokenDescriptor)
 	{
 		tokenDescriptor.SigningCredentials = new SigningCredentials(
@@ -55,13 +49,7 @@ public class TokenBuilder : ITokenBuilder
 		return handler.WriteToken(handler.CreateToken(tokenDescriptor));
 	}
 
-	///	<summary>
-	///		Builds a token with the specified claims.
-	///	</summary>
-	///	<param name="claims">The claims the token should carry.</param>
-	///	<returns>
-	///		A JWT string containing the provided <paramref name="claims"/>.
-	///	</returns>
+	///	<inheritdoc/>
 	public string BuildToken(Claim[] claims)
 	{
 		var tokenDescriptor = new SecurityTokenDescriptor
@@ -72,13 +60,7 @@ public class TokenBuilder : ITokenBuilder
 		return BuildToken(tokenDescriptor);
 	}
 	
-	///	<summary>
-	///		Builds a token with the specified claims.
-	///	</summary>
-	///	<param name="claims">The claims the token should carry.</param>
-	///	<returns>
-	///		A JWT string containing the provided <paramref name="claims"/>.
-	///	</returns>
+	///	<inheritdoc/>
 	public string BuildToken(IDictionary<string, object> claims)
 	{
 		var tokenDescriptor = new SecurityTokenDescriptor
@@ -89,32 +71,20 @@ public class TokenBuilder : ITokenBuilder
 		return BuildToken(tokenDescriptor);
 	}
 
-	/// <summary>
-	/// 	Builds a token with a custom header "typ".
-	/// </summary>
-	///	<param name="claims">The claims the token should carry.</param>
-	/// <param name="tokenType">The token header "typ" value.</param>
-	///	<returns>
-	///		A JWT string containing the provided 
-	///		<paramref name="claims"/> and <paramref name="tokenType"/>.
-	///	</returns>
-	public string BuildCustomTypeToken(Claim[] claims, string tokenType)
+	///	<inheritdoc/>
+	public string BuildCustomTypeToken<TUser, TKey>(TUser user, string tokenType)
+	where TUser : IdentityUser<TKey>
+	where TKey : IEquatable<TKey>
 	{
 		return BuildToken(new SecurityTokenDescriptor
 		{
-			Subject = new(claims),
+			Subject = new(new []{new Claim(ClaimTypes.PrimarySid, user.Id.ToString()!)}),
 			TokenType = tokenType,
 			Expires = DateTime.UtcNow.AddMinutes(15),
 		});
 	}
 
-	/// <summary>
-	/// 	Validates a <paramref name="token"/> 
-	/// 	with <paramref name="validationParameters"/>
-	/// </summary>
-	/// <param name="token">Token to validate.</param>
-	/// <param name="validationParameters">Parameters of validation.</param>
-	/// <returns>The <paramref name="token"/> claims.</returns>
+	///	<inheritdoc/>
 	public Claim[]? ValidateToken(
 		string token,
 		TokenValidationParameters? validationParameters = null
@@ -143,16 +113,8 @@ public class TokenBuilder : ITokenBuilder
 		}
 	}
 
-	/// <summary>
-	/// 	Validates a <paramref name="token"/> 
-	/// 	with <paramref name="validationParameters"/>
-	/// 	and a custom <paramref name="tokenType"/>
-	/// </summary>
-	/// <param name="token">Token to validate.</param>
-	/// <param name="tokenType">Type for validation.</param>
-	/// <param name="validationParameters">Parameters of validation.</param>
-	/// <returns>The <paramref name="token"/> claims.</returns>
-	public Claim[]? ValidateCustomTypeToken(
+	///	<inheritdoc/>
+	public string? ValidateCustomTypeToken(
 		string token,
 		string tokenType,
 		TokenValidationParameters? validationParameters = null
@@ -168,7 +130,7 @@ public class TokenBuilder : ITokenBuilder
 
 		validationParameters.ValidTypes = new List<string> { tokenType };
 
-		return ValidateToken(token, validationParameters);
+		return ValidateToken(token, validationParameters)?.First(c => c.Type == ClaimTypes.PrimarySid).Value;
 	}
 
 }
