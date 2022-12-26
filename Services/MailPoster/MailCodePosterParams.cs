@@ -31,7 +31,7 @@ public class MailCodePosterParams
 	///		Sets or gets the builder of the email that should be sent when the user 
 	///		is registered.
 	/// </summary>
-	public MessageBuilder ConfirmEmailMessageBuilder
+	public MessageBuilder EmailConfirmationMessageBuilder
 	{ get; set; } = defaultConfirmEmailMessageBuilder;
 
 	// DEFAULT VALUES

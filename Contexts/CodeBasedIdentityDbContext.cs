@@ -11,7 +11,7 @@ namespace PortunusAdiutor.Contexts;
 /// <typeparam name="TUser">Type of <see cref="IdentityUser{TKey}"/> used by the identity system.</typeparam>
 /// <typeparam name="TRole">Type of <see cref="IdentityRole{TKey}"/> used by the identity system</typeparam>
 /// <typeparam name="TKey">The type used for the primary key for the <typeparamref name="TUser"/>.</typeparam>
-public class CodeBasedIdentityDbContext<TUser, TRole, TKey> : IdentityDbContext<TUser, TRole, TKey>
+public class IdentityDbContextWithCodes<TUser, TRole, TKey> : IdentityDbContext<TUser, TRole, TKey>
 where TUser : IdentityUser<TKey>
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
@@ -23,7 +23,7 @@ where TKey : IEquatable<TKey>
 
 #pragma warning disable CS8618
 	/// <inheritdoc/>
-	public CodeBasedIdentityDbContext(DbContextOptions options) : base(options)
+	public IdentityDbContextWithCodes(DbContextOptions options) : base(options)
 	{
 	}
 #pragma warning restore CS8618

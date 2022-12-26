@@ -24,6 +24,7 @@ where TKey : IEquatable<TKey>
 	/// <param name="tokenBuilder">Service to build the tokens sent on the messages.</param>
 	public MailLinkPoster(MailLinkPosterParams posterParams, ITokenBuilder tokenBuilder)
 	{
+		
 		_posterParams = posterParams;
 		_tokenBuilder = tokenBuilder;
 	}

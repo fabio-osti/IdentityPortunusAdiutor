@@ -216,11 +216,11 @@ namespace PortunusAdiutor.Extensions
 			}
 
 			if (emailConfirmationMessageBuilder != null) {
-				mailParams.ConfirmEmailMessageBuilder = emailConfirmationMessageBuilder;
+				mailParams.EmailConfirmationMessageBuilder = emailConfirmationMessageBuilder;
 			}
 
 			if (passwordRedefinitionMessageBuilder != null) {
-				mailParams.ConfirmEmailMessageBuilder = passwordRedefinitionMessageBuilder;
+				mailParams.EmailConfirmationMessageBuilder = passwordRedefinitionMessageBuilder;
 			}
 
 			return mailParams;
@@ -254,6 +254,7 @@ namespace PortunusAdiutor.Extensions
 		/// <summary>
 		/// 	Configures <see cref="MailCodePoster{TUser, TRole, TKey}"/> service.
 		/// </summary>
+		/// <typeparam name="TContext"></typeparam>
 		/// <typeparam name="TUser"><see cref="IdentityUser{TKey}"/> type to be used.</typeparam>
 		/// <typeparam name="TRole"><see cref="IdentityRole{TKey}"/> type to be used.</typeparam>
 		/// <typeparam name="TKey">The type used for the primary key for the <typeparamref name="TUser"/>.</typeparam>
@@ -262,10 +263,11 @@ namespace PortunusAdiutor.Extensions
 		/// <remarks>
 		/// 	Should be called after an overload of ConfigureTokenServices.
 		/// </remarks>
-		public static void ConfigureMailCodePoster<TUser, TRole, TKey>(
+		public static void ConfigureMailCodePoster<TContext, TUser, TRole, TKey>(
 			WebApplicationBuilder builder,
 			MailCodePosterParams mailParams
 		)
+			where TContext : IdentityDbContextWithCodes<TUser, TRole, TKey>
 			where TUser : IdentityUser<TKey>
 			where TRole : IdentityRole<TKey>
 			where TKey : IEquatable<TKey>
@@ -273,7 +275,7 @@ namespace PortunusAdiutor.Extensions
 			builder.Services.AddSingleton<IMailPoster<TUser, TKey>>(
 				e => new MailCodePoster<TUser, TRole, TKey>(
 					mailParams,
-					e.GetRequiredService<CodeBasedIdentityDbContext<TUser, TRole, TKey>>()
+					e.GetRequiredService<TContext>()
 				)
 			);
 		}
