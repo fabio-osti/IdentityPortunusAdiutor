@@ -49,7 +49,7 @@ where TUserToken : IdentityUserToken<TKey>
 					.ValidateSpecialToken(
 						e.Value!,
 						messageType.ToJwtString(),
-						false
+						out _
 					)?.First(t => t.Type == JwtCustomTypes.XDigitsCode)
 					.Value;
 
@@ -62,7 +62,7 @@ where TUserToken : IdentityUserToken<TKey>
 
 		if (userToken == null) throw new UnauthorizedAccessException($"No message: \"{message}\" to be consumed");
 		var code = _context.UserTokens.Remove(userToken);
-
+		_context.SaveChanges();
 	}
 
 	public void SendEmailConfirmationMessage(TUser user)
@@ -104,6 +104,8 @@ where TUserToken : IdentityUserToken<TKey>
 		var userToken = new IdentityUserToken<TKey>()
 		{
 			UserId = userId,
+			LoginProvider = "special-access",
+			Name = $"{type}@{DateTime.UtcNow.ToString()}",
 			Value = token
 		} as TUserToken;
 		if (userToken == null)

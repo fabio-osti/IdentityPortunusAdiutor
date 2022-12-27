@@ -25,7 +25,7 @@ public interface ITokenBuilder
 	Claim[]? ValidateSpecialToken(
 		string token,
 		string tokenType,
-		bool shouldDecrypt
+		out SecurityToken validatedToken
 	);
 
 }

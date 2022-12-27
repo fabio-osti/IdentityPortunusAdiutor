@@ -8,11 +8,6 @@ using PortunusAdiutor.Models;
 
 namespace PortunusAdiutor;
 
-
-
-
-
-
 public class Pbkdf2IdentityUser<TKey> : IdentityUser<TKey>, IManagedUser
 where TKey : IEquatable<TKey>
 {

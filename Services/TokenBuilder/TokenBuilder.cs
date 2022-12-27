@@ -8,20 +8,9 @@ using System.Security.Claims;
 
 namespace PortunusAdiutor.Services.TokenBuilder;
 
-
-
-
-
-
-
-
 public class TokenBuilder : ITokenBuilder
 {
 	private readonly TokenBuilderParams _builderParams;
-
-
-
-
 
 	public TokenBuilder(TokenBuilderParams builderParams)
 	{
@@ -126,7 +115,7 @@ public class TokenBuilder : ITokenBuilder
 	public Claim[]? ValidateSpecialToken(
 		string token,
 		string tokenType,
-		bool shouldDecrypt = true
+		out SecurityToken validatedToken
 	)
 	{
 		var handler = new JwtSecurityTokenHandler();
@@ -139,14 +128,14 @@ public class TokenBuilder : ITokenBuilder
 			ValidateLifetime = true,
 			ValidateIssuerSigningKey = true,
 			IssuerSigningKey = _builderParams.SigningKey,
-			TokenDecryptionKey = shouldDecrypt ? _builderParams.EncryptionKey : null
+			TokenDecryptionKey =_builderParams.EncryptionKey 
 		};
 
 
 		var claims = handler.ValidateToken(
 			token,
 			validationParameters,
-			out var tokenSecure
+			out validatedToken
 		);
 
 		return claims.Claims.ToArray();

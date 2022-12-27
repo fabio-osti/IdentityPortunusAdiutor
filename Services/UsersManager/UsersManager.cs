@@ -46,14 +46,14 @@ where TUserToken : IdentityUserToken<TKey>
 		return user;
 	}
 
-	public TUser? ConfirmEmail(Expression<Func<TUser, bool>> userFinder)
+	public TUser? ConfirmEmail(Expression<Func<TUser, bool>> userFinder, string message)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
 		if (user == null)
 		{
 			return null;
 		}
-
+		_mailPoster.ConsumeMessage(user, message, MessageType.EmailConfirmation);
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
 
@@ -72,14 +72,14 @@ where TUserToken : IdentityUserToken<TKey>
 		return user;
 	}
 
-	public TUser? RedefinePassword(Expression<Func<TUser, bool>> userFinder, string newPassword)
+	public TUser? RedefinePassword(Expression<Func<TUser, bool>> userFinder, string message, string newPassword)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
 		if (user == null)
 		{
 			return null;
 		}
-
+		_mailPoster.ConsumeMessage(user, message, MessageType.PasswordRedefinition);
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
 
