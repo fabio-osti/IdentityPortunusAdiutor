@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using MimeKit;
 
 using System.Net;
@@ -47,7 +48,53 @@ public class MailLinkPosterParams
 	public MessageBuilder EmailConfirmationMessageBuilder
 	{ get; set; } = defaultEmailConfirmationMessageBuilder;
 
+	/// <summary>
+	/// 	Initialize an instance of <see cref="MailLinkPosterParams"/>
+	/// 	with only the defaults as base.
+	/// </summary>
+	public MailLinkPosterParams()
+	{
 
+	}
+
+	/// <summary>
+	/// 	Iniatialize an instance of <see cref="MailLinkPosterParams"/> 
+	/// 	using an <see cref="IConfiguration"/> object and
+	/// 	the defaults as base.
+	/// </summary>
+	/// <param name="config">
+	/// 	An <see cref="IConfiguration"/> instance that 
+	/// 	have the section "SMTP" defined.
+	/// </param>
+	public MailLinkPosterParams(IConfiguration config)
+	{
+		var sect = config.GetSection("SMTP");
+		var smtpUri = sect["URI"];
+		if (smtpUri != null)
+		{
+			SmtpUri = new(smtpUri);
+		}
+
+		var smtpUser = sect["USERNAME"];
+		if (smtpUser != null)
+		{
+			var smtpPassword = sect["PSWRD"];
+			SmtpCredentials =
+				new NetworkCredential(smtpUser, smtpPassword);
+		}
+
+		var emailConfirmationEndpoint = sect["ECE"];
+		if (emailConfirmationEndpoint != null)
+		{
+			EmailConfirmationEndpoint = emailConfirmationEndpoint;
+		}
+
+		var passwordRedefinitionEndpoint = sect["PRE"];
+		if (passwordRedefinitionEndpoint != null)
+		{
+			PasswordRedefinitionEndpoint = passwordRedefinitionEndpoint;
+		}
+	}
 
 	// DEFAULT VALUES
 	const string defaultSmtpUriString = "smtp://localhost:2525";
@@ -78,8 +125,7 @@ public class MailLinkPosterParams
 				A new password was requested for your account,
 
 				Please confirm that it was you by opening this link: 
-				
-				{link}
+							{link}
 
 				If you didn’t make this request, then you can ignore this email.
 				"""

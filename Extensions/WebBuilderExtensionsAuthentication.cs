@@ -2,135 +2,65 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-using PortunusAdiutor.Contexts;
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Services.UsersManager;
 
 namespace PortunusAdiutor.Extensions;
 
-///	<summary>
-///		Helper to configure the services.
-///	</summary>
+
 static public partial class WebBuilderExtensions
 {
-	/// <summary>
-	/// 	Configures everything in the right order.
-	/// </summary>
-	/// <typeparam name="TContext">DbContext type to be used.</typeparam>
-	/// <typeparam name="TUser"><see cref="IdentityUser{TKey}"/> type to be used.</typeparam>
-	/// <typeparam name="TRole"><see cref="IdentityRole{TKey}"/> type to be used.</typeparam>
-	/// <typeparam name="TKey">The type used for the primary key for the <typeparamref name="TUser"/>.</typeparam>
-	/// <param name="builder">The app's web builder.</param>
-	/// <param name="authenticationConfiguration">
-	/// 	The configuration to be used. 
-	/// 	<seealso cref="AuthenticationConfigurationParams"/>
-	/// </param>
-	/// <returns><see cref="AuthenticationBuilder"/> for further configurations.</returns>
-	static public AuthenticationBuilder ConfigureAuthenticationWithCodes<TContext, TUser, TRole, TKey>(
+	static public AuthenticationBuilder AddAll<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
-		AuthenticationConfigurationParams authenticationConfiguration
+		Action<DbContextOptionsBuilder> contextConfigurator,
+		TokenBuilderParams tokenBuilderParams,
+		MailLinkPosterParams mailLinkPosterParams
 	)
-	where TContext : IdentityDbContextWithCodes<TUser, TRole, TKey>
+	where TContext : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
 	where TRole : IdentityRole<TKey>
 	where TKey : IEquatable<TKey>
+	where TUserClaim : IdentityUserClaim<TKey>
+	where TUserRole : IdentityUserRole<TKey>
+	where TUserLogin : IdentityUserLogin<TKey>
+	where TRoleClaim : IdentityRoleClaim<TKey>
+	where TUserToken : IdentityUserToken<TKey>
 	{
-		builder.Services.AddDbContext<TContext>(authenticationConfiguration.DbContextConfigurator, ServiceLifetime.Singleton);
-		AuthenticationBuilder authBuilder = authenticationConfiguration switch
-		{
-			{ JwtConfigurator: not null } => builder.ConfigureTokenServices(
-				authenticationConfiguration.SigningKey,
-				authenticationConfiguration.EncryptionKey,
-				authenticationConfiguration.JwtConfigurator
-			),
-			{ ValidationParams: not null } => builder.ConfigureTokenServices(
-				authenticationConfiguration.SigningKey,
-				authenticationConfiguration.EncryptionKey,
-				authenticationConfiguration.ValidationParams
-			),
-			_ => builder.ConfigureTokenServices(
-					authenticationConfiguration.SigningKey,
-					authenticationConfiguration.EncryptionKey
-				)
-		};
-		switch (authenticationConfiguration) {
-			case { LinkPosterParams: not null }:
-				ConfigureMailLinkPoster<TUser, TKey>(
-					builder,
-					authenticationConfiguration.LinkPosterParams
-				);
-				break;
-			case { CodePosterParams: not null }:
-				ConfigureMailCodePoster<TContext, TUser, TRole, TKey>(
-					builder,
-					authenticationConfiguration.CodePosterParams
-				);
-				break;
-			default:
-				break;
-		}
-		builder.Services.AddSingleton<IUsersManager<TUser, TRole, TKey>, UsersManager<TContext, TUser, TRole, TKey>>();
-		return authBuilder;
+		builder.Services.AddDbContext<TContext>(contextConfigurator, ServiceLifetime.Singleton);
+		var authenticationBuilder = builder.AddTokenBuilder(tokenBuilderParams);
+		builder.AddMailLinkPoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(mailLinkPosterParams);
+		builder.AddUsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>();
+		return authenticationBuilder;
 	}
-	/// <summary>
-	/// 	Configures everything in the right order.
-	/// </summary>
-	/// <typeparam name="TContext">DbContext type to be used.</typeparam>
-	/// <typeparam name="TUser"><see cref="IdentityUser{TKey}"/> type to be used.</typeparam>
-	/// <typeparam name="TRole"><see cref="IdentityRole{TKey}"/> type to be used.</typeparam>
-	/// <typeparam name="TKey">The type used for the primary key for the <typeparamref name="TUser"/>.</typeparam>
-	/// <param name="builder">The app's web builder.</param>
-	/// <param name="authenticationConfiguration">
-	/// 	The configuration to be used. 
-	/// 	<seealso cref="AuthenticationConfigurationParams"/>
-	/// </param>
-	/// <returns><see cref="AuthenticationBuilder"/> for further configurations.</returns>
-	static public AuthenticationBuilder ConfigureAuthentication<TContext, TUser, TRole, TKey>(
+
+	static public AuthenticationBuilder AddAll<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
-		AuthenticationConfigurationParams authenticationConfiguration
+		Action<DbContextOptionsBuilder> contextConfigurator,
+		TokenBuilderParams tokenBuilderParams,
+		MailCodePosterParams mailCodePosterParams
 	)
-	where TContext : IdentityDbContext<TUser, TRole, TKey>
+	where TContext : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
 	where TRole : IdentityRole<TKey>
 	where TKey : IEquatable<TKey>
+	where TUserClaim : IdentityUserClaim<TKey>
+	where TUserRole : IdentityUserRole<TKey>
+	where TUserLogin : IdentityUserLogin<TKey>
+	where TRoleClaim : IdentityRoleClaim<TKey>
+	where TUserToken : IdentityUserToken<TKey>
 	{
-		builder.Services.AddDbContext<TContext>(authenticationConfiguration.DbContextConfigurator, ServiceLifetime.Singleton);
-		AuthenticationBuilder authBuilder = authenticationConfiguration switch
-		{
-			{ JwtConfigurator: not null } => builder.ConfigureTokenServices(
-				authenticationConfiguration.SigningKey,
-				authenticationConfiguration.EncryptionKey,
-				authenticationConfiguration.JwtConfigurator
-			),
-			{ ValidationParams: not null } => builder.ConfigureTokenServices(
-				authenticationConfiguration.SigningKey,
-				authenticationConfiguration.EncryptionKey,
-				authenticationConfiguration.ValidationParams
-			),
-			_ => builder.ConfigureTokenServices(
-					authenticationConfiguration.SigningKey,
-					authenticationConfiguration.EncryptionKey
-				)
-		};
-		switch (authenticationConfiguration) {
-			case { LinkPosterParams: not null }:
-				ConfigureMailLinkPoster<TUser, TKey>(
-					builder,
-					authenticationConfiguration.LinkPosterParams
-				);
-				break;
-			case { CodePosterParams: not null }:
-				break;
-			default:
-				break;
-		}
-		builder.Services.AddSingleton<IUsersManager<TUser, TRole, TKey>, UsersManager<TContext, TUser, TRole, TKey>>();
-		return authBuilder;
+		builder.Services.AddDbContext<TContext>(contextConfigurator, ServiceLifetime.Singleton);
+
+		var authenticationBuilder = builder.AddTokenBuilder(tokenBuilderParams);
+
+		builder.AddMailCodePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(mailCodePosterParams);
+
+		builder.AddUsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>();
+
+		return authenticationBuilder;
 	}
-
-
-
-
 }

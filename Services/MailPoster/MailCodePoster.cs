@@ -1,86 +1,123 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 
 using MailKit.Net.Smtp;
 
 using Microsoft.AspNetCore.Identity;
-
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using MimeKit;
 
-using PortunusAdiutor.Contexts;
+using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MailPoster;
+using PortunusAdiutor.Services.TokenBuilder;
 
-/// <summary>
-/// 	Service for sending a <see cref="string"/> of length == 6
-/// 	to a <typeparamref name="TUser"/> for some special action.
-/// </summary>
-/// <typeparam name="TUser">The type of user to whom the messages will be sent.</typeparam>
-/// <typeparam name="TRole">Type of <see cref="IdentityRole{TKey}"/> used by the identity system</typeparam>
-/// <typeparam name="TKey">The type used for the primary key for the <typeparamref name="TUser"/>.</typeparam>
-public class MailCodePoster<TUser, TRole, TKey> : IMailPoster<TUser, TKey>
+public class MailCodePoster<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IMailPoster<TUser, TKey>
 where TUser : IdentityUser<TKey>
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
+where TUserClaim : IdentityUserClaim<TKey>
+where TUserRole : IdentityUserRole<TKey>
+where TUserLogin : IdentityUserLogin<TKey>
+where TRoleClaim : IdentityRoleClaim<TKey>
+where TUserToken : IdentityUserToken<TKey>
 {
-	IdentityDbContextWithCodes<TUser, TRole, TKey> _context;
 	MailCodePosterParams _posterParams;
-	/// <summary>
-	/// 	Initialize a new instance of <see cref="MailCodePoster{TUser, TRole, TKey}"/>
-	/// </summary>
-	/// <param name="posterParams">Parameters necessary for the code message posting.</param>
-	/// <param name="context">Context service for keeping the sent codes.</param>
-	public MailCodePoster(MailCodePosterParams posterParams, IdentityDbContextWithCodes<TUser, TRole, TKey> context)
+	IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> _context;
+	ITokenBuilder _tokenBuilder;
+
+	public MailCodePoster(MailCodePosterParams posterParams, IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> context, ITokenBuilder tokenBuilder)
 	{
 		_posterParams = posterParams;
 		_context = context;
+		_tokenBuilder = tokenBuilder;
 	}
-	///	<inheritdoc/>
-	public void MessageConsumed(TUser user, string content, MessageType messageType)
+
+	public void ConsumeMessage(TUser user, string message, MessageType messageType)
 	{
-		var code = _context.EmailCodes.Find(new { @UserId = user.Id, @Code = content });
-		if (code?.Type != messageType) {
-			throw new Exception();
-		}
+		var typeFilter = 
+			(TUserToken e) =>
+				messageType.ToJwtString() 
+					==
+				new JwtSecurityTokenHandler()
+					.ReadJwtToken(e.Value).Header.Typ;
+		var messageFinder =
+			(TUserToken e) =>
+				message 
+					== 
+				_tokenBuilder
+					.ValidateSpecialToken(
+						e.Value!,
+						messageType.ToJwtString(),
+						false
+					)?.First(t => t.Type == JwtCustomTypes.XDigitsCode)
+					.Value;
+
+		var userToken = _context.UserTokens
+			// Gets all tokens of user
+			.Where(e => e.UserId.Equals(user.Id))
+			// Gets tokens of message type
+			.Where(typeFilter)
+			.FirstOrDefault(messageFinder);
+
+		if (userToken == null) throw new UnauthorizedAccessException($"No message: \"{message}\" to be consumed");
+		var code = _context.UserTokens.Remove(userToken);
+
 	}
-	///	<inheritdoc/>
+
 	public void SendEmailConfirmationMessage(TUser user)
 	{
-		var code = _context.EmailCodes.Add(new MailCodePost<TUser, TKey>()
-		{
-			UserId = user.Id,
-			Code = RandomNumberGenerator.GetInt32(1000000).ToString(),
-			ExpiresOn = DateTime.UtcNow.AddMinutes(15),
-			Type = MessageType.EmailConfirmation
-		});
-		_context.SaveChanges();
-		
+		var sixDigitsCode = GenAndSave(user.Id, JwtCustomTypes.EmailConfirmation);
+
 		var message = _posterParams.EmailConfirmationMessageBuilder(
-			user.Email!, code.Entity.Code
+			user.Email!, sixDigitsCode
 		);
 
 		SendMessage(message);
 	}
-	///	<inheritdoc/>
+
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
-		var code = _context.EmailCodes.Add(new MailCodePost<TUser, TKey>()
-		{
-			UserId = user.Id,
-			Code = RandomNumberGenerator.GetInt32(1000000).ToString(),
-			ExpiresOn = DateTime.UtcNow.AddMinutes(15),
-			Type = MessageType.PasswordRedefinition
-		});
-		_context.SaveChanges();
-		
+		string sixDigitsCode = GenAndSave(user.Id, JwtCustomTypes.PasswordRedefinition);
+
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
-			user.Email!, code.Entity.Code
+			user.Email!, sixDigitsCode
 		);
 
 		SendMessage(message);
+	}
+
+	private string GenAndSave(TKey userId, string type)
+	{
+		var sixDigitCode = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
+
+		var token = _tokenBuilder.BuildSpecialToken(
+			new ClaimsIdentity(new[] {
+				new Claim(JwtCustomTypes.XDigitsCode, sixDigitCode),
+				new Claim("consumed", "false")
+			}),
+			type,
+			DateTime.UtcNow.AddMinutes(15),
+			false
+		);
+
+		var userToken = new IdentityUserToken<TKey>()
+		{
+			UserId = userId,
+			Value = token
+		} as TUserToken;
+		if (userToken == null)
+			throw new InvalidCastException($"{nameof(IdentityUserToken<TKey>)} is not a {nameof(TUserToken)}, you would think it should be, since it's a speficic type constraint that it should, I'm also confused.");
+		var c = _context.UserTokens.Add(userToken);
+
+		_context.SaveChanges();
+		return sixDigitCode;
 	}
 
 	private void SendMessage(MimeMessage message)
 	{
-		using (var client = new SmtpClient()) {
+		using (var client = new SmtpClient())
+		{
 			client.Connect(_posterParams.SmtpUri);
 			client.Authenticate(_posterParams.SmtpCredentials);
 			client.Send(message);

@@ -79,8 +79,7 @@ public class AuthorizationController : ControllerBase
 			var userPk =
 				_tokenBuilder.ValidateCustomTypeToken(token, JwtCustomTypes.EmailConfirmation);
 			var user = _userManager.ConfirmEmail(u => u.Id.ToString() == userPk);
-			
-			return user == null ? NotFound() : Ok();
+					return user == null ? NotFound() : Ok();
 		} catch (Exception e) {
 			return Problem(e.Message);
 		}
@@ -126,8 +125,7 @@ public class AuthorizationController : ControllerBase
 				u => u.Id.ToString() == userPk, 
 				redefined.Password!
 			);
-			
-			return user == null ? NotFound() : Ok();
+					return user == null ? NotFound() : Ok();
 		} catch (Exception e) {
 
 			return Problem(e.Message);
