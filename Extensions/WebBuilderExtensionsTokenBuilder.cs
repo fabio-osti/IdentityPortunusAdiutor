@@ -47,15 +47,14 @@ static public partial class WebBuilderExtensions
 							opt.TokenValidationParameters = builderParams.ValidationParams;
 						}
 					);
-							default:
+			default:
 				return builder.Services
 					.AddSingleton<ITokenBuilder>(_ => new TokenBuilder(builderParams))
 					.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 					.AddJwtBearer(opt =>
 					{
 						opt.SaveToken = true;
-						builderParams.ValidationParams = opt.TokenValidationParameters = 
-						new TokenValidationParameters
+						builderParams.ValidationParams = opt.TokenValidationParameters = new TokenValidationParameters
 						{
 							ValidateIssuerSigningKey = true,
 							IssuerSigningKey = builderParams.SigningKey,

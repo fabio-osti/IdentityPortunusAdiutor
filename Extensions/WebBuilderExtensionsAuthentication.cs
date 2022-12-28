@@ -11,10 +11,9 @@ using PortunusAdiutor.Services.UsersManager;
 
 namespace PortunusAdiutor.Extensions;
 
-
 static public partial class WebBuilderExtensions
 {
-	static public AuthenticationBuilder AddAll<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
+	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
@@ -37,7 +36,7 @@ static public partial class WebBuilderExtensions
 		return authenticationBuilder;
 	}
 
-	static public AuthenticationBuilder AddAll<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
+	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
