@@ -37,7 +37,7 @@ where TUserToken : IdentityUserToken<TKey>
 	public TUser? SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user == null)
+		if (user == null || user.EmailConfirmed)
 		{
 			return null;
 		}

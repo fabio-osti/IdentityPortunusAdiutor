@@ -6,6 +6,7 @@ using MailKit.Net.Smtp;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 
 using PortunusAdiutor.Models;
@@ -35,23 +36,33 @@ where TUserToken : IdentityUserToken<TKey>
 
 	public void ConsumeMessage(TUser user, string message, MessageType messageType)
 	{
-		var typeFilter = 
+		var typeFilter =
 			(TUserToken e) =>
-				messageType.ToJwtString() 
+				messageType.ToJwtString()
 					==
 				new JwtSecurityTokenHandler()
 					.ReadJwtToken(e.Value).Header.Typ;
 		var messageFinder =
 			(TUserToken e) =>
-				message 
-					== 
-				_tokenBuilder
-					.ValidateSpecialToken(
-						e.Value!,
-						messageType.ToJwtString(),
-						out _
-					)?.First(t => t.Type == JwtCustomTypes.XDigitsCode)
-					.Value;
+			{
+				try
+				{
+					return message
+							==
+						_tokenBuilder
+							.ValidateSpecialToken(
+								e.Value!,
+								messageType.ToJwtString(),
+								out _
+							)?
+							.First(t => t.Type == JwtCustomTypes.XDigitsCode)
+							.Value;
+				}
+				catch (SecurityTokenException)
+				{
+					return false;
+				}
+			};
 
 		var userToken = _context.UserTokens
 			// Gets all tokens of user
@@ -60,7 +71,10 @@ where TUserToken : IdentityUserToken<TKey>
 			.Where(typeFilter)
 			.FirstOrDefault(messageFinder);
 
-		if (userToken == null) throw new UnauthorizedAccessException($"No message: \"{message}\" to be consumed");
+		if (userToken == null)
+		{
+			throw new UnauthorizedAccessException($"No message: \"{message}\" to be consumed");
+		}
 		var code = _context.UserTokens.Remove(userToken);
 		_context.SaveChanges();
 	}
@@ -104,15 +118,17 @@ where TUserToken : IdentityUserToken<TKey>
 		var userToken = new IdentityUserToken<TKey>()
 		{
 			UserId = userId,
-			LoginProvider = "special-access",
+			LoginProvider = "code-special-access",
 			Name = $"{type}@{DateTime.UtcNow.ToString()}",
 			Value = token
 		} as TUserToken;
 		if (userToken == null)
-			throw new InvalidCastException($"{nameof(IdentityUserToken<TKey>)} is not a {nameof(TUserToken)}, you would think it should be, since it's a speficic type constraint that it should, I'm also confused.");
-		var c = _context.UserTokens.Add(userToken);
-
+		{
+			throw new InvalidCastException($"{nameof(IdentityUserToken<TKey>)} is not a {nameof(TUserToken)}.");
+		}
+		_context.UserTokens.Add(userToken);
 		_context.SaveChanges();
+		
 		return sixDigitCode;
 	}
 

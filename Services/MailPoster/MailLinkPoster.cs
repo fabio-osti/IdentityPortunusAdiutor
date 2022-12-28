@@ -7,6 +7,7 @@ using PortunusAdiutor.Services.TokenBuilder;
 using System.Security.Claims;
 using PortunusAdiutor.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 public class MailLinkPoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IMailPoster<TUser, TKey>
 where TContext : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
@@ -19,16 +20,15 @@ where TUserLogin : IdentityUserLogin<TKey>
 where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
-	private readonly ITokenBuilder _tokenBuilder;
 	private readonly MailLinkPosterParams _posterParams;
 	private readonly TContext _context;
+	private readonly ITokenBuilder _tokenBuilder;
 	public MailLinkPoster(
-		MailLinkPosterParams posterParams, 
+		MailLinkPosterParams posterParams,
 		TContext context,
-		ITokenBuilder tokenBuilder 
-		)
+		ITokenBuilder tokenBuilder
+	)
 	{
-
 		_posterParams = posterParams;
 		_tokenBuilder = tokenBuilder;
 		_context = context;
@@ -36,7 +36,30 @@ where TUserToken : IdentityUserToken<TKey>
 
 	public void ConsumeMessage(TUser user, string content, MessageType messageType)
 	{
+		_tokenBuilder.ValidateSpecialToken(
+			content,
+			messageType.ToJwtString(),
+			out _
+		);
+		if (_context.UserTokens.FirstOrDefault(e => e.Value == content) != null)
+		{
+			throw new SecurityTokenException("Token already consumed.");
 		}
+
+		var userToken = new IdentityUserToken<TKey>
+		{
+			UserId = user.Id,
+			LoginProvider = "token-special-access",
+			Name = $"{messageType.ToJwtString()}:{DateTime.UtcNow.ToString()}",
+			Value = content
+		} as TUserToken;
+		if (userToken == null)
+		{
+			throw new InvalidCastException($"{nameof(IdentityUserToken<TKey>)} is not a {nameof(TUserToken)}.");
+		}
+		_context.UserTokens.Add(userToken);
+		_context.SaveChanges();
+	}
 
 	public void SendEmailConfirmationMessage(TUser user)
 	{
