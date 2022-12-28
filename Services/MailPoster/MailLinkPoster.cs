@@ -34,19 +34,35 @@ where TUserToken : IdentityUserToken<TKey>
 		_context = context;
 	}
 
-	public void ConsumeMessage(TUser user, string content, MessageType messageType)
+	public void ConsumeMessage(TUser? user, string content, MessageType messageType)
 	{
-		_tokenBuilder.ValidateSpecialToken(
-			content,
-			messageType.ToJwtString(),
-			out _
-		);
-		if (_context.UserTokens.FirstOrDefault(e => e.Value == content) != null)
+		// Validates token
+		var userId = _tokenBuilder
+			.ValidateSpecialToken(
+				content,
+				messageType.ToJwtString(),
+				out _
+			)?
+			.First(e => e.Type == ClaimTypes.PrimarySid)
+			.Value;
+
+		// Gets user referenced by the token
+		user = _context.Users.First(e => e.Id.ToString() == userId);
+
+		// Checks if token have been already used.
+		var userToken = 
+			_context.UserTokens.FirstOrDefault(
+				e => 
+					e.Value == content &&
+					e.UserId.ToString() == user.Id.ToString()
+			);
+		if (userToken != null)
 		{
 			throw new SecurityTokenException("Token already consumed.");
 		}
 
-		var userToken = new IdentityUserToken<TKey>
+		// Saves token as used on the Db
+		userToken = new IdentityUserToken<TKey>
 		{
 			UserId = user.Id,
 			LoginProvider = "token-special-access",

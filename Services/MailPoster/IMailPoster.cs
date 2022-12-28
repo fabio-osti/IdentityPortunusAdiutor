@@ -9,7 +9,7 @@ where TKey : IEquatable<TKey>
 {
 	void SendEmailConfirmationMessage(TUser user);
 	void SendPasswordRedefinitionMessage(TUser user);
-	void ConsumeMessage(TUser user, string message, MessageType messageType);
+	void ConsumeMessage(TUser? user, string message, MessageType messageType);
 }
 
 public enum MessageType

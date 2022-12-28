@@ -34,8 +34,13 @@ where TUserToken : IdentityUserToken<TKey>
 		_tokenBuilder = tokenBuilder;
 	}
 
-	public void ConsumeMessage(TUser user, string message, MessageType messageType)
+	public void ConsumeMessage(TUser? user, string message, MessageType messageType)
 	{
+		if (user == null)
+		{
+			throw new ArgumentNullException(nameof(user), $"{nameof(user)} cannot be null with {this.GetType()}");
+		}
+		
 		var typeFilter =
 			(TUserToken e) =>
 				messageType.ToJwtString()
