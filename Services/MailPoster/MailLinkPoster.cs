@@ -34,12 +34,16 @@ where TUserToken : IdentityUserToken<TKey>
 		_context = context;
 	}
 
-	public void ConsumeMessage(TUser? user, string content, MessageType messageType)
+	public TUser ConsumeMessage(
+		string message, 
+		MessageType messageType,
+		TUser? user
+	)
 	{
 		// Validates token
 		var userId = _tokenBuilder
 			.ValidateSpecialToken(
-				content,
+				message,
 				messageType.ToJwtString(),
 				out _
 			)?
@@ -50,12 +54,11 @@ where TUserToken : IdentityUserToken<TKey>
 		user = _context.Users.First(e => e.Id.ToString() == userId);
 
 		// Checks if token have been already used.
-		var userToken = 
-			_context.UserTokens.FirstOrDefault(
-				e => 
-					e.Value == content &&
-					e.UserId.ToString() == user.Id.ToString()
-			);
+		var userToken = _context.UserTokens.FirstOrDefault(
+			e => 
+				e.Value == message 
+				&& e.UserId.ToString() == user.Id.ToString()
+		);
 		if (userToken != null)
 		{
 			throw new SecurityTokenException("Token already consumed.");
@@ -67,7 +70,7 @@ where TUserToken : IdentityUserToken<TKey>
 			UserId = user.Id,
 			LoginProvider = "token-special-access",
 			Name = $"{messageType.ToJwtString()}:{DateTime.UtcNow.ToString()}",
-			Value = content
+			Value = message
 		} as TUserToken;
 		if (userToken == null)
 		{
@@ -75,6 +78,8 @@ where TUserToken : IdentityUserToken<TKey>
 		}
 		_context.UserTokens.Add(userToken);
 		_context.SaveChanges();
+
+		return user;
 	}
 
 	public void SendEmailConfirmationMessage(TUser user)

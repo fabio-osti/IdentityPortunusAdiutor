@@ -34,27 +34,25 @@ where TUserToken : IdentityUserToken<TKey>
 		_tokenBuilder = tokenBuilder;
 	}
 
-	public void ConsumeMessage(TUser? user, string message, MessageType messageType)
+	public TUser ConsumeMessage(
+		string message,
+		MessageType messageType,
+		TUser? user
+	)
 	{
-		if (user == null)
-		{
-			throw new ArgumentNullException(nameof(user), $"{nameof(user)} cannot be null with {this.GetType()}");
-		}
-		
+		ArgumentNullException.ThrowIfNull(user);
+
 		var typeFilter =
 			(TUserToken e) =>
-				messageType.ToJwtString()
-					==
-				new JwtSecurityTokenHandler()
-					.ReadJwtToken(e.Value).Header.Typ;
+				messageType.ToJwtString() 
+					== new JwtSecurityTokenHandler().ReadJwtToken(e.Value).Header.Typ;
 		var messageFinder =
 			(TUserToken e) =>
 			{
 				try
 				{
 					return message
-							==
-						_tokenBuilder
+						== _tokenBuilder
 							.ValidateSpecialToken(
 								e.Value!,
 								messageType.ToJwtString(),
@@ -78,10 +76,12 @@ where TUserToken : IdentityUserToken<TKey>
 
 		if (userToken == null)
 		{
-			throw new UnauthorizedAccessException($"No message: \"{message}\" to be consumed");
+			throw new UnauthorizedAccessException($"""No message: "{message}" to be consumed""");
 		}
 		var code = _context.UserTokens.Remove(userToken);
 		_context.SaveChanges();
+
+		return user;
 	}
 
 	public void SendEmailConfirmationMessage(TUser user)
@@ -133,7 +133,7 @@ where TUserToken : IdentityUserToken<TKey>
 		}
 		_context.UserTokens.Add(userToken);
 		_context.SaveChanges();
-		
+
 		return sixDigitCode;
 	}
 

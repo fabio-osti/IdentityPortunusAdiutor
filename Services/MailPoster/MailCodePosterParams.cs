@@ -46,7 +46,7 @@ public class MailCodePosterParams
 
 	static MimeMessage defaultForgotPasswordMessageBuilder(
 		string email,
-		string link
+		string code
 	)
 	{
 		var message = new MimeMessage();
@@ -62,7 +62,8 @@ public class MailCodePosterParams
 				A new password was requested for your account,
 
 				Please confirm that it was you by entering this code: 
-							{link}
+				
+				{code}
 
 				If you didn’t make this request, then you can ignore this email.
 				"""
@@ -73,7 +74,7 @@ public class MailCodePosterParams
 
 	static MimeMessage defaultConfirmEmailMessageBuilder(
 		string email,
-		string link
+		string code
 	)
 	{
 		var message = new MimeMessage();
@@ -90,7 +91,7 @@ public class MailCodePosterParams
 
 				Please confirm that it was you by entering this code: 
 
-				{link}
+				{code}
 
 				If you didn’t make this request, then you can ignore this email.
 				"""

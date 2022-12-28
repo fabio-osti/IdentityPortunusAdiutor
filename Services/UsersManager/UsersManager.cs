@@ -34,58 +34,6 @@ where TUserToken : IdentityUserToken<TKey>
 		_context = context;
 	}
 
-	public TUser? SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
-	{
-		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user == null || user.EmailConfirmed)
-		{
-			return null;
-		}
-		_mailPoster.SendPasswordRedefinitionMessage(user);
-
-		return user;
-	}
-
-	public TUser? ConfirmEmail(Expression<Func<TUser, bool>> userFinder, string message)
-	{
-		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user == null)
-		{
-			return null;
-		}
-		_mailPoster.ConsumeMessage(user, message, MessageType.EmailConfirmation);
-		user.EmailConfirmed = true;
-		_context.SaveChanges();
-
-		return user;
-	}
-
-	public TUser? SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
-	{
-		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user == null)
-		{
-			return null;
-		}
-		_mailPoster.SendPasswordRedefinitionMessage(user);
-
-		return user;
-	}
-
-	public TUser? RedefinePassword(Expression<Func<TUser, bool>> userFinder, string message, string newPassword)
-	{
-		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user == null)
-		{
-			return null;
-		}
-		_mailPoster.ConsumeMessage(user, message, MessageType.PasswordRedefinition);
-		user.SetPassword(newPassword);
-		_context.SaveChanges();
-
-		return user;
-	}
-
 	public TUser? CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
 	{
 		if (_context.Users.FirstOrDefault(userFinder) != null)
@@ -109,4 +57,66 @@ where TUserToken : IdentityUserToken<TKey>
 		return user;
 	}
 
+	public TUser? SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
+	{
+		var user = _context.Users.FirstOrDefault(userFinder);
+		if (user == null || user.EmailConfirmed)
+		{
+			return null;
+		}
+		_mailPoster.SendPasswordRedefinitionMessage(user);
+
+		return user;
+	}
+
+	public TUser? ConfirmEmail(
+		string otp,
+		Expression<Func<TUser, bool>>? userFinder 
+	)
+	{
+		var user = userFinder is null 
+			? null 
+			: _context.Users.FirstOrDefault(userFinder);
+		user = _mailPoster.ConsumeMessage(otp, MessageType.EmailConfirmation, user);
+		if (user == null)
+		{
+			return null;
+		}
+		user.EmailConfirmed = true;
+		_context.SaveChanges();
+
+		return user;
+	}
+
+	public TUser? SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
+	{
+		var user = _context.Users.FirstOrDefault(userFinder);
+		if (user == null)
+		{
+			return null;
+		}
+		_mailPoster.SendPasswordRedefinitionMessage(user);
+
+		return user;
+	}
+
+	public TUser? RedefinePassword(
+		string otp,
+		string newPassword,
+		Expression<Func<TUser, bool>>? userFinder
+	)
+	{
+		var user = userFinder is null 
+			? null 
+			: _context.Users.FirstOrDefault(userFinder);
+		user = _mailPoster.ConsumeMessage(otp, MessageType.PasswordRedefinition, user);
+		if (user == null)
+		{
+			return null;
+		}
+		user.SetPassword(newPassword);
+		_context.SaveChanges();
+
+		return user;
+	}
 }

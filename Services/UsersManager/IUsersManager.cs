@@ -13,7 +13,7 @@ where TKey : IEquatable<TKey>
 	TUser? CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder);
 	TUser? ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword);
 	TUser? SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder);
-	TUser? ConfirmEmail(Expression<Func<TUser, bool>> userFinder, string message);
+	TUser? ConfirmEmail(string otp, Expression<Func<TUser, bool>>? userFinder);
 	TUser? SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder);
-	TUser? RedefinePassword(Expression<Func<TUser, bool>> userFinder, string message, string newPassword);
+	TUser? RedefinePassword(string otp, string newPassword,	Expression<Func<TUser, bool>>? userFinder);
 }

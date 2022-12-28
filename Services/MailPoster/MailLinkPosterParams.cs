@@ -125,7 +125,8 @@ public class MailLinkPosterParams
 				A new password was requested for your account,
 
 				Please confirm that it was you by opening this link: 
-							{link}
+				
+				{link}
 
 				If you didn’t make this request, then you can ignore this email.
 				"""
