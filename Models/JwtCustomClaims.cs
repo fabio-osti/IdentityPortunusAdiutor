@@ -1,4 +1,3 @@
-
 namespace PortunusAdiutor.Models;
 
 static public class JwtCustomClaims

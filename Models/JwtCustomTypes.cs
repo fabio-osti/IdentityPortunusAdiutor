@@ -1,5 +1,3 @@
-using PortunusAdiutor.Services.MailPoster;
-
 namespace PortunusAdiutor.Models;
 
 public static class JwtCustomTypes

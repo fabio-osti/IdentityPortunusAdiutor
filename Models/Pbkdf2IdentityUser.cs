@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 using System.Security.Cryptography;
 
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
@@ -54,4 +55,15 @@ where TKey : IEquatable<TKey>
 	}
 	
 	public byte[] Salt { get; set; }
+
+	public Claim[] GetClaims()
+	{
+		var id = Id.ToString();
+		ArgumentNullException.ThrowIfNull(id);
+		ArgumentNullException.ThrowIfNull(Email);
+		return new[] {
+			new Claim(ClaimTypes.PrimarySid, id),
+			new Claim(ClaimTypes.Email, Email)
+		};
+	}
 }
