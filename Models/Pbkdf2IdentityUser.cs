@@ -4,9 +4,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
 
-using PortunusAdiutor.Models;
-
-namespace PortunusAdiutor;
+namespace PortunusAdiutor.Models;
 
 public class Pbkdf2IdentityUser<TKey> : IdentityUser<TKey>, IManagedUser
 where TKey : IEquatable<TKey>

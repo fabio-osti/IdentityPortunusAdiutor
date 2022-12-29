@@ -1,8 +1,7 @@
 
-namespace PortunusAdiutor.Models
+namespace PortunusAdiutor.Models;
+
+static public class JwtCustomClaims
 {
-	static public class JwtCustomClaims
-	{
-		public const string XDigitsCode = "x-digits-code";
-	}
+	public const string XDigitsCode = "x-digits-code";
 }
