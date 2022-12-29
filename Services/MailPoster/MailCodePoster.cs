@@ -58,7 +58,7 @@ where TUserToken : IdentityUserToken<TKey>
 								messageType.ToJwtString(),
 								out _
 							)?
-							.First(t => t.Type == JwtCustomTypes.XDigitsCode)
+							.First(t => t.Type == JwtCustomClaims.XDigitsCode)
 							.Value;
 				}
 				catch (SecurityTokenException)
@@ -112,7 +112,7 @@ where TUserToken : IdentityUserToken<TKey>
 
 		var token = _tokenBuilder.BuildSpecialToken(
 			new ClaimsIdentity(new[] {
-				new Claim(JwtCustomTypes.XDigitsCode, sixDigitCode),
+				new Claim(JwtCustomClaims.XDigitsCode, sixDigitCode),
 				new Claim("consumed", "false")
 			}),
 			type,
