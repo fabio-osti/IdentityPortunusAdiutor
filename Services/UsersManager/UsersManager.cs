@@ -36,7 +36,7 @@ where TUserToken : IdentityUserToken<TKey>
 
 	public TUser? CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
 	{
-		if (_context.Users.FirstOrDefault(userFinder) != null)
+		if (_context.Users.FirstOrDefault(userFinder) is not null)
 		{
 			return null;
 		}
@@ -49,7 +49,7 @@ where TUserToken : IdentityUserToken<TKey>
 	public TUser? ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user == null || !user.ValidatePassword(userPassword))
+		if (user is null || !user.ValidatePassword(userPassword))
 		{
 			return null;
 		}
@@ -60,7 +60,7 @@ where TUserToken : IdentityUserToken<TKey>
 	public TUser? SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user == null || user.EmailConfirmed)
+		if (user is null || user.EmailConfirmed)
 		{
 			return null;
 		}
@@ -78,7 +78,7 @@ where TUserToken : IdentityUserToken<TKey>
 			? null 
 			: _context.Users.FirstOrDefault(userFinder);
 		user = _mailPoster.ConsumeMessage(otp, MessageType.EmailConfirmation, user);
-		if (user == null)
+		if (user is null)
 		{
 			return null;
 		}
@@ -91,7 +91,7 @@ where TUserToken : IdentityUserToken<TKey>
 	public TUser? SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user == null)
+		if (user is null)
 		{
 			return null;
 		}
@@ -110,7 +110,7 @@ where TUserToken : IdentityUserToken<TKey>
 			? null 
 			: _context.Users.FirstOrDefault(userFinder);
 		user = _mailPoster.ConsumeMessage(otp, MessageType.PasswordRedefinition, user);
-		if (user == null)
+		if (user is null)
 		{
 			return null;
 		}

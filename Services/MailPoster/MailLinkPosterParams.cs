@@ -70,13 +70,13 @@ public class MailLinkPosterParams
 	{
 		var sect = config.GetSection("SMTP");
 		var smtpUri = sect["URI"];
-		if (smtpUri != null)
+		if (smtpUri is not null)
 		{
 			SmtpUri = new(smtpUri);
 		}
 
 		var smtpUser = sect["USERNAME"];
-		if (smtpUser != null)
+		if (smtpUser is not null)
 		{
 			var smtpPassword = sect["PSWRD"];
 			SmtpCredentials =
@@ -84,13 +84,13 @@ public class MailLinkPosterParams
 		}
 
 		var emailConfirmationEndpoint = sect["ECE"];
-		if (emailConfirmationEndpoint != null)
+		if (emailConfirmationEndpoint is not null)
 		{
 			EmailConfirmationEndpoint = emailConfirmationEndpoint;
 		}
 
 		var passwordRedefinitionEndpoint = sect["PRE"];
-		if (passwordRedefinitionEndpoint != null)
+		if (passwordRedefinitionEndpoint is not null)
 		{
 			PasswordRedefinitionEndpoint = passwordRedefinitionEndpoint;
 		}

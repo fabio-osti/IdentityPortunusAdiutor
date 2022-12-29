@@ -74,7 +74,7 @@ where TUserToken : IdentityUserToken<TKey>
 			.Where(typeFilter)
 			.FirstOrDefault(messageFinder);
 
-		if (userToken == null)
+		if (userToken is null)
 		{
 			throw new UnauthorizedAccessException($"""No message: "{message}" to be consumed""");
 		}
@@ -127,7 +127,7 @@ where TUserToken : IdentityUserToken<TKey>
 			Name = $"{type}@{DateTime.UtcNow.ToString()}",
 			Value = token
 		} as TUserToken;
-		if (userToken == null)
+		if (userToken is null)
 		{
 			throw new InvalidCastException($"{nameof(IdentityUserToken<TKey>)} is not a {nameof(TUserToken)}.");
 		}

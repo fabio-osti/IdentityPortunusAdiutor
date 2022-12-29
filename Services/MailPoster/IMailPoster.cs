@@ -16,8 +16,3 @@ where TKey : IEquatable<TKey>
 	);
 }
 
-public enum MessageType
-{
-	EmailConfirmation,
-	PasswordRedefinition
-}

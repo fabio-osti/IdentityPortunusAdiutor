@@ -27,7 +27,6 @@ where TKey : IEquatable<TKey>
 		SetPassword(password);
 	}
 
-	
 	[MemberNotNull(nameof(Salt))]
 	public void SetPassword(string password)
 	{
@@ -39,7 +38,6 @@ where TKey : IEquatable<TKey>
 		return;
 	}
 
-	
 	public bool ValidatePassword(string password)
 	{
 		return PasswordHash == DeriveKey(password);
@@ -56,7 +54,6 @@ where TKey : IEquatable<TKey>
 		);
 		return Convert.ToBase64String(hashed);
 	}
-
 	
 	public byte[] Salt { get; set; }
 }

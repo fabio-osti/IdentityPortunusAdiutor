@@ -27,13 +27,13 @@ public class MailCodePosterParams
 	{
 		var sect = config.GetSection("SMTP");
 		var smtpUri = config["SMTP_URI"];
-		if (smtpUri != null)
+		if (smtpUri is not null)
 		{
 			SmtpUri = new(smtpUri);
 		}
 
 		var smtpUser = config["SMTP_USER"];
-		if (smtpUser != null)
+		if (smtpUser is not null)
 		{
 			var smtpPassword = config["SMTP_PSWRD"];
 			SmtpCredentials =

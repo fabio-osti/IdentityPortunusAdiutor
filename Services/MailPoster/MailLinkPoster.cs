@@ -59,7 +59,7 @@ where TUserToken : IdentityUserToken<TKey>
 				e.Value == message 
 				&& e.UserId.ToString() == user.Id.ToString()
 		);
-		if (userToken != null)
+		if (userToken is not null)
 		{
 			throw new SecurityTokenException("Token already consumed.");
 		}
@@ -72,7 +72,7 @@ where TUserToken : IdentityUserToken<TKey>
 			Name = $"{messageType.ToJwtString()}:{DateTime.UtcNow.ToString()}",
 			Value = message
 		} as TUserToken;
-		if (userToken == null)
+		if (userToken is null)
 		{
 			throw new InvalidCastException($"{nameof(IdentityUserToken<TKey>)} is not a {nameof(TUserToken)}.");
 		}

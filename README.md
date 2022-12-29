@@ -47,7 +47,7 @@ public class AuthorizationController : ControllerBase
 				() => new ApplicationUser(credentials.Email!, credentials.Password!)
 			);
 
-			return user == null 
+			return user is null 
 				? Problem("Email already registered.") 
 				: Ok(_tokenBuilder.BuildToken(user.GetClaims()));
 		} catch (Exception e) {
@@ -64,7 +64,7 @@ public class AuthorizationController : ControllerBase
 				credentials.Password!
 			);
 
-			return user == null 
+			return user is null 
 				? Problem("User or Password not found.")
 				: Ok(_tokenBuilder.BuildToken(user.GetClaims()));
 		} catch (Exception e) {
@@ -79,7 +79,7 @@ public class AuthorizationController : ControllerBase
 			var userPk =
 				_tokenBuilder.ValidateCustomTypeToken(token, JwtCustomTypes.EmailConfirmation);
 			var user = _userManager.ConfirmEmail(u => u.Id.ToString() == userPk);
-					return user == null ? NotFound() : Ok();
+					return user is null ? NotFound() : Ok();
 		} catch (Exception e) {
 			return Problem(e.Message);
 		}
@@ -92,7 +92,7 @@ public class AuthorizationController : ControllerBase
 			var user = 
 				_userManager.SendPasswordRedefinition(e => e.Email == redefine.Email);
 
-			return user == null ? NotFound() : Ok();
+			return user is null ? NotFound() : Ok();
 		} catch (Exception e) {
 			return Problem(e.Message);
 		}
@@ -104,7 +104,7 @@ public class AuthorizationController : ControllerBase
 		try {
 			var userPk =
 				_tokenBuilder.ValidateCustomTypeToken(token, JwtCustomTypes.PasswordRedefinition);
-			if (userPk == null) {
+			if (userPk is null) {
 				return NotFound();
 			}
 
@@ -125,7 +125,7 @@ public class AuthorizationController : ControllerBase
 				u => u.Id.ToString() == userPk, 
 				redefined.Password!
 			);
-					return user == null ? NotFound() : Ok();
+					return user is null ? NotFound() : Ok();
 		} catch (Exception e) {
 
 			return Problem(e.Message);
