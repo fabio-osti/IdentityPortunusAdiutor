@@ -9,10 +9,10 @@ where TKey : IEquatable<TKey>
 {
 	void SendEmailConfirmationMessage(TUser user);
 	void SendPasswordRedefinitionMessage(TUser user);
-	TUser ConsumeMessage(
-		string message, 
-		MessageType messageType,
-		TUser? user
+	bool ConsumeOtp(
+		TKey? userId,
+		string otp,
+		MessageType messageType
 	);
 }
 

@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
@@ -9,7 +9,7 @@ using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Services.UsersManager;
 
 public class UsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IUsersManager<TUser, TKey>
-where TContext : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>, IManagedUser
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
@@ -71,17 +71,24 @@ where TUserToken : IdentityUserToken<TKey>
 
 	public TUser? ConfirmEmail(
 		string otp,
-		Expression<Func<TUser, bool>>? userFinder 
+		Expression<Func<TUser, bool>>? userFinder
 	)
 	{
-		var user = userFinder is null 
-			? null 
+		var user = userFinder is null
+			? null
 			: _context.Users.FirstOrDefault(userFinder);
-		user = _mailPoster.ConsumeMessage(otp, MessageType.EmailConfirmation, user);
-		if (user is null)
+		if (
+			user is null
+				|| !_mailPoster.ConsumeOtp(
+					user.Id,
+					otp,
+					MessageType.EmailConfirmation
+				)
+		)
 		{
-			return null;
+			throw new UnauthorizedAccessException();
 		}
+
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
 
@@ -106,14 +113,22 @@ where TUserToken : IdentityUserToken<TKey>
 		Expression<Func<TUser, bool>>? userFinder
 	)
 	{
-		var user = userFinder is null 
-			? null 
+		var user = userFinder is null
+			? null
 			: _context.Users.FirstOrDefault(userFinder);
-		user = _mailPoster.ConsumeMessage(otp, MessageType.PasswordRedefinition, user);
-		if (user is null)
+		if (
+			user is null
+				|| !_mailPoster.ConsumeOtp(
+					user.Id,
+					otp,
+					MessageType.EmailConfirmation
+				)
+		)
 		{
 			return null;
 		}
+
+
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
 

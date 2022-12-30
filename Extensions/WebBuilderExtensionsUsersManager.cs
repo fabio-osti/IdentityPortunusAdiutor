@@ -13,7 +13,7 @@ namespace PortunusAdiutor.Extensions;
 static public partial class WebBuilderExtensions
 {
 	public static void AddUsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(this WebApplicationBuilder builder)
-	where TContext : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+	where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
 	where TRole : IdentityRole<TKey>
 	where TKey : IEquatable<TKey>
