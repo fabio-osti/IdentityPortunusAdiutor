@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Data;
 using PortunusAdiutor.Services.TokenBuilder;
-using PortunusAdiutor.Services.UsersManager;
 
 namespace PortunusAdiutor.Extensions;
 
