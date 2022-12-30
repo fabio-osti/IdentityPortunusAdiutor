@@ -12,6 +12,19 @@ namespace PortunusAdiutor.Extensions;
 
 static public partial class WebBuilderExtensions
 {
+	/// <summary>
+	/// 	Adds <see cref="UserManager{TUser}"/> to the <see cref="ServiceCollection"/>.
+	/// </summary>
+	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
+	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
+	/// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
+	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
+	/// <typeparam name="TUserClaim">Repesents a claim posessed by an user.</typeparam>
+	/// <typeparam name="TUserRole">Represents the link between an user and a role.</typeparam>
+	/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
+	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
+	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
+	/// <param name="builder"></param>
 	public static void AddUsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(this WebApplicationBuilder builder)
 	where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser

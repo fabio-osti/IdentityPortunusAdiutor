@@ -22,8 +22,8 @@
     <PackageDescription>A helper with setting up JWT authorization.</PackageDescription>
     <RepositoryUrl>https://github.com/fabio-osti/TokenAuthenticationHelper.git</RepositoryUrl>
   </PropertyGroup>
-<!-- 
+
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup> -->
+  </PropertyGroup>
 </Project>

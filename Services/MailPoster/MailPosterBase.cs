@@ -20,8 +20,6 @@ where TUserToken : IdentityUserToken<TKey>
 		_context = context;
 	}
 
-
-	// OTP stuff
 	protected UserOneTimePassword<TUser, TKey> GenAndSave(TKey userId, string type)
 	{
 		var sixDigitCode = RandomNumberGenerator.GetInt32(1000000).ToString("000000");

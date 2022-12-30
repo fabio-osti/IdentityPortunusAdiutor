@@ -10,6 +10,12 @@ namespace PortunusAdiutor.Extensions;
 
 static public partial class WebBuilderExtensions
 {
+	/// <summary>
+	/// 	Adds <see cref="TokenBuilder"/> to the <see cref="ServiceCollection"/>.
+	/// </summary>
+	/// <param name="builder"></param>
+	/// <param name="builderParams"></param>
+	/// <returns></returns>
 	static public AuthenticationBuilder AddTokenBuilder(
 		this WebApplicationBuilder builder,
 		TokenBuilderParams builderParams

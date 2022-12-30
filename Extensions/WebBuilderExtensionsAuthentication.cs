@@ -11,8 +11,28 @@ using PortunusAdiutor.Services.UsersManager;
 
 namespace PortunusAdiutor.Extensions;
 
+/// <summary>
+/// 	<see cref="WebApplicationBuilder"/> extensions for injecting the services.
+/// </summary>
 static public partial class WebBuilderExtensions
 {
+	/// <summary>
+	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="MailLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
+	/// </summary>
+	/// <typeparam name="TContext"></typeparam>
+	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
+	/// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
+	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
+	/// <typeparam name="TUserClaim">Repesents a claim posessed by an user.</typeparam>
+	/// <typeparam name="TUserRole">Represents the link between an user and a role.</typeparam>
+	/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
+	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
+	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
+	/// <param name="builder"></param>
+	/// <param name="contextConfigurator"></param>
+	/// <param name="tokenBuilderParams"></param>
+	/// <param name="mailLinkPosterParams"></param>
+	/// <returns></returns>
 	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
@@ -36,6 +56,23 @@ static public partial class WebBuilderExtensions
 		return authenticationBuilder;
 	}
 
+	/// <summary>
+	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="MailCodePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
+	/// </summary>
+	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
+	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
+	/// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
+	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
+	/// <typeparam name="TUserClaim">Repesents a claim posessed by an user.</typeparam>
+	/// <typeparam name="TUserRole">Represents the link between an user and a role.</typeparam>
+	/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
+	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
+	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
+	/// <param name="builder"></param>
+	/// <param name="contextConfigurator"></param>
+	/// <param name="tokenBuilderParams"></param>
+	/// <param name="mailCodePosterParams"></param>
+	/// <returns></returns>
 	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
