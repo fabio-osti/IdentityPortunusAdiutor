@@ -1,7 +1,7 @@
+using System.Security.Claims;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-
-using System.Security.Claims;
 
 namespace PortunusAdiutor.Services.TokenBuilder;
 

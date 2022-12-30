@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 using PortunusAdiutor.Extensions;
-
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace PortunusAdiutor.Services.TokenBuilder;
 
@@ -58,8 +58,7 @@ public class TokenBuilder : ITokenBuilder
 		TokenValidationParameters? validationParameters = null
 	)
 	{
-		try
-		{
+		try {
 			validationParameters ??= new TokenValidationParameters
 			{
 				ValidateIssuer = false,
@@ -77,9 +76,7 @@ public class TokenBuilder : ITokenBuilder
 			);
 
 			return claims.Claims.ToArray();
-		}
-		catch
-		{
+		} catch {
 			return null;
 		}
 	}
@@ -128,7 +125,7 @@ public class TokenBuilder : ITokenBuilder
 			ValidateLifetime = true,
 			ValidateIssuerSigningKey = true,
 			IssuerSigningKey = _builderParams.SigningKey,
-			TokenDecryptionKey =_builderParams.EncryptionKey 
+			TokenDecryptionKey = _builderParams.EncryptionKey
 		};
 
 

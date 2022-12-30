@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+
 using PortunusAdiutor.Models;
 
 namespace PortunusAdiutor.Services.MailPoster;
@@ -15,4 +16,3 @@ where TKey : IEquatable<TKey>
 		MessageType messageType
 	);
 }
-

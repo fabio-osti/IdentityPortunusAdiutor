@@ -1,15 +1,18 @@
-using Microsoft.AspNetCore.Identity;
-
-using MimeKit;
-using MailKit.Net.Smtp;
-using PortunusAdiutor.Services.MailPoster;
-using PortunusAdiutor.Services.TokenBuilder;
 using System.Security.Claims;
-using PortunusAdiutor.Models;
+using System.Security.Cryptography;
+
+using MailKit.Net.Smtp;
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
+
+using MimeKit;
+
 using PortunusAdiutor.Data;
+using PortunusAdiutor.Models;
+using PortunusAdiutor.Services.MailPoster;
+using PortunusAdiutor.Services.TokenBuilder;
 
 public class MailLinkPoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MailPosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMailPoster<TUser, TKey>
 where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
@@ -82,8 +85,7 @@ where TUserToken : IdentityUserToken<TKey>
 
 	private void SendMessage(MimeMessage message)
 	{
-		using (var client = new SmtpClient())
-		{
+		using (var client = new SmtpClient()) {
 			client.Connect(_posterParams.SmtpUri);
 			client.Authenticate(_posterParams.SmtpCredentials);
 			client.Send(message);

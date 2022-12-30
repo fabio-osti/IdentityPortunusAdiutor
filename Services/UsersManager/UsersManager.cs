@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
 using System.Security.Cryptography;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
@@ -37,8 +39,7 @@ where TUserToken : IdentityUserToken<TKey>
 
 	public Task<TUser> CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
 	{
-		if (_context.Users.FirstOrDefault(userFinder) is not null)
-		{
+		if (_context.Users.FirstOrDefault(userFinder) is not null) {
 			return Task.FromException<TUser>(new UserAlreadyExistsException());
 		}
 
@@ -51,13 +52,11 @@ where TUserToken : IdentityUserToken<TKey>
 	public Task<TUser> ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user is null)
-		{
+		if (user is null) {
 			return Task.FromException<TUser>(new UserNotFoundException());
 		}
 
-		if (!user.ValidatePassword(userPassword))
-		{
+		if (!user.ValidatePassword(userPassword)) {
 			return Task.FromException<TUser>(new UnauthorizedAccessException());
 		}
 
@@ -67,13 +66,11 @@ where TUserToken : IdentityUserToken<TKey>
 	public Task<TUser> SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user is null)
-		{
+		if (user is null) {
 			return Task.FromException<TUser>(new UserNotFoundException());
 		}
 
-		if (user.EmailConfirmed)
-		{
+		if (user.EmailConfirmed) {
 			return Task.FromException<TUser>(new UnauthorizedAccessException());
 		}
 
@@ -90,8 +87,7 @@ where TUserToken : IdentityUserToken<TKey>
 		var user = userFinder is null
 			? null
 			: _context.Users.FirstOrDefault(userFinder);
-		if (user is null)
-		{
+		if (user is null) {
 			return Task.FromException<TUser>(new UserNotFoundException());
 		}
 
@@ -101,8 +97,7 @@ where TUserToken : IdentityUserToken<TKey>
 				otp,
 				MessageType.EmailConfirmation
 			)
-		)
-		{
+		) {
 			return Task.FromException<TUser>(new UnauthorizedAccessException());
 		}
 
@@ -115,8 +110,7 @@ where TUserToken : IdentityUserToken<TKey>
 	public Task<TUser> SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user is null)
-		{
+		if (user is null) {
 			return Task.FromException<TUser>(new UserNotFoundException());
 		}
 
@@ -134,8 +128,7 @@ where TUserToken : IdentityUserToken<TKey>
 		var user = userFinder is null
 			? null
 			: _context.Users.FirstOrDefault(userFinder);
-		if (user is null)
-		{
+		if (user is null) {
 			return Task.FromException<TUser>(new UserNotFoundException());
 		}
 
@@ -145,8 +138,7 @@ where TUserToken : IdentityUserToken<TKey>
 				otp,
 				MessageType.PasswordRedefinition
 			)
-		)
-		{
+		) {
 			return Task.FromException<TUser>(new UnauthorizedAccessException());
 		}
 

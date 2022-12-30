@@ -1,6 +1,8 @@
-using Microsoft.Extensions.Configuration;
-using MimeKit;
 using System.Net;
+
+using Microsoft.Extensions.Configuration;
+
+using MimeKit;
 
 using MessageBuilder = System.Func<string, string, MimeKit.MimeMessage>;
 
@@ -27,14 +29,12 @@ public class MailCodePosterParams
 	{
 		var sect = config.GetSection("SMTP");
 		var smtpUri = config["SMTP_URI"];
-		if (smtpUri is not null)
-		{
+		if (smtpUri is not null) {
 			SmtpUri = new(smtpUri);
 		}
 
 		var smtpUser = config["SMTP_USER"];
-		if (smtpUser is not null)
-		{
+		if (smtpUser is not null) {
 			var smtpPassword = config["SMTP_PSWRD"];
 			SmtpCredentials =
 				new NetworkCredential(smtpUser, smtpPassword);

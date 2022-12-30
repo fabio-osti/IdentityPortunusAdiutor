@@ -22,8 +22,7 @@ static public partial class WebBuilderExtensions
 		TokenBuilderParams tokenBuilderParams
 	)
 	{
-		switch (tokenBuilderParams)
-		{
+		switch (tokenBuilderParams) {
 			case { JwtConfigurator: not null }:
 				var hijackedConfigurator = (JwtBearerOptions opt) =>
 				{

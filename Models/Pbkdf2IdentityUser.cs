@@ -47,8 +47,7 @@ where TKey : IEquatable<TKey>
 	[MemberNotNull(nameof(Salt))]
 	public void SetPassword(string password)
 	{
-		using (var sha = SHA256.Create())
-		{
+		using (var sha = SHA256.Create()) {
 			Salt =
 				sha.ComputeHash(BitConverter.GetBytes(DateTime.UtcNow.ToBinary()));
 		}

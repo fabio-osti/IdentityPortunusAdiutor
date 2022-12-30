@@ -1,5 +1,7 @@
 using System.Security.Cryptography;
+
 using Microsoft.AspNetCore.Identity;
+
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
 
@@ -54,13 +56,11 @@ where TUserToken : IdentityUserToken<TKey>
 				.Where(e => e.Type == type)
 				.FirstOrDefault(e => e.Password == otp);
 
-		if (userOtp is null)
-		{
+		if (userOtp is null) {
 			throw new UnauthorizedAccessException("One Use Password not found.");
 		}
 
-		if (userOtp.ExpiresOn < DateTime.UtcNow)
-		{
+		if (userOtp.ExpiresOn < DateTime.UtcNow) {
 			throw new UnauthorizedAccessException("Token already expired.");
 		}
 
