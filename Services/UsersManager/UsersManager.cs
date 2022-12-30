@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MailPoster;

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
-
+using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MailPoster;
 using PortunusAdiutor.Services.TokenBuilder;

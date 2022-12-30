@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 using PortunusAdiutor.Models;
 
+namespace PortunusAdiutor.Data;
 
 /// <summary>
 /// 	Base class for the Entity Framework database context used for identity with OTP keeping.

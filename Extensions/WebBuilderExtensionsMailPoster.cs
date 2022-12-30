@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Data;
 using PortunusAdiutor.Services.MailPoster;
 using PortunusAdiutor.Services.TokenBuilder;
 
