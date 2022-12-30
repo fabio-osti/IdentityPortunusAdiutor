@@ -13,58 +13,58 @@ static public partial class WebBuilderExtensions
 	/// <summary>
 	/// 	Adds <see cref="TokenBuilder"/> to the <see cref="ServiceCollection"/>.
 	/// </summary>
-	/// <param name="builder"></param>
-	/// <param name="builderParams"></param>
+	/// <param name="builder">The web app builder.</param>
+	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
 	/// <returns></returns>
 	static public AuthenticationBuilder AddTokenBuilder(
 		this WebApplicationBuilder builder,
-		TokenBuilderParams builderParams
+		TokenBuilderParams tokenBuilderParams
 	)
 	{
-		switch (builderParams)
+		switch (tokenBuilderParams)
 		{
 			case { JwtConfigurator: not null }:
 				var hijackedConfigurator = (JwtBearerOptions opt) =>
 				{
-					builderParams.JwtConfigurator(opt);
+					tokenBuilderParams.JwtConfigurator(opt);
 					opt.TokenValidationParameters.ValidateIssuerSigningKey = true;
-					opt.TokenValidationParameters.IssuerSigningKey = builderParams.SigningKey;
-					opt.TokenValidationParameters.TokenDecryptionKey = builderParams.EncryptionKey;
-					builderParams.ValidationParams = opt.TokenValidationParameters;
+					opt.TokenValidationParameters.IssuerSigningKey = tokenBuilderParams.SigningKey;
+					opt.TokenValidationParameters.TokenDecryptionKey = tokenBuilderParams.EncryptionKey;
+					tokenBuilderParams.ValidationParams = opt.TokenValidationParameters;
 				};
 
 				return builder.Services
-					.AddSingleton<ITokenBuilder>(new TokenBuilder(builderParams))
+					.AddSingleton<ITokenBuilder>(new TokenBuilder(tokenBuilderParams))
 					.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 					.AddJwtBearer(hijackedConfigurator);
 
 			case { ValidationParams: not null }:
-				builderParams.ValidationParams.ValidateIssuerSigningKey = true;
-				builderParams.ValidationParams.IssuerSigningKey = builderParams.SigningKey;
-				builderParams.ValidationParams.TokenDecryptionKey = builderParams.EncryptionKey;
+				tokenBuilderParams.ValidationParams.ValidateIssuerSigningKey = true;
+				tokenBuilderParams.ValidationParams.IssuerSigningKey = tokenBuilderParams.SigningKey;
+				tokenBuilderParams.ValidationParams.TokenDecryptionKey = tokenBuilderParams.EncryptionKey;
 
 				return builder.Services
-					.AddSingleton<ITokenBuilder>(_ => new TokenBuilder(builderParams))
+					.AddSingleton<ITokenBuilder>(_ => new TokenBuilder(tokenBuilderParams))
 					.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 					.AddJwtBearer(
 						opt =>
 						{
 							opt.SaveToken = true;
-							opt.TokenValidationParameters = builderParams.ValidationParams;
+							opt.TokenValidationParameters = tokenBuilderParams.ValidationParams;
 						}
 					);
 			default:
 				return builder.Services
-					.AddSingleton<ITokenBuilder>(_ => new TokenBuilder(builderParams))
+					.AddSingleton<ITokenBuilder>(_ => new TokenBuilder(tokenBuilderParams))
 					.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 					.AddJwtBearer(opt =>
 					{
 						opt.SaveToken = true;
-						builderParams.ValidationParams = opt.TokenValidationParameters = new TokenValidationParameters
+						tokenBuilderParams.ValidationParams = opt.TokenValidationParameters = new TokenValidationParameters
 						{
 							ValidateIssuerSigningKey = true,
-							IssuerSigningKey = builderParams.SigningKey,
-							TokenDecryptionKey = builderParams.SigningKey,
+							IssuerSigningKey = tokenBuilderParams.SigningKey,
+							TokenDecryptionKey = tokenBuilderParams.SigningKey,
 							ValidateAudience = false,
 							ValidateIssuer = false,
 						};

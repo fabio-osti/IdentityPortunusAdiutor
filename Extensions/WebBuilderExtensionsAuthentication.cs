@@ -19,7 +19,7 @@ static public partial class WebBuilderExtensions
 	/// <summary>
 	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="MailLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
 	/// </summary>
-	/// <typeparam name="TContext"></typeparam>
+	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 	/// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
 	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
@@ -27,12 +27,12 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TUserRole">Represents the link between an user and a role.</typeparam>
 	/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
 	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
-	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
-	/// <param name="builder"></param>
-	/// <param name="contextConfigurator"></param>
-	/// <param name="tokenBuilderParams"></param>
-	/// <param name="mailLinkPosterParams"></param>
-	/// <returns></returns>
+	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>	
+  /// <param name="builder">The web app builder.</param>
+	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
+	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
+	/// <param name="mailLinkPosterParams">The paramaters used by the <see cref="MailLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
 	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
@@ -68,11 +68,11 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
 	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
-	/// <param name="builder"></param>
-	/// <param name="contextConfigurator"></param>
-	/// <param name="tokenBuilderParams"></param>
-	/// <param name="mailCodePosterParams"></param>
-	/// <returns></returns>
+	/// <param name="builder">The web app builder.</param>
+	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
+	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
+	/// <param name="mailCodePosterParams">The paramaters used by the <see cref="MailCodePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
 	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,

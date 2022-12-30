@@ -24,7 +24,7 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
 	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
-	/// <param name="builder"></param>
+	/// <param name="builder">The web app builder.</param>
 	public static void AddUsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(this WebApplicationBuilder builder)
 	where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
