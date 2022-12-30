@@ -17,5 +17,3 @@ where TKey : IEquatable<TKey>
 	Task<TUser> SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder);
 	Task<TUser> RedefinePassword(string otp, string newPassword, Expression<Func<TUser, bool>>? userFinder);
 }
-
-// TODO: Change "TUser?" return types from methods to Taks<TUser>
