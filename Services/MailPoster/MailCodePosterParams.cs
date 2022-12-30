@@ -6,25 +6,51 @@ using MimeKit;
 
 using MessageBuilder = System.Func<string, string, MimeKit.MimeMessage>;
 
-
-
-
+/// <summary>
+/// 	Parameters necessary for the link message posting.
+/// </summary>
 public class MailCodePosterParams
 {
 
+	/// <summary>
+	/// 	Uri used for the SMTP server.
+	/// </summary>
 	public Uri SmtpUri { get; set; } = new Uri(defaultSmtpUriString);
 
+	/// <summary>
+	/// 	Credentials used for the SMTP server.
+	/// </summary>
 	public ICredentials SmtpCredentials
 	{ get; set; } = new NetworkCredential();
-
+	/// <summary>
+	///		Sets or gets the builder of the email that should be sent if the user
+	///		forgets his password.
+	/// </summary>
 	public MessageBuilder PasswordRedefinitionMessageBuilder
-	{ get; set; } = defaultForgotPasswordMessageBuilder;
+	{ get; set; } = defaultPasswordRedefinitionMessageBuilder;
 
+	/// <summary>
+	///		Sets or gets the builder of the email that should be sent when the user 
+	///		is registered.
+	/// </summary>
 	public MessageBuilder EmailConfirmationMessageBuilder
-	{ get; set; } = defaultConfirmEmailMessageBuilder;
+	{ get; set; } = defaultEmailConfirmationMessageBuilder;
 
+	/// <summary>
+	/// 	Initialize an instance of <see cref="MailCodePosterParams"/>
+	/// 	with only the defaults as base.
+	/// </summary>
 	public MailCodePosterParams() { }
 
+	/// <summary>
+	/// 	Iniatialize an instance of <see cref="MailLinkPosterParams"/> 
+	/// 	using an <see cref="IConfiguration"/> object and
+	/// 	the defaults as base.
+	/// </summary>
+	/// <param name="config">
+	/// 	An <see cref="IConfiguration"/> instance that 
+	/// 	have the section "SMTP" defined.
+	/// </param>
 	public MailCodePosterParams(ConfigurationManager config)
 	{
 		var sect = config.GetSection("SMTP");
@@ -44,7 +70,7 @@ public class MailCodePosterParams
 	const string defaultSmtpUriString = "smtp://localhost:2525";
 	static ICredentials defaultCredentials => new NetworkCredential();
 
-	static MimeMessage defaultForgotPasswordMessageBuilder(
+	static MimeMessage defaultPasswordRedefinitionMessageBuilder(
 		string email,
 		string code
 	)
@@ -72,7 +98,7 @@ public class MailCodePosterParams
 		return message;
 	}
 
-	static MimeMessage defaultConfirmEmailMessageBuilder(
+	static MimeMessage defaultEmailConfirmationMessageBuilder(
 		string email,
 		string code
 	)
