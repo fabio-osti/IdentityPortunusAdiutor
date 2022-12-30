@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-
+using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MailPoster;
 using PortunusAdiutor.Services.TokenBuilder;
@@ -34,42 +34,54 @@ where TUserToken : IdentityUserToken<TKey>
 		_context = context;
 	}
 
-	public TUser? CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
+	public Task<TUser> CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
 	{
 		if (_context.Users.FirstOrDefault(userFinder) is not null)
 		{
-			return null;
+			return Task.FromException<TUser>(new UserAlreadyExistsException());
 		}
+
 		var user = _context.Users.Add(userBuilder()).Entity;
 		_mailPoster.SendEmailConfirmationMessage(user);
 		_context.SaveChanges();
-		return user;
+		return Task.FromResult(user);
 	}
 
-	public TUser? ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
+	public Task<TUser> ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user is null || !user.ValidatePassword(userPassword))
+		if (user is null)
 		{
-			return null;
+			return Task.FromException<TUser>(new UserNotFoundException());
 		}
 
-		return user;
+		if (!user.ValidatePassword(userPassword))
+		{
+			return Task.FromException<TUser>(new UnauthorizedAccessException());
+		}
+
+		return Task.FromResult(user);
 	}
 
-	public TUser? SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
+	public Task<TUser> SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user is null || user.EmailConfirmed)
+		if (user is null)
 		{
-			return null;
+			return Task.FromException<TUser>(new UserNotFoundException());
 		}
+
+		if (user.EmailConfirmed)
+		{
+			return Task.FromException<TUser>(new UnauthorizedAccessException());
+		}
+
 		_mailPoster.SendPasswordRedefinitionMessage(user);
 
-		return user;
+		return Task.FromResult(user);
 	}
 
-	public TUser? ConfirmEmail(
+	public Task<TUser> ConfirmEmail(
 		string otp,
 		Expression<Func<TUser, bool>>? userFinder
 	)
@@ -79,9 +91,9 @@ where TUserToken : IdentityUserToken<TKey>
 			: _context.Users.FirstOrDefault(userFinder);
 		if (user is null)
 		{
-			return null;
+			return Task.FromException<TUser>(new UserNotFoundException());
 		}
-		
+
 		if (
 			!_mailPoster.ConsumeOtp(
 				user.Id,
@@ -90,28 +102,29 @@ where TUserToken : IdentityUserToken<TKey>
 			)
 		)
 		{
-			throw new UnauthorizedAccessException();
+			return Task.FromException<TUser>(new UnauthorizedAccessException());
 		}
 
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
 
-		return user;
+		return Task.FromResult(user);
 	}
 
-	public TUser? SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
+	public Task<TUser> SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
 		if (user is null)
 		{
-			return null;
+			return Task.FromException<TUser>(new UserNotFoundException());
 		}
+
 		_mailPoster.SendPasswordRedefinitionMessage(user);
 
-		return user;
+		return Task.FromResult(user);
 	}
 
-	public TUser? RedefinePassword(
+	public Task<TUser> RedefinePassword(
 		string otp,
 		string newPassword,
 		Expression<Func<TUser, bool>>? userFinder
@@ -120,21 +133,25 @@ where TUserToken : IdentityUserToken<TKey>
 		var user = userFinder is null
 			? null
 			: _context.Users.FirstOrDefault(userFinder);
+		if (user is null)
+		{
+			return Task.FromException<TUser>(new UserNotFoundException());
+		}
+
 		if (
-			user is null
-				|| !_mailPoster.ConsumeOtp(
-					user.Id,
-					otp,
-					MessageType.EmailConfirmation
-				)
+			!_mailPoster.ConsumeOtp(
+				user.Id,
+				otp,
+				MessageType.PasswordRedefinition
+			)
 		)
 		{
-			return null;
+			return Task.FromException<TUser>(new UnauthorizedAccessException());
 		}
 
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
 
-		return user;
+		return Task.FromResult(user);
 	}
 }

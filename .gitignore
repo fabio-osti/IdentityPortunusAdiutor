@@ -375,3 +375,5 @@ doxyFile
 pat
 nuget.config
 PortunusAdiutor.code-workspace
+.vscode/settings.json
+db.session.sql
