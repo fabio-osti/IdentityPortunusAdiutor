@@ -15,5 +15,7 @@ where TKey : IEquatable<TKey>
 	TUser? SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder);
 	TUser? ConfirmEmail(string otp, Expression<Func<TUser, bool>>? userFinder);
 	TUser? SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder);
-	TUser? RedefinePassword(string otp, string newPassword,	Expression<Func<TUser, bool>>? userFinder);
+	TUser? RedefinePassword(string otp, string newPassword, Expression<Func<TUser, bool>>? userFinder);
 }
+
+// TODO: Change "TUser?" return types from methods to Taks<TUser>
