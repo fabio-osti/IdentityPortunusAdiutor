@@ -77,13 +77,17 @@ where TUserToken : IdentityUserToken<TKey>
 		var user = userFinder is null
 			? null
 			: _context.Users.FirstOrDefault(userFinder);
+		if (user is null)
+		{
+			return null;
+		}
+		
 		if (
-			user is null
-				|| !_mailPoster.ConsumeOtp(
-					user.Id,
-					otp,
-					MessageType.EmailConfirmation
-				)
+			!_mailPoster.ConsumeOtp(
+				user.Id,
+				otp,
+				MessageType.EmailConfirmation
+			)
 		)
 		{
 			throw new UnauthorizedAccessException();
@@ -127,7 +131,6 @@ where TUserToken : IdentityUserToken<TKey>
 		{
 			return null;
 		}
-
 
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
