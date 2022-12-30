@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-using PortunusAdiutor.Models;
 using PortunusAdiutor.Data;
+using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.TokenBuilder;
 
 namespace PortunusAdiutor.Extensions;
@@ -27,7 +27,7 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
 	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>	
-  /// <param name="builder">The web app builder.</param>
+	/// <param name="builder">The web app builder.</param>
 	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
 	/// <param name="mailLinkPosterParams">The paramaters used by the <see cref="MailLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
