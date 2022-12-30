@@ -1,202 +1,139 @@
-# PortunusAdiutor
-A small helper with token authentication.
+# PortunsAdiutor
 
-Examples are worth a thousand comments, so this is an example of the configuration to be called at the WebApplicationBuilder:
+## Adding it to your app
 
-```csharp
-var authParams = new AuthenticationConfigurationParams()
-{
-	SigningKey = Encoding.UTF8.GetBytes(builder.Configuration["SigningKey"]!),
-	EncryptionKey = Encoding.UTF8.GetBytes(builder.Configuration["EncryptKey"]!),
-	DbContextConfigurator = 
-		options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")),
-	LinkPosterParams = builder.GetMailLinkPosterParams(
-		smtpUri:"smtp://localhost:2525",
-		emailConfirmationEndpoint:"http://localhost/authorization/confirmemail?token=",
-		passwordRedefinitionEndpoint:"http://localhost/authorization/redefinepassword?token="
-	)
-};
-builder.ConfigureAuthentication<ApplicationIdentityDbContext, ApplicationUser, IdentityRole<Guid>, Guid>(authParams);
-```
-
-And a controller that uses the services:
-
-```csharp
-[ApiController]
-[Route("[controller]/[action]")]
-public class AuthorizationController : ControllerBase
-{
-	readonly ITokenBuilder _tokenBuilder;
-	readonly IUserManager<ApplicationUser, IdentityRole<Guid>, Guid> _userManager;
-
-	public AuthorizationController(
-		ITokenBuilder tokenBuilder,
-		IUserManager<ApplicationUser, IdentityRole<Guid>, Guid> userManager
-	)
-	{
-		_tokenBuilder = tokenBuilder;
-		_userManager = userManager;
-	}
-
-	[HttpPost]
-	public IActionResult SignUp([FromBody] CredentialsDto credentials)
-	{
-		try {
-			var user = _userManager.CreateUser(
-				e => e.Email == credentials.Email,
-				() => new ApplicationUser(credentials.Email!, credentials.Password!)
-			);
-
-			return user is null 
-				? Problem("Email already registered.") 
-				: Ok(_tokenBuilder.BuildToken(user.GetClaims()));
-		} catch (Exception e) {
-			return Problem(e.Message);
+	```csharp
+	builder.AddAllPortunusServices<ApplicationDbContext, ApplicationUser, IdentityRole<Guid>, Guid, IdentityUserClaim<Guid>, IdentityUserRole<Guid>, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>(
+		(e) => e.UseSqlite("Data Source=app.db;"),
+		new()
+		{
+			SigningKey = new(Encoding.UTF8.GetBytes("BeautifulKeyUsedToSignThoseMostSecureTokens")),
+			EncryptionKey = new(Encoding.UTF8.GetBytes("BeautifulerKeyUsedToEncryptThoseMostSecureTokens")),
+		},
+		new MailCodePosterParams()
+		{
+			SmtpUri = new Uri("smtp://localhost:2525")
 		}
-	}
+	);
+	```
 
-	[HttpPost]
-	public IActionResult SignIn([FromBody] CredentialsDto credentials)
+## UserManager
+
+ ```csharp
+	[ApiController]
+	[Route("[controller]/[action]")]
+	public class AuthorizationController : ControllerBase
 	{
-		try {
-			var user = _userManager.ValidateUser(
-				(e) => e.Email == credentials.Email, 
-				credentials.Password!
-			);
+		ILogger _logger;
+		IUsersManager<ApplicationUser, Guid> _manager;
+		ITokenBuilder _tokenBuilder;
 
-			return user is null 
-				? Problem("User or Password not found.")
-				: Ok(_tokenBuilder.BuildToken(user.GetClaims()));
-		} catch (Exception e) {
-			return Problem(e.Message);
+		public AuthorizationController(ILogger logger, IUsersManager<ApplicationUser, Guid> manager, ITokenBuilder tokenBuilder)
+		{
+			_logger = logger;
+			_manager = manager;
+			_tokenBuilder = tokenBuilder;
 		}
-	}
 
-	[HttpGet]
-	public IActionResult ConfirmEmail(string token)
-	{
-		try {
-			var userPk =
-				_tokenBuilder.ValidateCustomTypeToken(token, JwtCustomTypes.EmailConfirmation);
-			var user = _userManager.ConfirmEmail(u => u.Id.ToString() == userPk);
-					return user is null ? NotFound() : Ok();
-		} catch (Exception e) {
-			return Problem(e.Message);
-		}
-	}
+		[HttpPost]
+		public IActionResult SignUp([FromBody] CredentialsDto cred)
+		{
+			try
+			{
+				var user = _manager.CreateUser(
+					e => e.Email == cred.Email,
+					() => new ApplicationUser(cred.Email!, cred.Password!)
+				);
 
-	[HttpPost]
-	public IActionResult SendPasswordRedefinition([FromBody] CredentialsDto redefine)
-	{
-		try {
-			var user = 
-				_userManager.SendPasswordRedefinition(e => e.Email == redefine.Email);
-
-			return user is null ? NotFound() : Ok();
-		} catch (Exception e) {
-			return Problem(e.Message);
-		}
-	}
-
-	[HttpGet]
-	public IActionResult RedefinePassword(string token)
-	{
-		try {
-			var userPk =
-				_tokenBuilder.ValidateCustomTypeToken(token, JwtCustomTypes.PasswordRedefinition);
-			if (userPk is null) {
-				return NotFound();
+				return user.Exception is not null
+					? Unauthorized()
+					: Ok(_tokenBuilder.BuildToken(user.Result.GetClaims()));
 			}
+			catch (System.Exception e)
+			{
+				_logger.LogError(e, "An error has occured.");
+				return Problem();
+			}
+		}
 
-			var html = System.IO.File.ReadAllText("Content/redefine-password.html");
-			return Content(html, "text/html");
-		} catch (Exception e) {
-			return Problem(e.Message);
+		[HttpPost]
+		public IActionResult LogIn([FromBody] CredentialsDto cred)
+		{
+			try
+			{
+				var user = _manager.ValidateUser(e => e.Email == cred.Email!, cred.Password!);
+
+				return user.Exception is not null
+					? Unauthorized()
+					: Ok(_tokenBuilder.BuildToken(user.Result.GetClaims()));
+			}
+			catch (System.Exception e)
+			{
+				_logger.LogError(e, "An error has occured.");
+				return Problem();
+			}
+		}
+
+		[HttpPost]
+		public IActionResult ConfirmMail([FromBody] CredentialsDto cred)
+		{
+			try
+			{
+				ArgumentException.ThrowIfNullOrEmpty(cred.Otp);
+
+				var user = _manager.ConfirmEmail(
+					cred.Otp,
+					e => e.Email == cred.Email
+				);
+
+				return user.Exception is not null
+					? Unauthorized()
+					: Ok();
+			}
+			catch (System.Exception e)
+			{
+				_logger.LogError(e, "An error has occured.");
+				return Problem();
+			}
+		}
+
+		[HttpPost]
+		public IActionResult RedefinePassword([FromBody] CredentialsDto cred)
+		{
+			try
+			{
+				ArgumentException.ThrowIfNullOrEmpty(cred.Password);
+				ArgumentException.ThrowIfNullOrEmpty(cred.Otp);
+
+				var user = _manager.RedefinePassword(
+					cred.Otp,
+					cred.Password,
+					e => e.Email == cred.Email
+				);
+
+				return user.Exception is not null
+					? Unauthorized()
+					: Ok();
+			}
+			catch (System.Exception e)
+			{
+				_logger.LogError(e, "An error has occured.");
+				return Problem();
+			}
+		}
+
+		[HttpPost]
+		public IActionResult SendEmailConfirmation(string email)
+		{
+			_manager.SendEmailConfirmation(e => e.Email == email);
+			return Ok();
+		}
+
+		[HttpPost]
+		public IActionResult SendPasswordRedefinition(string email)
+		{
+			_manager.SendPasswordRedefinition(e => e.Email == email);
+			return Ok();
 		}
 	}
-
-	[HttpPost]
-	public IActionResult RedefinePassword([FromBody] CredentialsDto redefined, string token)
-	{
-		try {
-			var userPk =
-				_tokenBuilder.ValidateCustomTypeToken(token, JwtCustomTypes.PasswordRedefinition);
-			var user = _userManager.RedefinePassword(
-				u => u.Id.ToString() == userPk, 
-				redefined.Password!
-			);
-					return user is null ? NotFound() : Ok();
-		} catch (Exception e) {
-
-			return Problem(e.Message);
-		}
-	}
-}
-```
-For a more in depth display of the components, keep reading.
-
-## ITokenBuilder
-Class to build the tokens using a secret key.
-Add it on your services like so:
-
-```csharp
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.ConfigureTokenServices(
-	"B4nTg#8reNm7b23vvT@b68GT#kuw3psX" // Example key
-);
-```
-
-and then inject it on your controller to use:
-
-```csharp
-class AuthorizationController : ControllerBase
-{
-	ITokenBuilder TokenBuilder { get; }
-
-	AuthorizationController(ITokenBuilder tokenBuilder)
-	{
-		TokenBuilder = tokenBuilder;
-	}
-}
-```
-
-and to use it:
-
-```csharp
-string GenToken(Claim[] claims)
-{
-	return TokenBuilder.BuildToken(new SecurityTokenDescriptor
-	{
-		Expires = DateTime.UtcNow.AddHours(2),
-		Subject = new(claims)
-	});
-}
-```
-
-## Pbfdk2IdentityUser\<TKey>
-A class inheriting IdentityUser\<TKey> that automatically processes the password using the Pbfdk2 algorithm with the following parameters:
- -	**Salt:** The user creation UTC DateTime to binary, hashed with SHA256.
- -	**Pseudo Random Function:** `HMACSHA512`.
- -	**Iteration Count:** `262140`.
- -	**Hashed Size:** `128`.
-
-It should be inherited and used like so:
-
-```csharp
-public class ApplicationUser : IdentityUserPbkdf2<Guid>
-{
-	public ApplicationUser(string email, string password) : base(email, password)
-	{
-		Id = Guid.NewGuid();
-	}
-}
-```
-
-and its usage:
-
-```csharp
-user.SetPassword("Pass123$");
-user.ValidatePassword("Pass123$"); // returns True;
-user.ValidatePassword("Pass132$"); // returns False;
-```
-
+ ```
