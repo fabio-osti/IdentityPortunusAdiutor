@@ -6,10 +6,11 @@ using MimeKit;
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
-using PortunusAdiutor.Services.MailPoster;
 using PortunusAdiutor.Services.TokenBuilder;
 
-public class MailCodePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MailPosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMailPoster<TUser, TKey>
+namespace PortunusAdiutor.Services.MessagePoster;
+
+public class MessageCodePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMessagePoster<TUser, TKey>
 where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>
 where TRole : IdentityRole<TKey>
@@ -20,10 +21,10 @@ where TUserLogin : IdentityUserLogin<TKey>
 where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
-	MailCodePosterParams _posterParams;
+	MessageCodePosterParams _posterParams;
 	ITokenBuilder _tokenBuilder;
 
-	public MailCodePoster(MailCodePosterParams posterParams, TContext context, ITokenBuilder tokenBuilder) : base(context)
+	public MessageCodePoster(MessageCodePosterParams posterParams, TContext context, ITokenBuilder tokenBuilder) : base(context)
 	{
 		_posterParams = posterParams;
 		_tokenBuilder = tokenBuilder;
@@ -31,7 +32,7 @@ where TUserToken : IdentityUserToken<TKey>
 
 	public void SendEmailConfirmationMessage(TUser user)
 	{
-		ArgumentNullException.ThrowIfNullOrEmpty(user.Email);
+		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 
 		var otp = GenAndSave(user.Id, MessageTypes.EmailConfirmation);
 
@@ -45,7 +46,7 @@ where TUserToken : IdentityUserToken<TKey>
 
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
-		ArgumentNullException.ThrowIfNullOrEmpty(user.Email);
+		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 
 		var otp = GenAndSave(user.Id, MessageTypes.PasswordRedefinition);
 

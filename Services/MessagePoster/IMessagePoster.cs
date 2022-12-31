@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Identity;
 
 using PortunusAdiutor.Models;
 
-namespace PortunusAdiutor.Services.MailPoster;
+namespace PortunusAdiutor.Services.MessagePoster;
 
-public interface IMailPoster<TUser, TKey>
+public interface IMessagePoster<TUser, TKey>
 where TUser : IdentityUser<TKey>
 where TKey : IEquatable<TKey>
 {

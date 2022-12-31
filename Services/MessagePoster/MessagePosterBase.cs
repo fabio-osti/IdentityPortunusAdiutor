@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
 
-public class MailPosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+namespace PortunusAdiutor.Services.MessagePoster;
+
+public class MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>
 where TRole : IdentityRole<TKey>
@@ -18,7 +20,7 @@ where TUserToken : IdentityUserToken<TKey>
 {
 	TContext _context;
 
-	public MailPosterBase(TContext context)
+	public MessagePosterBase(TContext context)
 	{
 		_context = context;
 	}

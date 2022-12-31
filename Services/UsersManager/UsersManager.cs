@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
-using PortunusAdiutor.Services.MailPoster;
+using PortunusAdiutor.Services.MessagePoster;
 using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Services.UsersManager;
 
@@ -23,12 +23,12 @@ where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
 	ITokenBuilder _tokenBuilder;
-	IMailPoster<TUser, TKey> _mailPoster;
+	IMessagePoster<TUser, TKey> _mailPoster;
 	TContext _context;
 
 	public UsersManager(
 		ITokenBuilder tokenBuilder,
-		IMailPoster<TUser, TKey> mailPoster,
+		IMessagePoster<TUser, TKey> mailPoster,
 		TContext context
 	)
 	{

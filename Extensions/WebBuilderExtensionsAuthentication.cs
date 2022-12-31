@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Services.MessagePoster;
 using PortunusAdiutor.Services.TokenBuilder;
 
 namespace PortunusAdiutor.Extensions;
@@ -16,7 +17,7 @@ namespace PortunusAdiutor.Extensions;
 static public partial class WebBuilderExtensions
 {
 	/// <summary>
-	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="MailLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
+	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="MessageLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
 	/// </summary>
 	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
@@ -30,13 +31,13 @@ static public partial class WebBuilderExtensions
 	/// <param name="builder">The web app builder.</param>
 	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <param name="mailLinkPosterParams">The paramaters used by the <see cref="MailLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <param name="mailLinkPosterParams">The paramaters used by the <see cref="MessageLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
 	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
-		MailLinkPosterParams mailLinkPosterParams
+		MessageLinkPosterParams mailLinkPosterParams
 	)
 	where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
@@ -56,7 +57,7 @@ static public partial class WebBuilderExtensions
 	}
 
 	/// <summary>
-	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="MailCodePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
+	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="MessageCodePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
 	/// </summary>
 	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
@@ -70,13 +71,13 @@ static public partial class WebBuilderExtensions
 	/// <param name="builder">The web app builder.</param>
 	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <param name="mailCodePosterParams">The paramaters used by the <see cref="MailCodePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <param name="mailCodePosterParams">The paramaters used by the <see cref="MessageCodePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
 	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
-		MailCodePosterParams mailCodePosterParams
+		MessageCodePosterParams mailCodePosterParams
 	)
 	where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser

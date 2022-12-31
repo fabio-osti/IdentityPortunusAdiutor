@@ -11,10 +11,11 @@ using MimeKit;
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
-using PortunusAdiutor.Services.MailPoster;
 using PortunusAdiutor.Services.TokenBuilder;
 
-public class MailLinkPoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MailPosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMailPoster<TUser, TKey>
+namespace PortunusAdiutor.Services.MessagePoster;
+
+public class MessageLinkPoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMessagePoster<TUser, TKey>
 where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>, IManagedUser
 where TRole : IdentityRole<TKey>
@@ -25,10 +26,10 @@ where TUserLogin : IdentityUserLogin<TKey>
 where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
-	private readonly MailLinkPosterParams _posterParams;
+	private readonly MessageLinkPosterParams _posterParams;
 	private readonly ITokenBuilder _tokenBuilder;
-	public MailLinkPoster(
-		MailLinkPosterParams posterParams,
+	public MessageLinkPoster(
+		MessageLinkPosterParams posterParams,
 		TContext context,
 		ITokenBuilder tokenBuilder
 	) : base(context)
@@ -44,15 +45,15 @@ where TUserToken : IdentityUserToken<TKey>
 		// Builds token containing OTP
 		var token = _tokenBuilder.BuildSpecialToken(
 			new ClaimsIdentity(new[] {
-				new Claim(ClaimTypes.PrimarySid, otp.UserId.ToString()!),
-				new Claim(JwtCustomClaims.XDigitsCode, otp.Password)
+			new Claim(ClaimTypes.PrimarySid, otp.UserId.ToString()!),
+			new Claim(JwtCustomClaims.XDigitsCode, otp.Password)
 			}),
 			otp.Type,
 			otp.ExpiresOn,
 			true
 		);
 		// Builds and sends message
-		ArgumentNullException.ThrowIfNullOrEmpty(user.Email);
+		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
 			_posterParams.PasswordRedefinitionEndpoint + token
@@ -67,15 +68,15 @@ where TUserToken : IdentityUserToken<TKey>
 		// Builds token containing OTP
 		var token = _tokenBuilder.BuildSpecialToken(
 			new ClaimsIdentity(new[] {
-				new Claim(ClaimTypes.PrimarySid, otp.UserId.ToString()!),
-				new Claim(JwtCustomClaims.XDigitsCode, otp.Password)
+			new Claim(ClaimTypes.PrimarySid, otp.UserId.ToString()!),
+			new Claim(JwtCustomClaims.XDigitsCode, otp.Password)
 			}),
 			otp.Type,
 			otp.ExpiresOn,
 			true
 		);
 		// Builds and sends message
-		ArgumentNullException.ThrowIfNullOrEmpty(user.Email);
+		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
 			_posterParams.PasswordRedefinitionEndpoint + token

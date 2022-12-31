@@ -6,12 +6,13 @@ using MimeKit;
 
 using MessageBuilder = System.Func<string, string, MimeKit.MimeMessage>;
 
+namespace PortunusAdiutor.Services.MessagePoster;
+
 /// <summary>
 /// 	Parameters necessary for the link message posting.
 /// </summary>
-public class MailCodePosterParams
+public class MessageLinkPosterParams
 {
-
 	/// <summary>
 	/// 	Uri used for the SMTP server.
 	/// </summary>
@@ -22,6 +23,19 @@ public class MailCodePosterParams
 	/// </summary>
 	public ICredentials SmtpCredentials
 	{ get; set; } = new NetworkCredential();
+
+	/// <summary>
+	/// 	App endpoint for email validation.
+	/// </summary>
+	public string EmailConfirmationEndpoint { get; set; } =
+		defaultEmailConfirmationEndpoint;
+
+	/// <summary>
+	/// 	App endpoint for password redefinition.
+	/// </summary>
+	public string PasswordRedefinitionEndpoint { get; set; } =
+		defaultPasswordRedefinitionEndpoint;
+
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent if the user
 	///		forgets his password.
@@ -37,13 +51,13 @@ public class MailCodePosterParams
 	{ get; set; } = defaultEmailConfirmationMessageBuilder;
 
 	/// <summary>
-	/// 	Initialize an instance of <see cref="MailCodePosterParams"/>
+	/// 	Initialize an instance of <see cref="MessageLinkPosterParams"/>
 	/// 	with only the defaults as base.
 	/// </summary>
-	public MailCodePosterParams() { }
+	public MessageLinkPosterParams() {	}
 
 	/// <summary>
-	/// 	Iniatialize an instance of <see cref="MailLinkPosterParams"/> 
+	/// 	Iniatialize an instance of <see cref="MessageLinkPosterParams"/> 
 	/// 	using an <see cref="IConfiguration"/> object and
 	/// 	the defaults as base.
 	/// </summary>
@@ -51,28 +65,46 @@ public class MailCodePosterParams
 	/// 	An <see cref="IConfiguration"/> instance that 
 	/// 	have the section "SMTP" defined.
 	/// </param>
-	public MailCodePosterParams(ConfigurationManager config)
+	public MessageLinkPosterParams(IConfiguration config)
 	{
 		var sect = config.GetSection("SMTP");
-		var smtpUri = config["SMTP_URI"];
+		var smtpUri = sect["URI"];
 		if (smtpUri is not null) {
 			SmtpUri = new(smtpUri);
 		}
 
-		var smtpUser = config["SMTP_USER"];
+		var smtpUser = sect["USERNAME"];
 		if (smtpUser is not null) {
-			var smtpPassword = config["SMTP_PSWRD"];
+			var smtpPassword = sect["PSWRD"];
 			SmtpCredentials =
 				new NetworkCredential(smtpUser, smtpPassword);
 		}
+
+		var emailConfirmationEndpoint = sect["ECE"];
+		if (emailConfirmationEndpoint is not null) {
+			EmailConfirmationEndpoint = emailConfirmationEndpoint;
+		}
+
+		var passwordRedefinitionEndpoint = sect["PRE"];
+		if (passwordRedefinitionEndpoint is not null) {
+			PasswordRedefinitionEndpoint = passwordRedefinitionEndpoint;
+		}
 	}
 
+	// DEFAULT VALUES
 	const string defaultSmtpUriString = "smtp://localhost:2525";
+
+	const string defaultEmailConfirmationEndpoint =
+		"http://localhost:8080/Authorization/ConfirmEmail?token=";
+
+	const string defaultPasswordRedefinitionEndpoint =
+		"http://localhost:8080/Authorization/RedefinePassword?token=";
+
 	static ICredentials defaultCredentials => new NetworkCredential();
 
 	static MimeMessage defaultPasswordRedefinitionMessageBuilder(
 		string email,
-		string code
+		string link
 	)
 	{
 		var message = new MimeMessage();
@@ -87,9 +119,9 @@ public class MailCodePosterParams
 
 				A new password was requested for your account,
 
-				Please confirm that it was you by entering this code: 
+				Please confirm that it was you by opening this link: 
 				
-				{code}
+				{link}
 
 				If you didn’t make this request, then you can ignore this email.
 				"""
@@ -100,7 +132,7 @@ public class MailCodePosterParams
 
 	static MimeMessage defaultEmailConfirmationMessageBuilder(
 		string email,
-		string code
+		string link
 	)
 	{
 		var message = new MimeMessage();
@@ -115,9 +147,9 @@ public class MailCodePosterParams
 
 				Your account have been registered, 
 
-				Please confirm that it was you by entering this code: 
+				Please confirm that it was you by opening this link: 
 
-				{code}
+				{link}
 
 				If you didn’t make this request, then you can ignore this email.
 				"""
