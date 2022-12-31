@@ -15,6 +15,18 @@ using PortunusAdiutor.Services.TokenBuilder;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 
+/// <summary>
+/// 	Implementation of <see cref="IMessagePoster{TUser, TKey}"/> with the plain text OTP.
+/// </summary>
+/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
+/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
+/// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
+/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
+/// <typeparam name="TUserClaim">Repesents a claim posessed by an user.</typeparam>
+/// <typeparam name="TUserRole">Represents the link between an user and a role.</typeparam>
+/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
+/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
+/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
 public class MessageLinkPoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMessagePoster<TUser, TKey>
 where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>, IManagedUser
@@ -28,6 +40,13 @@ where TUserToken : IdentityUserToken<TKey>
 {
 	private readonly MessageLinkPosterParams _posterParams;
 	private readonly ITokenBuilder _tokenBuilder;
+	
+	/// <summary>
+	/// 	Initializes an instance of the class.
+	/// </summary>
+	/// <param name="posterParams">Parameters for sending messages.</param>
+	/// <param name="context">Database context.</param>
+	/// <param name="tokenBuilder">JWT builder.</param>
 	public MessageLinkPoster(
 		MessageLinkPosterParams posterParams,
 		TContext context,
@@ -37,7 +56,8 @@ where TUserToken : IdentityUserToken<TKey>
 		_posterParams = posterParams;
 		_tokenBuilder = tokenBuilder;
 	}
-
+	
+	/// <inheritdoc/>
 	public void SendEmailConfirmationMessage(TUser user)
 	{
 		// Generates OTP
@@ -60,7 +80,8 @@ where TUserToken : IdentityUserToken<TKey>
 		);
 		SendMessage(message);
 	}
-
+	
+	/// <inheritdoc/>
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
 		// Generates OTP
@@ -83,7 +104,8 @@ where TUserToken : IdentityUserToken<TKey>
 		);
 		SendMessage(message);
 	}
-
+	
+	/// <inheritdoc/>
 	private void SendMessage(MimeMessage message)
 	{
 		using (var client = new SmtpClient()) {
