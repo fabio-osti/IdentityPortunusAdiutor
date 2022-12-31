@@ -1,16 +1,19 @@
 using System.Linq.Expressions;
-using System.Security.Cryptography;
+using System.Security.Claims;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MessagePoster;
-using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Services.UsersManager;
+using PortunusAdiutor.Services.TokenBuilder;
 
+/// <summary>
+/// 	Implementation of <see cref="IUsersManager{TUser, TKey}"/>.
+/// </summary>
 public class UsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IUsersManager<TUser, TKey>
 where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>, IManagedUser
@@ -23,20 +26,27 @@ where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
 	ITokenBuilder _tokenBuilder;
-	IMessagePoster<TUser, TKey> _mailPoster;
+	IMessagePoster<TUser, TKey> _messagePoster;
 	TContext _context;
 
+	/// <summary>
+	/// 	Initializes an instance of the class.
+	/// </summary>
+	/// <param name="messagePoster">Message poster.</param>
+	/// <param name="context">Database context.</param>
+	/// <param name="tokenBuilder">JWT builder.</param>
 	public UsersManager(
 		ITokenBuilder tokenBuilder,
-		IMessagePoster<TUser, TKey> mailPoster,
+		IMessagePoster<TUser, TKey> messagePoster,
 		TContext context
 	)
 	{
 		_tokenBuilder = tokenBuilder;
-		_mailPoster = mailPoster;
+		_messagePoster = messagePoster;
 		_context = context;
 	}
 
+	/// <inheritdoc/>
 	public Task<TUser> CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
 	{
 		if (_context.Users.FirstOrDefault(userFinder) is not null) {
@@ -44,11 +54,12 @@ where TUserToken : IdentityUserToken<TKey>
 		}
 
 		var user = _context.Users.Add(userBuilder()).Entity;
-		_mailPoster.SendEmailConfirmationMessage(user);
+		_messagePoster.SendEmailConfirmationMessage(user);
 		_context.SaveChanges();
 		return Task.FromResult(user);
 	}
 
+	/// <inheritdoc/>
 	public Task<TUser> ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
@@ -63,6 +74,7 @@ where TUserToken : IdentityUserToken<TKey>
 		return Task.FromResult(user);
 	}
 
+	/// <inheritdoc/>
 	public Task<TUser> SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
@@ -74,11 +86,12 @@ where TUserToken : IdentityUserToken<TKey>
 			return Task.FromException<TUser>(new UnauthorizedAccessException());
 		}
 
-		_mailPoster.SendPasswordRedefinitionMessage(user);
+		_messagePoster.SendPasswordRedefinitionMessage(user);
 
 		return Task.FromResult(user);
 	}
 
+	/// <inheritdoc/>
 	public Task<TUser> ConfirmEmail(
 		string otp,
 		Expression<Func<TUser, bool>>? userFinder
@@ -92,7 +105,7 @@ where TUserToken : IdentityUserToken<TKey>
 		}
 
 		if (
-			!_mailPoster.ConsumeOtp(
+			!_messagePoster.ConsumeOtp(
 				user.Id,
 				otp,
 				MessageType.EmailConfirmation
@@ -107,6 +120,7 @@ where TUserToken : IdentityUserToken<TKey>
 		return Task.FromResult(user);
 	}
 
+	/// <inheritdoc/>
 	public Task<TUser> SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
@@ -114,11 +128,12 @@ where TUserToken : IdentityUserToken<TKey>
 			return Task.FromException<TUser>(new UserNotFoundException());
 		}
 
-		_mailPoster.SendPasswordRedefinitionMessage(user);
+		_messagePoster.SendPasswordRedefinitionMessage(user);
 
 		return Task.FromResult(user);
 	}
 
+	/// <inheritdoc/>
 	public Task<TUser> RedefinePassword(
 		string otp,
 		string newPassword,
@@ -133,7 +148,7 @@ where TUserToken : IdentityUserToken<TKey>
 		}
 
 		if (
-			!_mailPoster.ConsumeOtp(
+			!_messagePoster.ConsumeOtp(
 				user.Id,
 				otp,
 				MessageType.PasswordRedefinition
@@ -146,5 +161,27 @@ where TUserToken : IdentityUserToken<TKey>
 		_context.SaveChanges();
 
 		return Task.FromResult(user);
+	}
+
+	/// <inheritdoc/>
+	public Tuple<string, string> GetOtpCredentialsFromToken(
+		string token,
+		string tokenType
+	)
+	{
+		var validationParameters = new TokenValidationParameters
+		{
+			ValidateIssuer = false,
+			ValidateAudience = false,
+			ValidTypes = new List<string> { tokenType },
+			ValidateLifetime = true,
+			ValidateIssuerSigningKey = true,
+		};
+
+		var claims = _tokenBuilder.ValidateToken(token, out var validated, validationParameters);
+		ArgumentNullException.ThrowIfNull(claims);
+		var id = claims.First(e => e.Type == ClaimTypes.PrimarySid).Value;
+		var xdc = claims.First(e => e.Type == JwtCustomClaims.XDigitsCode).Value;
+		return new(id, xdc);
 	}
 }

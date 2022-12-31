@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Security.Cryptography;
 
@@ -40,7 +41,7 @@ where TUserToken : IdentityUserToken<TKey>
 {
 	private readonly MessageLinkPosterParams _posterParams;
 	private readonly ITokenBuilder _tokenBuilder;
-	
+
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
@@ -56,21 +57,18 @@ where TUserToken : IdentityUserToken<TKey>
 		_posterParams = posterParams;
 		_tokenBuilder = tokenBuilder;
 	}
-	
+
 	/// <inheritdoc/>
 	public void SendEmailConfirmationMessage(TUser user)
 	{
 		// Generates OTP
 		var otp = GenAndSave(user.Id, MessageTypes.EmailConfirmation);
 		// Builds token containing OTP
-		var token = _tokenBuilder.BuildSpecialToken(
-			new ClaimsIdentity(new[] {
-			new Claim(ClaimTypes.PrimarySid, otp.UserId.ToString()!),
-			new Claim(JwtCustomClaims.XDigitsCode, otp.Password)
-			}),
+		var token = BuildSpecialToken(
+			otp.UserId.ToString()!,
+			otp.Password,
 			otp.Type,
-			otp.ExpiresOn,
-			true
+			otp.ExpiresOn
 		);
 		// Builds and sends message
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
@@ -80,21 +78,18 @@ where TUserToken : IdentityUserToken<TKey>
 		);
 		SendMessage(message);
 	}
-	
+
 	/// <inheritdoc/>
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
 		// Generates OTP
 		var otp = GenAndSave(user.Id, MessageTypes.PasswordRedefinition);
 		// Builds token containing OTP
-		var token = _tokenBuilder.BuildSpecialToken(
-			new ClaimsIdentity(new[] {
-			new Claim(ClaimTypes.PrimarySid, otp.UserId.ToString()!),
-			new Claim(JwtCustomClaims.XDigitsCode, otp.Password)
-			}),
+		var token = BuildSpecialToken(
+			otp.UserId.ToString()!,
+			otp.Password,
 			otp.Type,
-			otp.ExpiresOn,
-			true
+			otp.ExpiresOn
 		);
 		// Builds and sends message
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
@@ -104,7 +99,7 @@ where TUserToken : IdentityUserToken<TKey>
 		);
 		SendMessage(message);
 	}
-	
+
 	/// <inheritdoc/>
 	private void SendMessage(MimeMessage message)
 	{
@@ -114,5 +109,25 @@ where TUserToken : IdentityUserToken<TKey>
 			client.Send(message);
 			client.Disconnect(true);
 		}
+	}
+
+	private string BuildSpecialToken(
+		string userId,
+		string userXdc,
+		string type,
+		DateTime expiration
+	)
+	{
+		var tokenDescriptor = new SecurityTokenDescriptor
+		{
+			Subject = new ClaimsIdentity(new[] {
+				new Claim(ClaimTypes.PrimarySid, userId),
+				new Claim(JwtCustomClaims.XDigitsCode, userXdc)
+			}),
+			TokenType = type,
+			Expires = expiration
+		};
+
+		return _tokenBuilder.BuildToken(tokenDescriptor);
 	}
 }
