@@ -17,7 +17,7 @@
 	);
 	```
 
-## UserManager
+## Usage
 
  ```csharp
 	[ApiController]
