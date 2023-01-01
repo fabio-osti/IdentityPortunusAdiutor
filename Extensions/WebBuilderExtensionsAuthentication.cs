@@ -23,7 +23,7 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 	/// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
 	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-	/// <typeparam name="TUserClaim">Repesents a claim posessed by an user.</typeparam>
+	/// <typeparam name="TUserClaim">Represents a claim possessed by an user.</typeparam>
 	/// <typeparam name="TUserRole">Represents the link between an user and a role.</typeparam>
 	/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
 	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
@@ -63,7 +63,7 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 	/// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
 	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-	/// <typeparam name="TUserClaim">Repesents a claim posessed by an user.</typeparam>
+	/// <typeparam name="TUserClaim">Represents a claim possessed by an user.</typeparam>
 	/// <typeparam name="TUserRole">Represents the link between an user and a role.</typeparam>
 	/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
 	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
