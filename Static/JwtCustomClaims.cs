@@ -9,4 +9,8 @@ static public class JwtCustomClaims
 	/// 	Claim of type "x-digits-code".
 	/// </summary>
 	public const string XDigitsCode = "x-digits-code";
+	/// <summary>
+    /// 	Claim of type "email-confirmed".
+    /// </summary>
+	public const string EmailConfirmed = "email-confirmed";
 }

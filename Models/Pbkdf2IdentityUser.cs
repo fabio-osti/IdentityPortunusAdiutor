@@ -104,7 +104,8 @@ where TKey : IEquatable<TKey>
 		ArgumentNullException.ThrowIfNull(Email);
 		return new[] {
 			new Claim(ClaimTypes.PrimarySid, id),
-			new Claim(ClaimTypes.Email, Email)
+			new Claim(ClaimTypes.Email, Email),
+			new Claim(JwtCustomClaims.EmailConfirmed, EmailConfirmed.ToString())
 		};
 	}
 }
