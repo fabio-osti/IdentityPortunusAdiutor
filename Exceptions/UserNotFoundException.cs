@@ -9,6 +9,8 @@ namespace PortunusAdiutor.Exceptions;
 /// </summary>
 public class UserNotFoundException : PortunusException
 {
+	public UserNotFoundException() : base("User not found.") { }
+
 	/// <summary>
 	/// 	Checks if <paramref name="user"/> is null.
 	/// </summary>
