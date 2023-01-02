@@ -31,7 +31,7 @@ public static partial class WebBuilderExtensions
 	/// <param name="builder">The web app builder.</param>
 	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <param name="mailLinkPosterParams">The paramaters used by the <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <param name="mailLinkPosterParams">The parameters used by the <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
 	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
@@ -71,7 +71,7 @@ public static partial class WebBuilderExtensions
 	/// <param name="builder">The web app builder.</param>
 	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <param name="mailCodePosterParams">The paramaters used by the <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <param name="mailCodePosterParams">The parameters used by the <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
 	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
