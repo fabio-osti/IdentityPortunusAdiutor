@@ -7,8 +7,8 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <summary>
 /// 	Defines all necessary methods for message posting
 /// </summary>
-/// <typeparam name="TUser"></typeparam>
-/// <typeparam name="TKey"></typeparam>
+/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
+/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
 public interface IMessagePoster<TUser, TKey>
 where TUser : class, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>

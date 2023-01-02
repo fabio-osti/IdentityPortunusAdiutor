@@ -27,10 +27,10 @@ where TKey : IEquatable<TKey>
 	/// <summary>
 	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> of <see cref="SingleUseToken{TUser, TKey}"/>
 	/// </summary>
-	public DbSet<SingleUseToken<TUser, TKey>> UserSingleUseTokens { get; set; }
+	public DbSet<SingleUseToken<TUser, TKey>> SingleUseTokens { get; set; }
 
 	/// <summary>
-	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> of the users.
+	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> of <typeparamref name="TUser"/>.
     /// </summary>
 	public DbSet<TUser> Users { get; set; }
 

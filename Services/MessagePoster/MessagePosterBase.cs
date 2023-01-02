@@ -9,8 +9,8 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// 	Defines a common method for SUT generation and consumption.
 /// </summary>
 /// <typeparam name="TContext"></typeparam>
-/// <typeparam name="TUser"></typeparam>
-/// <typeparam name="TKey"></typeparam>
+/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
+/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
 public class MessagePosterBase<TContext, TUser, TKey>
 where TContext : ManagedUserDbContext<TUser, TKey>
 where TUser : class, IManagedUser<TUser, TKey>
@@ -40,7 +40,7 @@ where TKey : IEquatable<TKey>
 
 		var userSut = new SingleUseToken<TUser, TKey>(userId, xdc, type);
 
-		_context.UserSingleUseTokens.Add(userSut);
+		_context.SingleUseTokens.Add(userSut);
 		_context.SaveChanges();
 
 		return userSut;
@@ -59,7 +59,7 @@ where TKey : IEquatable<TKey>
 	{
 		var type = messageType.ToJwtTypeString();
 		var userSut =
-			_context.UserSingleUseTokens.Find(token);
+			_context.SingleUseTokens.Find(token);
 
 		if (userSut is null)
 		{
@@ -71,7 +71,7 @@ where TKey : IEquatable<TKey>
 			throw new UnauthorizedAccessException("Token already expired.");
 		}
 
-		var code = _context.UserSingleUseTokens.Remove(userSut);
+		var code = _context.SingleUseTokens.Remove(userSut);
 		_context.SaveChanges();
 
 		return userSut.UserId;
