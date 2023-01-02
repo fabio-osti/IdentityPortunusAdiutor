@@ -49,12 +49,10 @@ where TUserToken : IdentityUserToken<TKey>
 	public TUser ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user is null) {
-			throw new UserNotFoundException();
-		}
+		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
 
 		if (!user.ValidatePassword(userPassword)) {
-			throw new UnauthorizedAccessException();
+			throw new InvalidPasswordException();
 		}
 
 		return user;
@@ -63,12 +61,10 @@ where TUserToken : IdentityUserToken<TKey>
 	public TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user is null) {
-			throw new UserNotFoundException();
-		}
+		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
 
 		if (user.EmailConfirmed) {
-			throw new UnauthorizedAccessException();
+			throw new EmailAlreadyConfirmedException();
 		}
 
 		_mailPoster.SendPasswordRedefinitionMessage(user);
@@ -85,7 +81,7 @@ where TUserToken : IdentityUserToken<TKey>
 			MessageType.EmailConfirmation
 		);
 		var user = _context.Users.Find(userId);
-
+		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
 
@@ -95,9 +91,7 @@ where TUserToken : IdentityUserToken<TKey>
 	public TUser SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		if (user is null) {
-			throw new UserNotFoundException();
-		}
+		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
 
 		_mailPoster.SendPasswordRedefinitionMessage(user);
 
@@ -114,7 +108,7 @@ where TUserToken : IdentityUserToken<TKey>
 				MessageType.EmailConfirmation
 		);
 		var user = _context.Users.Find(userId);
-
+		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
 

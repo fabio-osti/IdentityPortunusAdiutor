@@ -9,7 +9,7 @@ namespace PortunusAdiutor.Exceptions;
 /// </summary>
 public class UserNotFoundException : PortunusException
 {
-	static TUser ThrowIfUserNull<TUser, TKey>(TUser? user) 
+	static public TUser ThrowIfUserNull<TUser, TKey>(TUser? user) 
 	where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>
 	where TKey : IEquatable<TKey>
 	{
