@@ -76,8 +76,7 @@ static public partial class WebBuilderExtensions
 		builder.Services.AddSingleton<IMessagePoster<TUser, TKey>>(
 			e => new LinkMessagePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 				mailParams,
-				e.GetRequiredService<TContext>(),
-				e.GetRequiredService<ITokenBuilder>()
+				e.GetRequiredService<TContext>()
 			)
 		);
 	}

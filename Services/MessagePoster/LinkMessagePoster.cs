@@ -29,7 +29,8 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
 public class LinkMessagePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMessagePoster<TUser, TKey>
 where TContext : ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>where TRole : IdentityRole<TKey>
+where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>
+where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
 where TUserClaim : IdentityUserClaim<TKey>
 where TUserRole : IdentityUserRole<TKey>
@@ -38,22 +39,17 @@ where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
 	private readonly LinkMessagePosterParams _posterParams;
-	private readonly ITokenBuilder _tokenBuilder;
-
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
 	/// <param name="posterParams">Parameters for sending messages.</param>
 	/// <param name="context">Database context.</param>
-	/// <param name="tokenBuilder">JWT builder.</param>
 	public LinkMessagePoster(
 		LinkMessagePosterParams posterParams,
-		TContext context,
-		ITokenBuilder tokenBuilder
+		TContext context
 	) : base(context)
 	{
 		_posterParams = posterParams;
-		_tokenBuilder = tokenBuilder;
 	}
 
 	/// <inheritdoc/>

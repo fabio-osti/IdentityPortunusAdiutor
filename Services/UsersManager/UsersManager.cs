@@ -13,7 +13,8 @@ using PortunusAdiutor.Services.UsersManager;
 
 public class UsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IUsersManager<TUser, TKey>
 where TContext : ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>where TRole : IdentityRole<TKey>
+where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>
+where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
 where TUserClaim : IdentityUserClaim<TKey>
 where TUserRole : IdentityUserRole<TKey>
@@ -21,17 +22,14 @@ where TUserLogin : IdentityUserLogin<TKey>
 where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
-	ITokenBuilder _tokenBuilder;
 	IMessagePoster<TUser, TKey> _mailPoster;
 	TContext _context;
 
 	public UsersManager(
-		ITokenBuilder tokenBuilder,
 		IMessagePoster<TUser, TKey> mailPoster,
 		TContext context
 	)
 	{
-		_tokenBuilder = tokenBuilder;
 		_mailPoster = mailPoster;
 		_context = context;
 	}
