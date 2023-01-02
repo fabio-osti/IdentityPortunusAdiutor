@@ -1,6 +1,12 @@
-using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using System.Security.Cryptography;
 
 using MailKit.Net.Smtp;
+
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+
 using MimeKit;
 
 using PortunusAdiutor.Data;
@@ -10,9 +16,9 @@ using PortunusAdiutor.Services.TokenBuilder;
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
-/// 	Implementation of <see cref="IMessagePoster{TUser, TKey}"/> with the plain text OTP.
+/// 	Implementation of <see cref="IMessagePoster{TUser, TKey}"/> with the plain text SUT.
 /// </summary>
-/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
+/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with SUT keeping.</typeparam>
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 /// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
 /// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
@@ -21,9 +27,9 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
 /// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 /// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
-public class MessageCodePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMessagePoster<TUser, TKey>
+public class LinkMessagePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMessagePoster<TUser, TKey>
 where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TUser : IdentityUser<TKey>
+where TUser : IdentityUser<TKey>, IManagedUser
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
 where TUserClaim : IdentityUserClaim<TKey>
@@ -32,45 +38,50 @@ where TUserLogin : IdentityUserLogin<TKey>
 where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
-	MessageCodePosterParams _posterParams;
+	private readonly LinkMessagePosterParams _posterParams;
+	private readonly ITokenBuilder _tokenBuilder;
 
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
 	/// <param name="posterParams">Parameters for sending messages.</param>
 	/// <param name="context">Database context.</param>
-	public MessageCodePoster(MessageCodePosterParams posterParams, TContext context) : base(context)
+	/// <param name="tokenBuilder">JWT builder.</param>
+	public LinkMessagePoster(
+		LinkMessagePosterParams posterParams,
+		TContext context,
+		ITokenBuilder tokenBuilder
+	) : base(context)
 	{
 		_posterParams = posterParams;
+		_tokenBuilder = tokenBuilder;
 	}
 
 	/// <inheritdoc/>
 	public void SendEmailConfirmationMessage(TUser user)
 	{
+		// Generates SUT
+		var sut = GenAndSave(user.Id, MessageTypes.EmailConfirmation, out _);
+		// Builds and sends message
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
-
-		var otp = GenAndSave(user.Id, MessageTypes.EmailConfirmation, out var xdc);
-
-		var message = _posterParams.EmailConfirmationMessageBuilder(
+		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
-			xdc
+			_posterParams.PasswordRedefinitionEndpoint + sut.Token
 		);
-
 		SendMessage(message);
 	}
 
 	/// <inheritdoc/>
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
+		// Generates SUT
+		var sut = GenAndSave(user.Id, MessageTypes.PasswordRedefinition, out _);
+		// Builds and sends message
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
-
-		var otp = GenAndSave(user.Id, MessageTypes.PasswordRedefinition, out var xdc);
-
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
-			xdc
+			_posterParams.PasswordRedefinitionEndpoint + sut.Token
 		);
-
 		SendMessage(message);
 	}
 

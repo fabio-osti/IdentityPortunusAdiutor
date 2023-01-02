@@ -12,7 +12,7 @@ namespace PortunusAdiutor.Extensions;
 static public partial class WebBuilderExtensions
 {
 	/// <summary>
-	/// 	Adds <see cref="MessageCodePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/> to the <see cref="ServiceCollection"/>.
+	/// 	Adds <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/> to the <see cref="ServiceCollection"/>.
 	/// </summary>
 	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
@@ -24,10 +24,10 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
 	/// <param name="builder">The web app builder.</param>
-	/// <param name="mailParams">The paramaters used by the <see cref="MessageCodePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <param name="mailParams">The paramaters used by the <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	public static void AddMailCodePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
-		MessageCodePosterParams mailParams
+		CodeMessagePosterParams mailParams
 	)
 	where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
@@ -40,7 +40,7 @@ static public partial class WebBuilderExtensions
 	where TUserToken : IdentityUserToken<TKey>
 	{
 		builder.Services.AddSingleton<IMessagePoster<TUser, TKey>>(
-			e => new MessageCodePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
+			e => new CodeMessagePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 				mailParams,
 				e.GetRequiredService<TContext>()
 			)
@@ -48,7 +48,7 @@ static public partial class WebBuilderExtensions
 	}
 
 	/// <summary>
-	/// 	Adds <see cref="MessageLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/> to the <see cref="ServiceCollection"/>.
+	/// 	Adds <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/> to the <see cref="ServiceCollection"/>.
 	/// </summary>
 	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
@@ -60,10 +60,10 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
 	/// <param name="builder">The web app builder.</param>
-	/// <param name="mailParams">The paramaters used by the <see cref="MessageLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <param name="mailParams">The paramaters used by the <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	public static void AddMailLinkPoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
-		MessageLinkPosterParams mailParams
+		LinkMessagePosterParams mailParams
 	)
 	where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
@@ -76,7 +76,7 @@ static public partial class WebBuilderExtensions
 	where TUserToken : IdentityUserToken<TKey>
 	{
 		builder.Services.AddSingleton<IMessagePoster<TUser, TKey>>(
-			e => new MessageLinkPoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
+			e => new LinkMessagePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 				mailParams,
 				e.GetRequiredService<TContext>(),
 				e.GetRequiredService<ITokenBuilder>()

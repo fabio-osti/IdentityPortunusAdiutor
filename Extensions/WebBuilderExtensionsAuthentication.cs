@@ -17,7 +17,7 @@ namespace PortunusAdiutor.Extensions;
 static public partial class WebBuilderExtensions
 {
 	/// <summary>
-	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="MessageLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
+	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
 	/// </summary>
 	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
@@ -31,13 +31,13 @@ static public partial class WebBuilderExtensions
 	/// <param name="builder">The web app builder.</param>
 	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <param name="mailLinkPosterParams">The paramaters used by the <see cref="MessageLinkPoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <param name="mailLinkPosterParams">The paramaters used by the <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
 	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
-		MessageLinkPosterParams mailLinkPosterParams
+		LinkMessagePosterParams mailLinkPosterParams
 	)
 	where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
@@ -57,7 +57,7 @@ static public partial class WebBuilderExtensions
 	}
 
 	/// <summary>
-	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="MessageCodePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
+	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
 	/// </summary>
 	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
@@ -71,13 +71,13 @@ static public partial class WebBuilderExtensions
 	/// <param name="builder">The web app builder.</param>
 	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <param name="mailCodePosterParams">The paramaters used by the <see cref="MessageCodePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <param name="mailCodePosterParams">The paramaters used by the <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
 	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
-		MessageCodePosterParams mailCodePosterParams
+		CodeMessagePosterParams mailCodePosterParams
 	)
 	where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
