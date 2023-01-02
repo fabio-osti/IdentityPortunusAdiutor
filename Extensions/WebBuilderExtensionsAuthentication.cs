@@ -19,7 +19,7 @@ static public partial class WebBuilderExtensions
 	/// <summary>
 	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
 	/// </summary>
-	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
+	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity.</typeparam>
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 	/// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
 	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
@@ -59,7 +59,7 @@ static public partial class WebBuilderExtensions
 	/// <summary>
 	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
 	/// </summary>
-	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
+	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity.</typeparam>
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 	/// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
 	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>

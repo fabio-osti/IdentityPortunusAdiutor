@@ -14,7 +14,7 @@ using PortunusAdiutor.Services.UsersManager;
 /// <summary>
 /// 	Default implementation of <see cref="IUsersManager{TUser, TKey}"/>.
 /// </summary>
-/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
+/// <typeparam name="TContext">Represents an Entity Framework database context used for identity.</typeparam>
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 /// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
 /// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>

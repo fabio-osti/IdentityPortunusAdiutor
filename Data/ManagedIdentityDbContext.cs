@@ -7,7 +7,7 @@ using PortunusAdiutor.Models;
 namespace PortunusAdiutor.Data;
 
 /// <summary>
-/// 	Base class for the Entity Framework database context used for identity with OTP keeping.
+/// 	Base class for the Entity Framework database context used for identity.
 /// </summary>
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 /// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
