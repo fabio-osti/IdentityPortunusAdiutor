@@ -75,7 +75,6 @@ where TUserToken : IdentityUserToken<TKey>
 		SendMessage(message);
 	}
 
-	/// <inheritdoc/>
 	private void SendMessage(MimeMessage message)
 	{
 		using (var client = new SmtpClient()) {
