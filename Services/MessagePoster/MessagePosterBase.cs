@@ -81,7 +81,7 @@ where TUserToken : IdentityUserToken<TKey>
 		}
 
 		var type = messageType.ToJwtTypeString();
-		if (userSut.ExpiresOn < DateTime.UtcNow || userSut.Type == type) {
+		if (userSut.ExpiresOn < DateTime.UtcNow || userSut.Type != type) {
 			throw new InvalidPasswordException();
 		}
 
