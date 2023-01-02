@@ -90,8 +90,6 @@ where TKey : IEquatable<TKey>
 	/// <inheritdoc/>
 	public byte[] Salt { get; set; }
 	/// <inheritdoc/>
-	public ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
-	/// <inheritdoc/>
 	public virtual Claim[] GetClaims()
 	{
 		var id = Id.ToString();
@@ -103,4 +101,6 @@ where TKey : IEquatable<TKey>
 			new Claim(JwtCustomClaims.EmailConfirmed, EmailConfirmed.ToString())
 		};
 	}
+	/// <inheritdoc/>
+	public ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
 }
