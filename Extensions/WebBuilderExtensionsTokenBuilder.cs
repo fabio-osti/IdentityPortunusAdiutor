@@ -22,7 +22,8 @@ static public partial class WebBuilderExtensions
 		TokenBuilderParams tokenBuilderParams
 	)
 	{
-		switch (tokenBuilderParams) {
+		switch (tokenBuilderParams)
+		{
 			case { JwtConfigurator: not null }:
 				var hijackedConfigurator = (JwtBearerOptions opt) =>
 				{
@@ -45,7 +46,11 @@ static public partial class WebBuilderExtensions
 
 				return builder.Services
 					.AddSingleton<ITokenBuilder>(_ => new TokenBuilder(tokenBuilderParams))
-					.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+					.AddAuthentication(x =>
+					{
+						x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+						x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+					})
 					.AddJwtBearer(
 						opt =>
 						{
@@ -64,7 +69,7 @@ static public partial class WebBuilderExtensions
 						{
 							ValidateIssuerSigningKey = true,
 							IssuerSigningKey = tokenBuilderParams.SigningKey,
-							TokenDecryptionKey = tokenBuilderParams.SigningKey,
+							TokenDecryptionKey = tokenBuilderParams.EncryptionKey,
 							ValidateAudience = false,
 							ValidateIssuer = false,
 						};

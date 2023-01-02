@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
+
 
 namespace PortunusAdiutor.Models;
 
@@ -10,7 +10,6 @@ namespace PortunusAdiutor.Models;
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 /// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
 public interface IManagedUser<TUser, TKey>
-where TUser : IdentityUser<TKey>
 where TKey : IEquatable<TKey>
 {
 	/// <summary>
@@ -24,6 +23,22 @@ where TKey : IEquatable<TKey>
 	/// </summary>
 	/// <param name="password">Plain text password.</param>
 	bool ValidatePassword(string password);
+	/// <summary>
+	/// 	Gets or sets the email.
+	/// </summary>
+	string Email { get; set; }
+	/// <summary>
+	/// 	Gets or sets the hashed password.
+	/// </summary>
+	string PasswordHash { get; set; }
+	/// <summary>
+	/// 	Gets or sets the id.
+	/// </summary>
+	TKey Id { get; set; }
+	/// <summary>
+	/// 	Gets or sets if this user email is confirmed.
+	/// </summary>
+	bool EmailConfirmed { get; set; }
 	/// <summary>
 	/// 	Gets or sets the salt used by <see cref="SetPassword(string)"/> and <see cref="ValidatePassword(string)"/>.
 	/// </summary>

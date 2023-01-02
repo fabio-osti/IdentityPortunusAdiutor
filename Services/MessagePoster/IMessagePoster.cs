@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+
 
 using PortunusAdiutor.Models;
 
@@ -10,17 +10,17 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TUser"></typeparam>
 /// <typeparam name="TKey"></typeparam>
 public interface IMessagePoster<TUser, TKey>
-where TUser : IdentityUser<TKey>
+where TUser : class, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
 	/// <summary>
-	/// 	Sends message asking for the confirmation of the <see cref="IdentityUser{TKey}.Email"/> from <paramref name="user"/>.
+	/// 	Sends message asking for the confirmation of the <see cref="IManagedUser{TUser, TKey}.Email"/> from <paramref name="user"/>.
 	/// </summary>
 	/// <param name="user">Receiver of the message.</param>
 	void SendEmailConfirmationMessage(TUser user);
 	
 	/// <summary>
-	/// 	Sends message asking for the redefinition of the <see cref="IdentityUser{TKey}.PasswordHash"/> from <paramref name="user"/>.
+	/// 	Sends message asking for the redefinition of the <see cref="IManagedUser{TUser, TKey}.PasswordHash"/> from <paramref name="user"/>.
 	/// </summary>
 	/// <param name="user">Receiver of the message.</param>
 	void SendPasswordRedefinitionMessage(TUser user);

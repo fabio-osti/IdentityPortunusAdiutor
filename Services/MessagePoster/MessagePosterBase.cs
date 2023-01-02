@@ -1,7 +1,5 @@
 using System.Security.Cryptography;
 
-using Microsoft.AspNetCore.Identity;
-
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
 
@@ -12,23 +10,11 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// </summary>
 /// <typeparam name="TContext"></typeparam>
 /// <typeparam name="TUser"></typeparam>
-/// <typeparam name="TRole"></typeparam>
 /// <typeparam name="TKey"></typeparam>
-/// <typeparam name="TUserClaim"></typeparam>
-/// <typeparam name="TUserRole"></typeparam>
-/// <typeparam name="TUserLogin"></typeparam>
-/// <typeparam name="TRoleClaim"></typeparam>
-/// <typeparam name="TUserToken"></typeparam>
-public class MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TContext : ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>
-where TRole : IdentityRole<TKey>
+public class MessagePosterBase<TContext, TUser, TKey>
+where TContext : ManagedUserDbContext<TUser, TKey>
+where TUser : class, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>
-where TUserClaim : IdentityUserClaim<TKey>
-where TUserRole : IdentityUserRole<TKey>
-where TUserLogin : IdentityUserLogin<TKey>
-where TRoleClaim : IdentityRoleClaim<TKey>
-where TUserToken : IdentityUserToken<TKey>
 {
 	TContext _context;
 
@@ -42,9 +28,9 @@ where TUserToken : IdentityUserToken<TKey>
 	}
 
 	/// <summary>
-	/// 	Generates an SUT for an <see cref="IdentityUser{TKey}"/> for an access of type <paramref name="type"/> and saves it on the database.
+	/// 	Generates an SUT for an <see cref="IManagedUser{TUser, TKey}"/> for an access of type <paramref name="type"/> and saves it on the database.
 	/// </summary>
-	/// <param name="userId">Id of the <see cref="IdentityUser{TKey}"/>.</param>
+	/// <param name="userId">Id of the <see cref="IManagedUser{TUser, TKey}"/>.</param>
 	/// <param name="type">Type of access granted by the the returning SUT.</param>
 	/// <param name="xdc"></param>
 	/// <returns>The SUT.</returns>

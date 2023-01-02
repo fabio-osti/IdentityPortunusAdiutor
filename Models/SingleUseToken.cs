@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
+
 using Microsoft.IdentityModel.Tokens;
 
 namespace PortunusAdiutor.Models;
@@ -11,7 +11,6 @@ namespace PortunusAdiutor.Models;
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 /// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
 public class SingleUseToken<TUser, TKey>
-where TUser : IdentityUser<TKey>
 where TKey : IEquatable<TKey>
 {
 	/// <summary>

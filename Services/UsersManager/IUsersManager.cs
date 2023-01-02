@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-using Microsoft.AspNetCore.Identity;
+
 
 using PortunusAdiutor.Models;
 
@@ -12,7 +12,7 @@ namespace PortunusAdiutor.Services.UsersManager;
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 /// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
 public interface IUsersManager<TUser, TKey>
-where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>
+where TUser : class, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
 	/// <summary>

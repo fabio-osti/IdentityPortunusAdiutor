@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using System.Security.Cryptography;
 
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
+
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
@@ -16,23 +16,11 @@ using PortunusAdiutor.Services.UsersManager;
 /// </summary>
 /// <typeparam name="TContext">Represents an Entity Framework database context used for identity.</typeparam>
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
-/// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
 /// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-/// <typeparam name="TUserClaim">Represents a claim possessed by an user.</typeparam>
-/// <typeparam name="TUserRole">Represents the link between an user and a role.</typeparam>
-/// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
-/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
-/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>	
-public class UsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IUsersManager<TUser, TKey>
-where TContext : ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>
-where TRole : IdentityRole<TKey>
+public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
+where TContext : ManagedUserDbContext<TUser, TKey>
+where TUser : class, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>
-where TUserClaim : IdentityUserClaim<TKey>
-where TUserRole : IdentityUserRole<TKey>
-where TUserLogin : IdentityUserLogin<TKey>
-where TRoleClaim : IdentityRoleClaim<TKey>
-where TUserToken : IdentityUserToken<TKey>
 {
 	IMessagePoster<TUser, TKey> _mailPoster;
 	TContext _context;

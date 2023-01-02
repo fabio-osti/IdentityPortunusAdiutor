@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Identity;
+
 
 namespace PortunusAdiutor.Models;
 
@@ -12,7 +12,7 @@ namespace PortunusAdiutor.Models;
 /// </summary>
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 /// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-public class Pbkdf2IdentityUser<TUser, TKey> : IdentityUser<TKey>, IManagedUser<TUser, TKey>
+public class Pbkdf2IdentityUser<TUser, TKey> : IManagedUser<TUser, TKey>
 where TUser : Pbkdf2IdentityUser<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
@@ -23,13 +23,17 @@ where TKey : IEquatable<TKey>
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
+	/// <param name="id">Id of the user.</param>
 	/// <param name="email">Email of the user.</param>
 	/// <param name="salt">Salt of the user.</param>
+	/// <param name="passwordHash">Hashed password of the user.</param>
 	/// <remarks>
 	/// 	This constructor should only be used by EF to build an object representing an existing <see cref="Pbkdf2IdentityUser{TUser, TKey}"/>.
-	/// 	</remarks>
-	public Pbkdf2IdentityUser(string email, byte[] salt)
+	/// </remarks>
+	public Pbkdf2IdentityUser(TKey id, string email, byte[] salt, string passwordHash)
 	{
+		Id = id;
+		PasswordHash = passwordHash;
 		Email = email;
 		Salt = salt;
 	}
@@ -37,19 +41,22 @@ where TKey : IEquatable<TKey>
 	/// <summary>
 	/// 	Initializes na instance of the class.
 	/// </summary>
+	/// <param name="id">Id of the user</param>
 	/// <param name="email">Email of the user.</param>
 	/// <param name="password">Password of the user.</param>
-	public Pbkdf2IdentityUser(string email, string password)
+	public Pbkdf2IdentityUser(TKey id, string email, string password)
 	{
+		Id = id;
 		Email = email;
 		SetPassword(password);
 	}
 
 	/// <inheritdoc/>
-	[MemberNotNull(nameof(Salt))]
+	[MemberNotNull(nameof(Salt), nameof(PasswordHash))]
 	public void SetPassword(string password)
 	{
-		using (var sha = SHA256.Create()) {
+		using (var sha = SHA256.Create())
+		{
 			Salt =
 				sha.ComputeHash(BitConverter.GetBytes(DateTime.UtcNow.ToBinary()));
 		}
@@ -75,6 +82,14 @@ where TKey : IEquatable<TKey>
 		return Convert.ToBase64String(hashed);
 	}
 
+	/// <inheritdoc/>
+	public string Email { get; set; }
+	/// <inheritdoc/>
+	public string PasswordHash { get; set; }
+	/// <inheritdoc/>
+	public TKey Id { get; set; }
+	/// <inheritdoc/>
+	public bool EmailConfirmed { get; set; }
 	/// <inheritdoc/>
 	public byte[] Salt { get; set; }
 
