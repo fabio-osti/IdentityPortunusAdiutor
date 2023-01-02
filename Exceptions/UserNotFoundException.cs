@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 using PortunusAdiutor.Models;
 
 namespace PortunusAdiutor.Exceptions;

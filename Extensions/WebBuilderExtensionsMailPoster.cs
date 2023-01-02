@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MessagePoster;
-using PortunusAdiutor.Services.TokenBuilder;
 
 namespace PortunusAdiutor.Extensions;
 

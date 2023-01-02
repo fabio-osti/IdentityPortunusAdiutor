@@ -1,7 +1,5 @@
 using System.Linq.Expressions;
 
-
-
 using PortunusAdiutor.Models;
 
 namespace PortunusAdiutor.Services.UsersManager;

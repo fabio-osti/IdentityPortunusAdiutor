@@ -1,5 +1,3 @@
-
-
 using Microsoft.EntityFrameworkCore;
 using PortunusAdiutor.Models;
 

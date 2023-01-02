@@ -1,11 +1,8 @@
-
-
 using MailKit.Net.Smtp;
 using MimeKit;
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
-using PortunusAdiutor.Services.TokenBuilder;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 

@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 
-
 namespace PortunusAdiutor.Models;
 
 /// <summary>
