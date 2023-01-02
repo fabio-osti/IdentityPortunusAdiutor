@@ -8,7 +8,7 @@ using PortunusAdiutor.Services.TokenBuilder;
 
 namespace PortunusAdiutor.Extensions;
 
-static public partial class WebBuilderExtensions
+public static partial class WebBuilderExtensions
 {
 	/// <summary>
 	/// 	Adds <see cref="TokenBuilder"/> to the <see cref="ServiceCollection"/>.
@@ -16,7 +16,7 @@ static public partial class WebBuilderExtensions
 	/// <param name="builder">The web app builder.</param>
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
 	/// <returns></returns>
-	static public AuthenticationBuilder AddTokenBuilder(
+	public static AuthenticationBuilder AddTokenBuilder(
 		this WebApplicationBuilder builder,
 		TokenBuilderParams tokenBuilderParams
 	)

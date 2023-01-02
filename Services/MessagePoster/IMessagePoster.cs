@@ -1,4 +1,5 @@
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 

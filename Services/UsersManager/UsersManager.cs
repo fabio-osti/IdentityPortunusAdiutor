@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
-
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MessagePoster;
-using PortunusAdiutor.Services.UsersManager;
+using PortunusAdiutor.Static;
+
+namespace PortunusAdiutor.Services.UsersManager;
 
 /// <summary>
 /// 	Default implementation of <see cref="IUsersManager{TUser, TKey}"/>.
@@ -13,12 +14,12 @@ using PortunusAdiutor.Services.UsersManager;
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 /// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
 public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
-where TContext : ManagedUserDbContext<TUser, TKey>
-where TUser : class, IManagedUser<TUser, TKey>
-where TKey : IEquatable<TKey>
+	where TContext : ManagedUserDbContext<TUser, TKey>
+	where TUser : class, IManagedUser<TUser, TKey>
+	where TKey : IEquatable<TKey>
 {
-	IMessagePoster<TUser, TKey> _mailPoster;
-	TContext _context;
+	private readonly IMessagePoster<TUser, TKey> _mailPoster;
+	private readonly TContext _context;
 
 	/// <summary>
 	/// 	Initializes an instance of the class.
@@ -108,8 +109,8 @@ where TKey : IEquatable<TKey>
 	)
 	{
 		var userId = _mailPoster.ConsumeSut(
-				token,
-				MessageType.EmailConfirmation
+			token,
+			MessageType.EmailConfirmation
 		);
 		var user = _context.Users.Find(userId);
 		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);

@@ -8,7 +8,7 @@ using PortunusAdiutor.Services.MessagePoster;
 
 namespace PortunusAdiutor.Extensions;
 
-static public partial class WebBuilderExtensions
+public static partial class WebBuilderExtensions
 {
 	/// <summary>
 	/// 	Adds <see cref="CodeMessagePoster{TContext, TUser, TKey}"/> to the <see cref="ServiceCollection"/>.
@@ -17,7 +17,7 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
 	/// <param name="builder">The web app builder.</param>
-	/// <param name="mailParams">The paramaters used by the <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.</param>
+	/// <param name="mailParams">The parameters used by the <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.</param>
 	public static void AddMailCodePoster<TContext, TUser, TKey>(
 		this WebApplicationBuilder builder,
 		CodeMessagePosterParams mailParams
@@ -41,7 +41,7 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
 	/// <param name="builder">The web app builder.</param>
-	/// <param name="mailParams">The paramaters used by the <see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.</param>
+	/// <param name="mailParams">The parameters used by the <see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.</param>
 	public static void AddMailLinkPoster<TContext, TUser, TKey>(
 		this WebApplicationBuilder builder,
 		LinkMessagePosterParams mailParams

@@ -8,7 +8,7 @@ using PortunusAdiutor.Services.UsersManager;
 
 namespace PortunusAdiutor.Extensions;
 
-static public partial class WebBuilderExtensions
+public static partial class WebBuilderExtensions
 {
 	/// <summary>
 	/// 	Adds <see cref="UsersManager{TContext, TUser, TKey}"/> to the <see cref="ServiceCollection"/>.

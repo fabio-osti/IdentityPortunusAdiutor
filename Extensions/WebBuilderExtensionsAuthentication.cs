@@ -14,7 +14,7 @@ namespace PortunusAdiutor.Extensions;
 /// <summary>
 /// 	<see cref="WebApplicationBuilder"/> extensions for injecting the services.
 /// </summary>
-static public partial class WebBuilderExtensions
+public static partial class WebBuilderExtensions
 {
 	/// <summary>
 	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.
@@ -25,9 +25,9 @@ static public partial class WebBuilderExtensions
 	/// <param name="builder">The web app builder.</param>
 	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <param name="mailLinkPosterParams">The paramaters used by the <see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.</param>
+	/// <param name="mailLinkPosterParams">The parameters used by the <see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.</param>
 	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
-	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TKey>(
+	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TKey>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
@@ -53,9 +53,9 @@ static public partial class WebBuilderExtensions
 	/// <param name="builder">The web app builder.</param>
 	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <param name="mailCodePosterParams">The paramaters used by the <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.</param>
+	/// <param name="mailCodePosterParams">The parameters used by the <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.</param>
 	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
-	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TKey>(
+	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TKey>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
@@ -64,7 +64,6 @@ static public partial class WebBuilderExtensions
 	where TContext : ManagedUserDbContext<TUser, TKey>
 	where TUser : class, IManagedUser<TUser, TKey>
 	where TKey : IEquatable<TKey>
-
 	{
 		builder.Services.AddDbContext<TContext>(contextConfigurator, ServiceLifetime.Singleton);
 		var authenticationBuilder = builder.AddTokenBuilder(tokenBuilderParams);

@@ -1,8 +1,10 @@
 using System.Security.Cryptography;
-
+using MailKit.Net.Smtp;
+using MimeKit;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 
@@ -17,7 +19,7 @@ where TContext : ManagedUserDbContext<TUser, TKey>
 where TUser : class, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
-	TContext _context;
+	private readonly TContext _context;
 
 	/// <summary>
 	/// 	Initializes an instance of the class.
@@ -35,7 +37,11 @@ where TKey : IEquatable<TKey>
 	/// <param name="type">Type of access granted by the the returning SUT.</param>
 	/// <param name="xdc"></param>
 	/// <returns>The SUT.</returns>
-	protected SingleUseToken<TUser, TKey> GenAndSave(TKey userId, string type, out string xdc)
+	protected SingleUseToken<TUser, TKey> GenAndSave(
+		TKey userId,
+		string type,
+		out string xdc
+	)
 	{
 		xdc = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
 
@@ -72,7 +78,8 @@ where TKey : IEquatable<TKey>
 			throw new InvalidPasswordException();
 		}
 
-		var code = _context.SingleUseTokens.Remove(userSut);
+
+		_context.SingleUseTokens.Remove(userSut);
 		_context.SaveChanges();
 
 		return userSut.UserId;

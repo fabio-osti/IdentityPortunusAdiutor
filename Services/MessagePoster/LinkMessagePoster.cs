@@ -4,6 +4,7 @@ using MimeKit;
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 
@@ -59,15 +60,13 @@ where TKey : IEquatable<TKey>
 		);
 		SendMessage(message);
 	}
-
-	/// <inheritdoc/>
+	
 	private void SendMessage(MimeMessage message)
 	{
-		using (var client = new SmtpClient()) {
-			client.Connect(_posterParams.SmtpUri);
-			client.Authenticate(_posterParams.SmtpCredentials);
-			client.Send(message);
-			client.Disconnect(true);
-		}
+		using var client = new SmtpClient();
+		client.Connect(_posterParams.SmtpUri);
+		client.Authenticate(_posterParams.SmtpCredentials);
+		client.Send(message);
+		client.Disconnect(true);
 	}
 }

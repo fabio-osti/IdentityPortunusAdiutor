@@ -20,7 +20,7 @@ public class SingleUseTokenNotFoundException : PortunusException
 	/// <param name="token">Token to be checked if null.</param>
 	/// <returns>Not null asserted <paramref name="token"/>.</returns>
 	/// <exception cref="UserNotFoundException"></exception>
-	static public SingleUseToken<TUser, TKey> ThrowIfUserNull<TUser, TKey>(SingleUseToken<TUser, TKey>? token)
+	public static SingleUseToken<TUser, TKey> ThrowIfUserNull<TUser, TKey>(SingleUseToken<TUser, TKey>? token)
 	where TUser : class, IManagedUser<TUser, TKey>
 	where TKey : IEquatable<TKey>
 	{

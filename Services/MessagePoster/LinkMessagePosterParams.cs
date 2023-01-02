@@ -16,38 +16,38 @@ public class LinkMessagePosterParams
 	/// <summary>
 	/// 	Uri used for the SMTP server.
 	/// </summary>
-	public Uri SmtpUri { get; set; } = new Uri(defaultSmtpUriString);
+	public Uri SmtpUri { get; set; } = new(DefaultSmtpUriString);
 
 	/// <summary>
 	/// 	Credentials used for the SMTP server.
 	/// </summary>
-	public ICredentials SmtpCredentials{ get; set; } = defaultCredentials;
+	public ICredentials SmtpCredentials{ get; set; } = DefaultCredentials;
 		
 	/// <summary>
 	/// 	App endpoint for email validation.
 	/// </summary>
 	public string EmailConfirmationEndpoint { get; set; } =
-		defaultEmailConfirmationEndpoint;
+		DefaultEmailConfirmationEndpoint;
 
 	/// <summary>
 	/// 	App endpoint for password redefinition.
 	/// </summary>
 	public string PasswordRedefinitionEndpoint { get; set; } =
-		defaultPasswordRedefinitionEndpoint;
+		DefaultPasswordRedefinitionEndpoint;
 
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent if the user
 	///		forgets his password.
 	/// </summary>
 	public MessageBuilder PasswordRedefinitionMessageBuilder{ get; set; } = 
-		defaultPasswordRedefinitionMessageBuilder;
+		DefaultPasswordRedefinitionMessageBuilder;
 
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent when the user 
 	///		is registered.
 	/// </summary>
 	public MessageBuilder EmailConfirmationMessageBuilder{ get; set; } = 
-		defaultEmailConfirmationMessageBuilder;
+		DefaultEmailConfirmationMessageBuilder;
 
 	/// <summary>
 	/// 	Initialize an instance of <see cref="LinkMessagePosterParams"/>
@@ -69,7 +69,7 @@ public class LinkMessagePosterParams
 		var sect = config.GetSection("SMTP");
 		var smtpUri = sect["URI"];
 		if (smtpUri is not null) {
-			SmtpUri = new(smtpUri);
+			SmtpUri = new Uri(smtpUri);
 		}
 
 		var smtpUser = sect["USERNAME"];
@@ -91,17 +91,17 @@ public class LinkMessagePosterParams
 	}
 
 	// DEFAULT VALUES
-	const string defaultSmtpUriString = "smtp://localhost:2525";
+	private const string DefaultSmtpUriString = "smtp://localhost:2525";
 
-	const string defaultEmailConfirmationEndpoint =
+	private const string DefaultEmailConfirmationEndpoint =
 		"http://localhost:8080/Authorization/ConfirmEmail?token=";
 
-	const string defaultPasswordRedefinitionEndpoint =
+	private const string DefaultPasswordRedefinitionEndpoint =
 		"http://localhost:8080/Authorization/RedefinePassword?token=";
 
-	static ICredentials defaultCredentials => new NetworkCredential();
+	private static ICredentials DefaultCredentials => new NetworkCredential();
 
-	static MimeMessage defaultPasswordRedefinitionMessageBuilder(
+	private static MimeMessage DefaultPasswordRedefinitionMessageBuilder(
 		string email,
 		string link
 	)
@@ -129,7 +129,7 @@ public class LinkMessagePosterParams
 		return message;
 	}
 
-	static MimeMessage defaultEmailConfirmationMessageBuilder(
+	private static MimeMessage DefaultEmailConfirmationMessageBuilder(
 		string email,
 		string link
 	)

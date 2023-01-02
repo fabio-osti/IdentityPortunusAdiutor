@@ -20,7 +20,7 @@ public class UserNotFoundException : PortunusException
 	/// <param name="user">User to be checked if null.</param>
 	/// <returns>Not null asserted <paramref name="user"/>.</returns>
 	/// <exception cref="UserNotFoundException"></exception>
-	static public TUser ThrowIfUserNull<TUser, TKey>(TUser? user)
+	public static TUser ThrowIfUserNull<TUser, TKey>(TUser? user)
 	where TUser : class, IManagedUser<TUser, TKey>
 	where TKey : IEquatable<TKey>
 	{
