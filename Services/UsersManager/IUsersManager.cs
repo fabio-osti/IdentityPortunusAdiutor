@@ -54,4 +54,10 @@ where TKey : IEquatable<TKey>
 	/// <param name="newPassword">Password to be set.</param>
 	/// <returns>User that had his password redefined.</returns>
 	TUser RedefinePassword(string token, string newPassword);
+	/// <summary>
+    /// 	Finds an user.
+    /// </summary>
+    /// <param name="userFinder">Predicate for finding the user.</param>
+    /// <returns>User found.</returns>
+	TUser FindUser(Expression<Func<TUser, bool>> userFinder);
 }

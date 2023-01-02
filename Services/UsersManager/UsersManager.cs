@@ -76,9 +76,7 @@ where TKey : IEquatable<TKey>
 	}
 
 	/// <inheritdoc/>
-	public TUser ConfirmEmail(
-		string token
-	)
+	public TUser ConfirmEmail(string token)
 	{
 		var userId = _mailPoster.ConsumeSut(
 			token,
@@ -119,5 +117,11 @@ where TKey : IEquatable<TKey>
 		_context.SaveChanges();
 
 		return user;
+	}
+
+	/// <inheritdoc/>
+	public TUser FindUser(Expression<Func<TUser, bool>> userFinder)
+	{
+		return _context.Users.FirstOrDefault(userFinder) ?? throw new UserNotFoundException();
 	}
 }
