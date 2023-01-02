@@ -11,7 +11,8 @@ namespace PortunusAdiutor.Models;
 /// 	Implementation of <see cref="IManagedUser"/> using PBKDF2 as derivation algorithm.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
-public class Pbkdf2IdentityUser<TKey> : IdentityUser<TKey>, IManagedUser<Pbkdf2IdentityUser<TKey>, TKey>
+public class Pbkdf2IdentityUser<TUser, TKey> : IdentityUser<TKey>, IManagedUser<TUser, TKey>
+where TUser : Pbkdf2IdentityUser<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
 	private const KeyDerivationPrf defaultPrf = KeyDerivationPrf.HMACSHA512;
@@ -24,7 +25,7 @@ where TKey : IEquatable<TKey>
 	/// <param name="email">Email of the user.</param>
 	/// <param name="salt">Salt of the user.</param>
 	/// <remarks>
-	/// 	This constructor should only be used by EF to build an object representing an existing <see cref="Pbkdf2IdentityUser{TKey}"/>.
+	/// 	This constructor should only be used by EF to build an object representing an existing <see cref="Pbkdf2IdentityUser{TUser, TKey}"/>.
 	/// 	</remarks>
 	public Pbkdf2IdentityUser(string email, byte[] salt)
 	{
@@ -77,7 +78,7 @@ where TKey : IEquatable<TKey>
 	public byte[] Salt { get; set; }
 
 	/// <inheritdoc/>
-	public ICollection<SingleUseToken<Pbkdf2IdentityUser<TKey>, TKey>>? SingleUseTokens { get; set; }
+	public ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
 
 	/// <inheritdoc/>
 	virtual public Claim[] GetClaims()
