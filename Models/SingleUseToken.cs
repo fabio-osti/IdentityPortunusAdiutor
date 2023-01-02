@@ -41,6 +41,14 @@ where TKey : IEquatable<TKey>
 		ExpiresOn = DateTime.UtcNow.AddMinutes(15);
 	}
 
+	private SingleUseToken(TKey userId, string token, string type, DateTime expiresOn)
+	{
+		UserId = userId;
+		Token = token;
+		Type = type;
+		ExpiresOn = expiresOn;
+	}
+
 	/// <summary>
 	///  	The user this <see cref="SingleUseToken{TUser, TKey}"/> gives access.
 	/// </summary>
