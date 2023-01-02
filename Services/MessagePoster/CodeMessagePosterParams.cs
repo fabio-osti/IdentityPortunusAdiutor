@@ -16,26 +16,26 @@ public class CodeMessagePosterParams
 	/// <summary>
 	/// 	Uri used for the SMTP server.
 	/// </summary>
-	public Uri SmtpUri { get; set; } = new Uri(defaultSmtpUriString);
+	public Uri SmtpUri { get; set; } = new(DefaultSmtpUriString);
 
 	/// <summary>
 	/// 	Credentials used for the SMTP server.
 	/// </summary>
-	public ICredentials SmtpCredentials{ get; set; } = defaultCredentials;
+	public ICredentials SmtpCredentials{ get; set; } = DefaultCredentials;
 		
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent if the user
 	///		forgets his password.
 	/// </summary>
 	public MessageBuilder PasswordRedefinitionMessageBuilder{ get; set; } = 
-		defaultPasswordRedefinitionMessageBuilder;
+		DefaultPasswordRedefinitionMessageBuilder;
 
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent when the user 
 	///		is registered.
 	/// </summary>
 	public MessageBuilder EmailConfirmationMessageBuilder{ get; set; } = 
-		defaultEmailConfirmationMessageBuilder;
+		DefaultEmailConfirmationMessageBuilder;
 
 	/// <summary>
 	/// 	Initialize an instance of <see cref="CodeMessagePosterParams"/>
@@ -44,7 +44,7 @@ public class CodeMessagePosterParams
 	public CodeMessagePosterParams() { }
 
 	/// <summary>
-	/// 	Iniatialize an instance of <see cref="LinkMessagePosterParams"/> 
+	/// 	Initialize an instance of <see cref="LinkMessagePosterParams"/> 
 	/// 	using an <see cref="IConfiguration"/> object and
 	/// 	the defaults as base.
 	/// </summary>
@@ -55,23 +55,23 @@ public class CodeMessagePosterParams
 	public CodeMessagePosterParams(ConfigurationManager config)
 	{
 		var sect = config.GetSection("SMTP");
-		var smtpUri = config["SMTP_URI"];
+		var smtpUri = sect["SMTP_URI"];
 		if (smtpUri is not null) {
 			SmtpUri = new(smtpUri);
 		}
 
-		var smtpUser = config["SMTP_USER"];
+		var smtpUser = sect["SMTP_USER"];
 		if (smtpUser is not null) {
-			var smtpPassword = config["SMTP_PSWRD"];
+			var smtpPassword = sect["SMTP_PSWRD"];
 			SmtpCredentials =
 				new NetworkCredential(smtpUser, smtpPassword);
 		}
 	}
 
-	const string defaultSmtpUriString = "smtp://localhost:2525";
-	static ICredentials defaultCredentials => new NetworkCredential();
+	private const string DefaultSmtpUriString = "smtp://localhost:2525";
+	private static ICredentials DefaultCredentials => new NetworkCredential();
 
-	static MimeMessage defaultPasswordRedefinitionMessageBuilder(
+	private static MimeMessage DefaultPasswordRedefinitionMessageBuilder(
 		string email,
 		string code
 	)
@@ -92,14 +92,14 @@ public class CodeMessagePosterParams
 				
 				{code}
 
-				If you didn’t make this request, then you can ignore this email.
+				If you didn't make this request, then you can ignore this email.
 				"""
 		};
 
 		return message;
 	}
 
-	static MimeMessage defaultEmailConfirmationMessageBuilder(
+	private static MimeMessage DefaultEmailConfirmationMessageBuilder(
 		string email,
 		string code
 	)
@@ -120,7 +120,7 @@ public class CodeMessagePosterParams
 
 				{code}
 
-				If you didn’t make this request, then you can ignore this email.
+				If you didn't make this request, then you can ignore this email.
 				"""
 		};
 

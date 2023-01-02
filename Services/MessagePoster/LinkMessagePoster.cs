@@ -1,17 +1,12 @@
-using System.Security.Claims;
-using System.Security.Cryptography;
-
 using MailKit.Net.Smtp;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 using MimeKit;
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
-using PortunusAdiutor.Services.TokenBuilder;
+using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 

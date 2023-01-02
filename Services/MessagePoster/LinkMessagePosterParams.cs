@@ -16,38 +16,38 @@ public class LinkMessagePosterParams
 	/// <summary>
 	/// 	Uri used for the SMTP server.
 	/// </summary>
-	public Uri SmtpUri { get; set; } = new Uri(defaultSmtpUriString);
+	public Uri SmtpUri { get; set; } = new(DefaultSmtpUriString);
 
 	/// <summary>
 	/// 	Credentials used for the SMTP server.
 	/// </summary>
-	public ICredentials SmtpCredentials{ get; set; } = defaultCredentials;
+	public ICredentials SmtpCredentials{ get; set; } = DefaultCredentials;
 		
 	/// <summary>
 	/// 	App endpoint for email validation.
 	/// </summary>
 	public string EmailConfirmationEndpoint { get; set; } =
-		defaultEmailConfirmationEndpoint;
+		DefaultEmailConfirmationEndpoint;
 
 	/// <summary>
 	/// 	App endpoint for password redefinition.
 	/// </summary>
 	public string PasswordRedefinitionEndpoint { get; set; } =
-		defaultPasswordRedefinitionEndpoint;
+		DefaultPasswordRedefinitionEndpoint;
 
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent if the user
 	///		forgets his password.
 	/// </summary>
 	public MessageBuilder PasswordRedefinitionMessageBuilder{ get; set; } = 
-		defaultPasswordRedefinitionMessageBuilder;
+		DefaultPasswordRedefinitionMessageBuilder;
 
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent when the user 
 	///		is registered.
 	/// </summary>
 	public MessageBuilder EmailConfirmationMessageBuilder{ get; set; } = 
-		defaultEmailConfirmationMessageBuilder;
+		DefaultEmailConfirmationMessageBuilder;
 
 	/// <summary>
 	/// 	Initialize an instance of <see cref="LinkMessagePosterParams"/>
@@ -56,7 +56,7 @@ public class LinkMessagePosterParams
 	public LinkMessagePosterParams() {	}
 
 	/// <summary>
-	/// 	Iniatialize an instance of <see cref="LinkMessagePosterParams"/> 
+	/// 	Initialize an instance of <see cref="LinkMessagePosterParams"/> 
 	/// 	using an <see cref="IConfiguration"/> object and
 	/// 	the defaults as base.
 	/// </summary>
@@ -91,17 +91,17 @@ public class LinkMessagePosterParams
 	}
 
 	// DEFAULT VALUES
-	const string defaultSmtpUriString = "smtp://localhost:2525";
+	private const string DefaultSmtpUriString = "smtp://localhost:2525";
 
-	const string defaultEmailConfirmationEndpoint =
+	private const string DefaultEmailConfirmationEndpoint =
 		"http://localhost:8080/Authorization/ConfirmEmail?token=";
 
-	const string defaultPasswordRedefinitionEndpoint =
+	private const string DefaultPasswordRedefinitionEndpoint =
 		"http://localhost:8080/Authorization/RedefinePassword?token=";
 
-	static ICredentials defaultCredentials => new NetworkCredential();
+	private static ICredentials DefaultCredentials => new NetworkCredential();
 
-	static MimeMessage defaultPasswordRedefinitionMessageBuilder(
+	private static MimeMessage DefaultPasswordRedefinitionMessageBuilder(
 		string email,
 		string link
 	)
@@ -122,14 +122,14 @@ public class LinkMessagePosterParams
 				
 				{link}
 
-				If you didn’t make this request, then you can ignore this email.
+				If you didn't make this request, then you can ignore this email.
 				"""
 		};
 
 		return message;
 	}
 
-	static MimeMessage defaultEmailConfirmationMessageBuilder(
+	private static MimeMessage DefaultEmailConfirmationMessageBuilder(
 		string email,
 		string link
 	)
@@ -150,7 +150,7 @@ public class LinkMessagePosterParams
 
 				{link}
 
-				If you didn’t make this request, then you can ignore this email.
+				If you didn't make this request, then you can ignore this email.
 				"""
 		};
 

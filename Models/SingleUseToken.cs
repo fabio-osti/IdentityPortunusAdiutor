@@ -21,7 +21,7 @@ where TKey : IEquatable<TKey>
 	/// <param name="xdc"></param>
 	/// <param name="type"></param>
 	/// <returns></returns>
-	static public string GetTokenFrom(TKey userId, string xdc, string type)
+	public static string GetTokenFrom(TKey userId, string xdc, string type)
 	{
 		var concat = Encoding.UTF8.GetBytes(userId.ToString() + type + xdc);
 		return Base64UrlEncoder.Encode(SHA512.HashData(concat));

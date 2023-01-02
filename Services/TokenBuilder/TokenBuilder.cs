@@ -1,10 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-
-using PortunusAdiutor.Extensions;
 
 namespace PortunusAdiutor.Services.TokenBuilder;
 
@@ -14,6 +10,7 @@ namespace PortunusAdiutor.Services.TokenBuilder;
 public class TokenBuilder : ITokenBuilder
 {
 	private readonly TokenBuilderParams _builderParams;
+	
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
@@ -26,11 +23,11 @@ public class TokenBuilder : ITokenBuilder
 	/// <inheritdoc/>
 	public string BuildToken(SecurityTokenDescriptor tokenDescriptor)
 	{
-		tokenDescriptor.SigningCredentials = new SigningCredentials(
+		tokenDescriptor.SigningCredentials = new(
 			_builderParams.SigningKey,
 			SecurityAlgorithms.HmacSha256Signature
 		);
-		tokenDescriptor.EncryptingCredentials = new EncryptingCredentials(
+		tokenDescriptor.EncryptingCredentials = new(
 			_builderParams.EncryptionKey,
 			JwtConstants.DirectKeyUseAlg,
 			SecurityAlgorithms.Aes128CbcHmacSha256
@@ -69,8 +66,7 @@ public class TokenBuilder : ITokenBuilder
 	)
 	{
 		try {
-			validationParameters ??= new TokenValidationParameters
-			{
+			validationParameters ??= new() {
 				ValidateIssuer = false,
 				ValidateAudience = false
 			};
@@ -82,7 +78,7 @@ public class TokenBuilder : ITokenBuilder
 			var claims = handler.ValidateToken(
 				token,
 				validationParameters,
-				out var tokenSecure
+				out _
 			);
 
 			return claims.Claims.ToArray();

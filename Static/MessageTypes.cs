@@ -1,4 +1,4 @@
-namespace PortunusAdiutor.Models;
+namespace PortunusAdiutor.Static;
 
 /// <summary>
 /// 	Class to define constants representing message types.
@@ -30,7 +30,7 @@ public static class MessageTypes
 }
 
 /// <summary>
-///  Enumaration of types of message.
+///		Enumeration of types of message.
 /// </summary>
 public enum MessageType
 {

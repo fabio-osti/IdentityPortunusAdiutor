@@ -16,9 +16,9 @@ public class Pbkdf2IdentityUser<TUser, TKey> : IdentityUser<TKey>, IManagedUser<
 where TUser : Pbkdf2IdentityUser<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
-	private const KeyDerivationPrf defaultPrf = KeyDerivationPrf.HMACSHA512;
-	private const int defaultIterCount = 262140;
-	private const int defaultHashedSize = 128;
+	private const KeyDerivationPrf DefaultPrf = KeyDerivationPrf.HMACSHA512;
+	private const int DefaultIterationCount = 262140;
+	private const int DefaultHashedSize = 128;
 
 	/// <summary>
 	/// 	Initializes an instance of the class.
@@ -49,10 +49,8 @@ where TKey : IEquatable<TKey>
 	[MemberNotNull(nameof(Salt))]
 	public void SetPassword(string password)
 	{
-		using (var sha = SHA256.Create()) {
-			Salt =
-				sha.ComputeHash(BitConverter.GetBytes(DateTime.UtcNow.ToBinary()));
-		}
+		Salt =
+			SHA256.HashData(BitConverter.GetBytes(DateTime.UtcNow.ToBinary()));
 		PasswordHash = DeriveKey(password);
 		return;
 	}
@@ -63,14 +61,14 @@ where TKey : IEquatable<TKey>
 		return PasswordHash == DeriveKey(password);
 	}
 
-	private string DeriveKey(string pswrd)
+	private string DeriveKey(string password)
 	{
 		var hashed = KeyDerivation.Pbkdf2(
-			pswrd,
+			password,
 			Salt,
-			defaultPrf,
-			defaultIterCount,
-			defaultHashedSize
+			DefaultPrf,
+			DefaultIterationCount,
+			DefaultHashedSize
 		);
 		return Convert.ToBase64String(hashed);
 	}
@@ -79,10 +77,13 @@ where TKey : IEquatable<TKey>
 	public byte[] Salt { get; set; }
 
 	/// <inheritdoc/>
+	public sealed override string? Email { get; set; }
+
+	/// <inheritdoc/>
 	public ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
 
 	/// <inheritdoc/>
-	virtual public Claim[] GetClaims()
+	public virtual Claim[] GetClaims()
 	{
 		var id = Id.ToString();
 		ArgumentNullException.ThrowIfNull(id);

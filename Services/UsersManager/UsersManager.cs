@@ -1,15 +1,13 @@
 using System.Linq.Expressions;
-using System.Security.Cryptography;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MessagePoster;
-using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Services.UsersManager;
+using PortunusAdiutor.Static;
 
 /// <summary>
 /// 	Default implementation of <see cref="IUsersManager{TUser, TKey}"/>.
@@ -34,8 +32,8 @@ where TUserLogin : IdentityUserLogin<TKey>
 where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
-	IMessagePoster<TUser, TKey> _mailPoster;
-	TContext _context;
+	private readonly IMessagePoster<TUser, TKey> _mailPoster;
+	private readonly TContext _context;
 
 	/// <summary>
 	/// 	Initializes an instance of the class.

@@ -1,8 +1,5 @@
-using System.Net;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using PortunusAdiutor.Data;
@@ -11,7 +8,7 @@ using PortunusAdiutor.Services.UsersManager;
 
 namespace PortunusAdiutor.Extensions;
 
-static public partial class WebBuilderExtensions
+public static partial class WebBuilderExtensions
 {
 	/// <summary>
 	/// 	Adds <see cref="UserManager{TUser}"/> to the <see cref="ServiceCollection"/>.

@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
 namespace PortunusAdiutor.Services.TokenBuilder;
@@ -13,13 +11,13 @@ namespace PortunusAdiutor.Services.TokenBuilder;
 /// </remarks>
 public class TokenBuilderParams
 {
-/// <summary>
-/// 	Key for signing tokens.
-/// </summary>
+	/// <summary>
+	/// 	Key for signing tokens.
+	/// </summary>
 	public required SymmetricSecurityKey SigningKey { get; set; }
-/// <summary>
-/// 	Key for encrypting tokens.
-/// </summary>
+	/// <summary>
+	/// 	Key for encrypting tokens.
+	/// </summary>
 	public required SymmetricSecurityKey EncryptionKey { get; set; }
 	/// <summary>
 	///  	Configurator of <see cref="JwtBearerOptions"/>.

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-
-using PortunusAdiutor.Models;
+using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 

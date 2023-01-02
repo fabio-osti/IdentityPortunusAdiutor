@@ -1,9 +1,9 @@
-namespace PortunusAdiutor.Models;
+namespace PortunusAdiutor.Static;
 
 /// <summary>
 /// 	Class to define claims constants.
 /// </summary>
-static public class JwtCustomClaims
+public static class JwtCustomClaims
 {
 	/// <summary>
 	/// 	Claim of type "x-digits-code".

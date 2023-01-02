@@ -14,7 +14,7 @@ namespace PortunusAdiutor.Extensions;
 /// <summary>
 /// 	<see cref="WebApplicationBuilder"/> extensions for injecting the services.
 /// </summary>
-static public partial class WebBuilderExtensions
+public static partial class WebBuilderExtensions
 {
 	/// <summary>
 	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.
@@ -33,7 +33,7 @@ static public partial class WebBuilderExtensions
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
 	/// <param name="mailLinkPosterParams">The paramaters used by the <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
-	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
+	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
@@ -73,7 +73,7 @@ static public partial class WebBuilderExtensions
 	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
 	/// <param name="mailCodePosterParams">The paramaters used by the <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
-	static public AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
+	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
@@ -89,13 +89,9 @@ static public partial class WebBuilderExtensions
 	where TUserToken : IdentityUserToken<TKey>
 	{
 		builder.Services.AddDbContext<TContext>(contextConfigurator, ServiceLifetime.Singleton);
-
 		var authenticationBuilder = builder.AddTokenBuilder(tokenBuilderParams);
-
 		builder.AddMailCodePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(mailCodePosterParams);
-
 		builder.AddUsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>();
-
 		return authenticationBuilder;
 	}
 }

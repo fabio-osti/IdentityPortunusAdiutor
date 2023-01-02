@@ -12,19 +12,19 @@ public interface ITokenBuilder
 	/// <summary>
 	/// 	Builds a token using <paramref name="tokenDescriptor"/>.
 	/// </summary>
-	/// <param name="tokenDescriptor">Descriptor of the builded token.</param>
+	/// <param name="tokenDescriptor">Descriptor of the build token.</param>
 	/// <returns>A JWT describing <paramref name="tokenDescriptor"/>.</returns>
 	string BuildToken(SecurityTokenDescriptor tokenDescriptor);
 	/// <summary>
 	/// 	Builds a token with <paramref name="claims"/>.
 	/// </summary>
-	/// <param name="claims">Claims of the builded token.</param>
+	/// <param name="claims">Claims of the build token.</param>
 	/// <returns>A JWT containing <paramref name="claims"/>.</returns>
 	string BuildToken(Claim[] claims);
 	/// <summary>
 	/// 	Builds a token with <paramref name="claims"/>.
 	/// </summary>
-	/// <param name="claims">Claims of the builded token.</param>
+	/// <param name="claims">Claims of the build token.</param>
 	/// <returns>A JWT containing <paramref name="claims"/>.</returns>
 	string BuildToken(IDictionary<string, object> claims);
 	/// <summary>

@@ -5,11 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MessagePoster;
-using PortunusAdiutor.Services.TokenBuilder;
 
 namespace PortunusAdiutor.Extensions;
 
-static public partial class WebBuilderExtensions
+public static partial class WebBuilderExtensions
 {
 	/// <summary>
 	/// 	Adds <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/> to the <see cref="ServiceCollection"/>.
@@ -24,7 +23,7 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
 	/// <param name="builder">The web app builder.</param>
-	/// <param name="mailParams">The paramaters used by the <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <param name="mailParams">The parameters used by the <see cref="CodeMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	public static void AddMailCodePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		CodeMessagePosterParams mailParams
@@ -59,7 +58,7 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
 	/// <param name="builder">The web app builder.</param>
-	/// <param name="mailParams">The paramaters used by the <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
+	/// <param name="mailParams">The parameters used by the <see cref="LinkMessagePoster{TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken}"/>.</param>
 	public static void AddMailLinkPoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(
 		this WebApplicationBuilder builder,
 		LinkMessagePosterParams mailParams

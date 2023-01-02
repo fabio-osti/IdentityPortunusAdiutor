@@ -7,6 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DOC\**" />
+    <EmbeddedResource Remove="DOC\**" />
+    <None Remove="DOC\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="doxyFile" />
+    <None Remove="pat" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MailKit" Version="3.4.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="7.0.1" />

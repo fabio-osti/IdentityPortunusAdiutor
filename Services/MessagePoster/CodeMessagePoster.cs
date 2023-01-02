@@ -5,7 +5,7 @@ using MimeKit;
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
-using PortunusAdiutor.Services.TokenBuilder;
+using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 
@@ -32,7 +32,7 @@ where TUserLogin : IdentityUserLogin<TKey>
 where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
-	CodeMessagePosterParams _posterParams;
+	private readonly CodeMessagePosterParams _posterParams;
 
 	/// <summary>
 	/// 	Initializes an instance of the class.
@@ -49,7 +49,7 @@ where TUserToken : IdentityUserToken<TKey>
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 
-		var otp = GenAndSave(user.Id, MessageTypes.EmailConfirmation, out var xdc);
+		GenAndSave(user.Id, MessageTypes.EmailConfirmation, out var xdc);
 
 		var message = _posterParams.EmailConfirmationMessageBuilder(
 			user.Email,
@@ -64,7 +64,7 @@ where TUserToken : IdentityUserToken<TKey>
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 
-		var otp = GenAndSave(user.Id, MessageTypes.PasswordRedefinition, out var xdc);
+		GenAndSave(user.Id, MessageTypes.PasswordRedefinition, out var xdc);
 
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
@@ -74,7 +74,6 @@ where TUserToken : IdentityUserToken<TKey>
 		SendMessage(message);
 	}
 
-	/// <inheritdoc/>
 	private void SendMessage(MimeMessage message)
 	{
 		using (var client = new SmtpClient()) {

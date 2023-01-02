@@ -3,7 +3,9 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 
 using PortunusAdiutor.Data;
+using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 
@@ -30,7 +32,7 @@ where TUserLogin : IdentityUserLogin<TKey>
 where TRoleClaim : IdentityRoleClaim<TKey>
 where TUserToken : IdentityUserToken<TKey>
 {
-	TContext _context;
+	private readonly TContext _context;
 
 	/// <summary>
 	/// 	Initializes an instance of the class.
@@ -71,21 +73,19 @@ where TUserToken : IdentityUserToken<TKey>
 		MessageType messageType
 	)
 	{
-		var type = messageType.ToJwtTypeString();
 		var userSut =
 			_context.UserSingleUseTokens.Find(token);
 
-		if (userSut is null)
-		{
-			throw new UnauthorizedAccessException("Single Token not found.");
+		if (userSut is null) {
+			throw new SingleUseTokenNotFoundException();
 		}
 
-		if (userSut.ExpiresOn < DateTime.UtcNow)
-		{
-			throw new UnauthorizedAccessException("Token already expired.");
+		var type = messageType.ToJwtTypeString();
+		if (userSut.ExpiresOn < DateTime.UtcNow || userSut.Type == type) {
+			throw new InvalidPasswordException();
 		}
 
-		var code = _context.UserSingleUseTokens.Remove(userSut);
+		_context.UserSingleUseTokens.Remove(userSut);
 		_context.SaveChanges();
 
 		return userSut.UserId;
