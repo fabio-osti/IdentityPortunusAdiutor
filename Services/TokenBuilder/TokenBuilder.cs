@@ -8,15 +8,22 @@ using PortunusAdiutor.Extensions;
 
 namespace PortunusAdiutor.Services.TokenBuilder;
 
+/// <summary>
+/// 	Default implementation of <see cref="ITokenBuilder"/>.
+/// </summary>
 public class TokenBuilder : ITokenBuilder
 {
 	private readonly TokenBuilderParams _builderParams;
-
+	/// <summary>
+	/// 	Initializes an instance of the class.
+	/// </summary>
+	/// <param name="builderParams">Parameters for building and validating tokens.</param>
 	public TokenBuilder(TokenBuilderParams builderParams)
 	{
 		_builderParams = builderParams;
 	}
 
+	/// <inheritdoc/>
 	public string BuildToken(SecurityTokenDescriptor tokenDescriptor)
 	{
 		tokenDescriptor.SigningCredentials = new SigningCredentials(
@@ -33,6 +40,7 @@ public class TokenBuilder : ITokenBuilder
 		return handler.WriteToken(handler.CreateToken(tokenDescriptor));
 	}
 
+	/// <inheritdoc/>
 	public string BuildToken(Claim[] claims)
 	{
 		var tokenDescriptor = new SecurityTokenDescriptor
@@ -43,6 +51,7 @@ public class TokenBuilder : ITokenBuilder
 		return BuildToken(tokenDescriptor);
 	}
 
+	/// <inheritdoc/>
 	public string BuildToken(IDictionary<string, object> claims)
 	{
 		var tokenDescriptor = new SecurityTokenDescriptor
@@ -53,6 +62,7 @@ public class TokenBuilder : ITokenBuilder
 		return BuildToken(tokenDescriptor);
 	}
 
+	/// <inheritdoc/>
 	public Claim[]? ValidateToken(
 		string token,
 		TokenValidationParameters? validationParameters = null
@@ -64,7 +74,7 @@ public class TokenBuilder : ITokenBuilder
 				ValidateIssuer = false,
 				ValidateAudience = false
 			};
-			validationParameters.ValidateIssuerSigningKey = true;
+
 			validationParameters.IssuerSigningKey = _builderParams.SigningKey;
 			validationParameters.TokenDecryptionKey = _builderParams.EncryptionKey;
 
@@ -80,62 +90,4 @@ public class TokenBuilder : ITokenBuilder
 			return null;
 		}
 	}
-
-	public string BuildSpecialToken(
-		ClaimsIdentity claims,
-		string tokenType,
-		DateTime expires,
-		bool shouldEncrypt = false
-	)
-	{
-		var tokenDescriptor = new SecurityTokenDescriptor
-		{
-			Subject = claims,
-			TokenType = tokenType,
-			Expires = expires,
-			SigningCredentials = new SigningCredentials(
-				_builderParams.SigningKey,
-				SecurityAlgorithms.HmacSha256Signature
-			),
-			EncryptingCredentials = shouldEncrypt
-			? new EncryptingCredentials(
-				_builderParams.EncryptionKey,
-				JwtConstants.DirectKeyUseAlg,
-				SecurityAlgorithms.Aes128CbcHmacSha256
-			) : null
-		};
-
-		var handler = new JwtSecurityTokenHandler();
-		return handler.WriteToken(handler.CreateToken(tokenDescriptor));
-	}
-
-	public Claim[]? ValidateSpecialToken(
-		string token,
-		string tokenType,
-		out SecurityToken validatedToken
-	)
-	{
-		var handler = new JwtSecurityTokenHandler();
-
-		var validationParameters = new TokenValidationParameters
-		{
-			ValidateIssuer = false,
-			ValidateAudience = false,
-			ValidTypes = new List<string> { tokenType },
-			ValidateLifetime = true,
-			ValidateIssuerSigningKey = true,
-			IssuerSigningKey = _builderParams.SigningKey,
-			TokenDecryptionKey = _builderParams.EncryptionKey
-		};
-
-
-		var claims = handler.ValidateToken(
-			token,
-			validationParameters,
-			out validatedToken
-		);
-
-		return claims.Claims.ToArray();
-	}
-
 }
