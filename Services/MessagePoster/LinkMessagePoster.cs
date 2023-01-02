@@ -59,9 +59,9 @@ where TUserToken : IdentityUserToken<TKey>
 		var sut = GenAndSave(user.Id, MessageTypes.EmailConfirmation, out _);
 		// Builds and sends message
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
-		var message = _posterParams.PasswordRedefinitionMessageBuilder(
+		var message = _posterParams.EmailConfirmationMessageBuilder(
 			user.Email,
-			_posterParams.PasswordRedefinitionEndpoint + sut.Token
+			_posterParams.EmailConfirmationEndpoint + sut.Token
 		);
 		SendMessage(message);
 	}
