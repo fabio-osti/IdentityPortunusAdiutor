@@ -92,7 +92,7 @@ public class CodeMessagePosterParams
 				
 				{code}
 
-				If you didn’t make this request, then you can ignore this email.
+				If you didn't make this request, then you can ignore this email.
 				"""
 		};
 
@@ -120,7 +120,7 @@ public class CodeMessagePosterParams
 
 				{code}
 
-				If you didn’t make this request, then you can ignore this email.
+				If you didn't make this request, then you can ignore this email.
 				"""
 		};
 

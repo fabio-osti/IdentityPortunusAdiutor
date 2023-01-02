@@ -122,7 +122,7 @@ public class LinkMessagePosterParams
 				
 				{link}
 
-				If you didn’t make this request, then you can ignore this email.
+				If you didn't make this request, then you can ignore this email.
 				"""
 		};
 
@@ -150,7 +150,7 @@ public class LinkMessagePosterParams
 
 				{link}
 
-				If you didn’t make this request, then you can ignore this email.
+				If you didn't make this request, then you can ignore this email.
 				"""
 		};
 
