@@ -7,61 +7,51 @@ using PortunusAdiutor.Models;
 namespace PortunusAdiutor.Services.UsersManager;
 
 /// <summary>
-/// 	An interface for a service that manages a <typeparamref name="TUser"/>.
+/// 	Manages users on the database context.
 /// </summary>
-/// <typeparam name="TUser">Type of <see cref="IdentityUser{TKey}"/> used by the identity system.</typeparam>
-/// <typeparam name="TRole">Type of <see cref="IdentityRole{TKey}"/> used by the identity system</typeparam>
-/// <typeparam name="TKey">The type used for the primary key for the <typeparamref name="TUser"/>.</typeparam>
-public interface IUsersManager<TUser, TRole, TKey>
-where TUser : IdentityUser<TKey>, IManagedUser
-where TRole : IdentityRole<TKey>
+/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
+/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
+public interface IUsersManager<TUser, TKey>
+where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
 	/// <summary>
-	/// 	Creates a <typeparamref name="TUser"/> with 
-	/// 	<paramref name="userBuilder"/> after checking that it
-	/// 	won't collide with any <typeparamref name="TUser"/> 
-	/// 	found by the <paramref name="userFinder"/>.
+	/// 	Creates an user.
 	/// </summary>
-	/// <param name="userFinder">Predicate for <typeparamref name="TUser"/> collision.</param>
-	/// <param name="userBuilder"><typeparamref name="TUser"/> builder function.</param>
-	/// <returns>The user if created, null else.</returns>
-	TUser? CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder);
+	/// <param name="userFinder">Predicate for finding duplicate user.</param>
+	/// <param name="userBuilder">Builder of the user.</param>
+	/// <returns>Created user.</returns>
+	TUser CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder);
 	/// <summary>
-	/// 	Validates <typeparamref name="TUser"/> found by <paramref name="userFinder"/>
-	/// 	with <see cref="IManagedUser.ValidatePassword(string)"/>.
+	/// 	Validates an user.
 	/// </summary>
-	/// <param name="userFinder">Predicate for finding an <typeparamref name="TUser"/>.</param>
-	/// <param name="userPassword">Clear text password to be validated.</param>
-	/// <returns>The user if validated, null else.</returns>
-	TUser? ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword);
+	/// <param name="userFinder">Predicate for finding the user.</param>
+	/// <param name="userPassword">Plain text password to be validated.</param>
+	/// <returns>Validated user.</returns>
+	TUser ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword);
 	/// <summary>
-	/// 	Sends a message to the <typeparamref name="TUser"/> found by
-	/// 	<paramref name="userFinder"/> for email confirmation.
+	/// 	Sends a message to an user for email confirmation.
 	/// </summary>
-	/// <param name="userFinder">Predicate for finding an <typeparamref name="TUser"/>.</param>
-	/// <returns>The user if message sent, null else.</returns>
-	TUser? SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder);
+	/// <param name="userFinder">Predicate for finding the user.</param>
+	/// <returns>Validated user.</returns>
+	TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder);
 	/// <summary>
-	/// 	Confirms the email of the <typeparamref name="TUser"/> found by
-	/// 	<paramref name="userFinder"/>.
+	/// 	Confirm the email of the user to whom this <paramref name="token"/> belongs to.
 	/// </summary>
-	/// <param name="userFinder"></param>
-	/// <returns>The user if confirmed, null else</returns>
-	TUser? ConfirmEmail(Expression<Func<TUser, bool>> userFinder);
+	/// <param name="token">Token for the action.</param>
+	/// <returns>User that had his email confirmed.</returns>
+	TUser ConfirmEmail(string token);
 	/// <summary>
-	/// 	Sends a message to the <typeparamref name="TUser"/> found by
-	/// 	<paramref name="userFinder"/> for password redefinition.
+	/// 	Sends a message to an user for password redefinition.
 	/// </summary>
-	/// <param name="userFinder">Predicate for finding an <typeparamref name="TUser"/>.</param>
-	/// <returns>The user if message sent, null else.</returns>
-	TUser? SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder);
+	/// <param name="userFinder">Predicate for finding the user.</param>
+	/// <returns>Validated user.</returns>
+	TUser SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder);
 	/// <summary>
-	/// 	Redefines the password of the <typeparamref name="TUser"/> found by
-	/// 	<paramref name="userFinder"/>.
+	/// 	Redefines the password of the user to whom this <paramref name="token"/> belongs to.
 	/// </summary>
-	/// <param name="userFinder">Predicate for finding an <typeparamref name="TUser"/>.</param>
-	/// <param name="newPassword"><paramref name="userFinder"/> result new password.</param>
-	/// <returns>The user if redefined, null else</returns>
-	TUser? RedefinePassword(Expression<Func<TUser, bool>> userFinder, string newPassword);
+	/// <param name="token">Token for the action.</param>
+	/// <param name="newPassword">Password to be set.</param>
+	/// <returns>User that had his password redefined.</returns>
+	TUser RedefinePassword(string token, string newPassword);
 }

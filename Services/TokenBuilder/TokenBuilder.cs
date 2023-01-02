@@ -1,49 +1,34 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-
-using PortunusAdiutor.Extensions;
-
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 
 namespace PortunusAdiutor.Services.TokenBuilder;
 
-///	<summary>
-///		Default ITokenBuilder implementation.
-///	</summary>
-///	<remarks>
-///		Prefer to use any <see cref="WebBuilderExtensions"/>
-///		to inject the <see cref="ITokenBuilder"/> dependency.
-///	</remarks>
+/// <summary>
+/// 	Default implementation of <see cref="ITokenBuilder"/>.
+/// </summary>
 public class TokenBuilder : ITokenBuilder
 {
-	private readonly SymmetricSecurityKey _signingKey;
-	private readonly SymmetricSecurityKey _encryptKey;
-
-
-	///	<summary>
-	///		Initiazlize a new instance of <see cref="TokenBuilder"/>.
-	///	</summary>
-	/// <param name="signingKey">Secret string used for the token signing.</param>
-	/// <param name="encryptKey">Secret string used for the token encryption.</param>
-	public TokenBuilder(
-		SymmetricSecurityKey signingKey,
-		SymmetricSecurityKey encryptKey
-	)
+	private readonly TokenBuilderParams _builderParams;
+	
+	/// <summary>
+	/// 	Initializes an instance of the class.
+	/// </summary>
+	/// <param name="builderParams">Parameters for building and validating tokens.</param>
+	public TokenBuilder(TokenBuilderParams builderParams)
 	{
-		_encryptKey = encryptKey;
-		_signingKey = signingKey;
+		_builderParams = builderParams;
 	}
 
-	///	<inheritdoc/>
+	/// <inheritdoc/>
 	public string BuildToken(SecurityTokenDescriptor tokenDescriptor)
 	{
-		tokenDescriptor.SigningCredentials = new SigningCredentials(
-			_signingKey,
+		tokenDescriptor.SigningCredentials = new(
+			_builderParams.SigningKey,
 			SecurityAlgorithms.HmacSha256Signature
 		);
-		tokenDescriptor.EncryptingCredentials = new EncryptingCredentials(
-			_encryptKey,
+		tokenDescriptor.EncryptingCredentials = new(
+			_builderParams.EncryptionKey,
 			JwtConstants.DirectKeyUseAlg,
 			SecurityAlgorithms.Aes128CbcHmacSha256
 		);
@@ -52,7 +37,7 @@ public class TokenBuilder : ITokenBuilder
 		return handler.WriteToken(handler.CreateToken(tokenDescriptor));
 	}
 
-	///	<inheritdoc/>
+	/// <inheritdoc/>
 	public string BuildToken(Claim[] claims)
 	{
 		var tokenDescriptor = new SecurityTokenDescriptor
@@ -63,7 +48,7 @@ public class TokenBuilder : ITokenBuilder
 		return BuildToken(tokenDescriptor);
 	}
 
-	///	<inheritdoc/>
+	/// <inheritdoc/>
 	public string BuildToken(IDictionary<string, object> claims)
 	{
 		var tokenDescriptor = new SecurityTokenDescriptor
@@ -74,40 +59,26 @@ public class TokenBuilder : ITokenBuilder
 		return BuildToken(tokenDescriptor);
 	}
 
-	///	<inheritdoc/>
-	public string BuildCustomTypeToken<TUser, TKey>(TUser user, string tokenType)
-	where TUser : IdentityUser<TKey>
-	where TKey : IEquatable<TKey>
-	{
-		return BuildToken(new SecurityTokenDescriptor
-		{
-			Subject = new(new[] { new Claim(ClaimTypes.PrimarySid, user.Id.ToString()!) }),
-			TokenType = tokenType,
-			Expires = DateTime.UtcNow.AddMinutes(15),
-		});
-	}
-
-	///	<inheritdoc/>
+	/// <inheritdoc/>
 	public Claim[]? ValidateToken(
 		string token,
 		TokenValidationParameters? validationParameters = null
 	)
 	{
 		try {
-			validationParameters ??= new TokenValidationParameters
-			{
+			validationParameters ??= new() {
 				ValidateIssuer = false,
 				ValidateAudience = false
 			};
-			validationParameters.ValidateIssuerSigningKey = true;
-			validationParameters.IssuerSigningKey = _signingKey;
-			validationParameters.TokenDecryptionKey = _encryptKey;
+
+			validationParameters.IssuerSigningKey = _builderParams.SigningKey;
+			validationParameters.TokenDecryptionKey = _builderParams.EncryptionKey;
 
 			var handler = new JwtSecurityTokenHandler();
 			var claims = handler.ValidateToken(
 				token,
 				validationParameters,
-				out var tokenSecure
+				out _
 			);
 
 			return claims.Claims.ToArray();
@@ -115,25 +86,4 @@ public class TokenBuilder : ITokenBuilder
 			return null;
 		}
 	}
-
-	///	<inheritdoc/>
-	public string? ValidateCustomTypeToken(
-		string token,
-		string tokenType,
-		TokenValidationParameters? validationParameters = null
-	)
-	{
-		var handler = new JwtSecurityTokenHandler();
-
-		validationParameters ??= new TokenValidationParameters
-		{
-			ValidateIssuer = false,
-			ValidateAudience = false,
-		};
-
-		validationParameters.ValidTypes = new List<string> { tokenType };
-
-		return ValidateToken(token, validationParameters)?.First(c => c.Type == ClaimTypes.PrimarySid).Value;
-	}
-
 }

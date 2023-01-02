@@ -1,29 +1,40 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace PortunusAdiutor.Models;
 
 /// <summary>
-/// 	An interface for types that implement some sort of password processing.
+/// 	Defines all necessary methods for managing an user.
 /// </summary>
-public interface IManagedUser
+/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
+/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
+public interface IManagedUser<TUser, TKey>
+where TUser : IdentityUser<TKey>
+where TKey : IEquatable<TKey>
 {
-	///	<summary>
-	///		Sets password for this <see cref="IManagedUser"/>.
-	///	</summary>
-	///	<param name="password">Clear text password.</param>
+	/// <summary>
+	/// 	Sets an user password to <paramref name="password"/>.
+	/// </summary>
+	/// <param name="password">Plain text password.</param>
 	[MemberNotNull(nameof(Salt))]
 	void SetPassword(string password);
-
-	///	<summary>
-	///		Check if <paramref name="password"/> is valid for this 
-	///		<see cref="IManagedUser"/>.
-	///	</summary>
-	///	<param name="password"></param>
-	///	<returns></returns>
+	/// <summary>
+	/// 	Validates an user password to <paramref name="password"/>.
+	/// </summary>
+	/// <param name="password">Plain text password.</param>
 	bool ValidatePassword(string password);
-
-	///	<summary>
-	///		Gets or sets the salt for this <see cref="IManagedUser"/>
-	///	</summary>
+	/// <summary>
+	/// 	Gets or sets the salt used by <see cref="SetPassword(string)"/> and <see cref="ValidatePassword(string)"/>.
+	/// </summary>
 	byte[] Salt { get; set; }
+	/// <summary>
+	/// 	Gets a collection of this user <see cref="Claim"/>.
+	/// </summary>
+	/// <returns>An <see cref="Array"/> where every element is an user <see cref="Claim"/>.</returns>
+	Claim[] GetClaims();
+	/// <summary>
+	/// 	Gets or sets <see cref="SingleUseToken{TUser, TKey}"/> related to this.
+	/// </summary>
+	ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
 }
