@@ -29,7 +29,7 @@ static public partial class WebBuilderExtensions
 		this WebApplicationBuilder builder,
 		MessageCodePosterParams mailParams
 	)
-	where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+	where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
 	where TRole : IdentityRole<TKey>
 	where TKey : IEquatable<TKey>
@@ -65,7 +65,7 @@ static public partial class WebBuilderExtensions
 		this WebApplicationBuilder builder,
 		MessageLinkPosterParams mailParams
 	)
-	where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+	where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 	where TUser : IdentityUser<TKey>, IManagedUser
 	where TRole : IdentityRole<TKey>
 	where TKey : IEquatable<TKey>

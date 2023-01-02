@@ -22,7 +22,7 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 /// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
 public class MessageCodePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMessagePoster<TUser, TKey>
-where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
@@ -49,11 +49,11 @@ where TUserToken : IdentityUserToken<TKey>
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 
-		var otp = GenAndSave(user.Id, MessageTypes.EmailConfirmation);
+		var otp = GenAndSave(user.Id, MessageTypes.EmailConfirmation, out var xdc);
 
 		var message = _posterParams.EmailConfirmationMessageBuilder(
 			user.Email,
-			otp.Password
+			xdc
 		);
 
 		SendMessage(message);
@@ -64,11 +64,11 @@ where TUserToken : IdentityUserToken<TKey>
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 
-		var otp = GenAndSave(user.Id, MessageTypes.PasswordRedefinition);
+		var otp = GenAndSave(user.Id, MessageTypes.PasswordRedefinition, out var xdc);
 
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
-			otp.Password
+			xdc
 		);
 
 		SendMessage(message);

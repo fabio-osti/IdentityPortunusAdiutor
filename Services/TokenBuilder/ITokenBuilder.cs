@@ -14,17 +14,4 @@ public interface ITokenBuilder
 		string token,
 		TokenValidationParameters? validationParameters = null
 	);
-	string BuildSpecialToken(
-		ClaimsIdentity claims,
-		string tokenType,
-		DateTime expires,
-		bool shouldEncrypt = false
-	);
-
-	Claim[]? ValidateSpecialToken(
-		string token,
-		string tokenType,
-		out SecurityToken validatedToken
-	);
-
 }

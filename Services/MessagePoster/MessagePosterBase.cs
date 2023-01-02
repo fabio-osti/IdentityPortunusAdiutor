@@ -20,7 +20,7 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TRoleClaim"></typeparam>
 /// <typeparam name="TUserToken"></typeparam>
 public class MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
@@ -46,58 +46,48 @@ where TUserToken : IdentityUserToken<TKey>
 	/// </summary>
 	/// <param name="userId">Id of the <see cref="IdentityUser{TKey}"/>.</param>
 	/// <param name="type">Type of access granted by the the returning OTP.</param>
+	/// <param name="xdc"></param>
 	/// <returns>The OTP.</returns>
-	protected UserOneTimePassword<TUser, TKey> GenAndSave(TKey userId, string type)
+	protected SingleUseToken<TUser, TKey> GenAndSave(TKey userId, string type, out string xdc)
 	{
-		var sixDigitCode = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
+		xdc = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
 
-		var userOtp = new UserOneTimePassword<TUser, TKey>()
-		{
-			User = _context.Users.Find(userId),
-			UserId = userId,
-			Password = sixDigitCode,
-			ExpiresOn = DateTime.UtcNow.AddMinutes(15),
-			Type = type
-		};
+		var userSut = new SingleUseToken<TUser, TKey>(userId, xdc, type);
 
-		_context.UserOtps.Add(userOtp);
+		_context.UserSingleUseTokens.Add(userSut);
 		_context.SaveChanges();
 
-		return userOtp;
+		return userSut;
 	}
 
 	/// <summary>
 	/// 	Consumes a sent message.
 	/// </summary>
-	/// <param name="userId">The <see cref="IdentityUser{TKey}.Id"/> of the message receiver.</param>
-	/// <param name="otp">The access key sent by the message.</param>
+	/// <param name="token">The access key sent by the message.</param>
 	/// <param name="messageType">The type of message that was sent.</param>
-	/// <returns>True if successful, else false.</returns>
-	public bool ConsumeOtp(
-		TKey? userId,
-		string otp,
+	/// <returns>The key of the user to whom the token gives access to.</returns>
+	public TKey ConsumeSut(
+		string token,
 		MessageType messageType
 	)
 	{
-		ArgumentNullException.ThrowIfNull(userId);
 		var type = messageType.ToJwtTypeString();
 		var userOtp =
-			_context.UserOtps
-				.Where(e => e.UserId.Equals(userId))
-				.Where(e => e.Type == type)
-				.FirstOrDefault(e => e.Password == otp);
+			_context.UserSingleUseTokens.Find(token);
 
-		if (userOtp is null) {
-			throw new UnauthorizedAccessException("One Use Password not found.");
+		if (userOtp is null)
+		{
+			throw new UnauthorizedAccessException("Single Token not found.");
 		}
 
-		if (userOtp.ExpiresOn < DateTime.UtcNow) {
+		if (userOtp.ExpiresOn < DateTime.UtcNow)
+		{
 			throw new UnauthorizedAccessException("Token already expired.");
 		}
 
-		var code = _context.UserOtps.Remove(userOtp);
+		var code = _context.UserSingleUseTokens.Remove(userOtp);
 		_context.SaveChanges();
 
-		return true;
+		return userOtp.UserId;
 	}
 }

@@ -17,7 +17,7 @@ namespace PortunusAdiutor.Data;
 /// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
 /// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 /// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
-public class OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+public class IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
@@ -32,28 +32,28 @@ where TUserToken : IdentityUserToken<TKey>
 	/// 	Initializes a new instance of the class.
 	/// </summary>
 	/// <param name="options">Options to be used by a <see cref="DbContext"/>.</param>
-	public OtpIdentityDbContext(DbContextOptions options) : base(options)
+	public IdentityWithSutDbContext(DbContextOptions options) : base(options)
 	{
 	}
 #pragma warning restore CS8618
 
 	/// <summary>
-	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> of <see cref="UserOneTimePassword{TUser, TKey}"/>
+	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> of <see cref="SingleUseToken{TUser, TKey}"/>
 	/// </summary>
-	public DbSet<UserOneTimePassword<TUser, TKey>> UserOtps { get; set; }
+	public DbSet<SingleUseToken<TUser, TKey>> UserSingleUseTokens { get; set; }
 
 	/// <inheritdoc/>
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
 		base.OnModelCreating(builder);
-		var entityTypeBuilder = builder.Entity<UserOneTimePassword<TUser, TKey>>();
+		var entityTypeBuilder = builder.Entity<SingleUseToken<TUser, TKey>>();
 
 		entityTypeBuilder
 			.Metadata
-			.SetTableName("AspNetUserOtps");
+			.SetTableName("AspNetUserSingleUseTokens");
 
 		entityTypeBuilder
-			.HasKey(e => new { e.UserId, e.Password, e.Type });
+			.HasKey(e => e.Token);
 
 		entityTypeBuilder
 			.HasOne<TUser>(e => e.User)

@@ -16,9 +16,9 @@ using PortunusAdiutor.Services.TokenBuilder;
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
-/// 	Implementation of <see cref="IMessagePoster{TUser, TKey}"/> with the plain text OTP.
+/// 	Implementation of <see cref="IMessagePoster{TUser, TKey}"/> with the plain text SUT.
 /// </summary>
-/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with OTP keeping.</typeparam>
+/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with SUT keeping.</typeparam>
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 /// <typeparam name="TRole">Represents a role in the identity system.</typeparam>
 /// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
@@ -28,7 +28,7 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 /// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
 public class MessageLinkPoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMessagePoster<TUser, TKey>
-where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>, IManagedUser
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
@@ -40,7 +40,7 @@ where TUserToken : IdentityUserToken<TKey>
 {
 	private readonly MessageLinkPosterParams _posterParams;
 	private readonly ITokenBuilder _tokenBuilder;
-	
+
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
@@ -56,59 +56,40 @@ where TUserToken : IdentityUserToken<TKey>
 		_posterParams = posterParams;
 		_tokenBuilder = tokenBuilder;
 	}
-	
+
 	/// <inheritdoc/>
 	public void SendEmailConfirmationMessage(TUser user)
 	{
-		// Generates OTP
-		var otp = GenAndSave(user.Id, MessageTypes.EmailConfirmation);
-		// Builds token containing OTP
-		var token = _tokenBuilder.BuildSpecialToken(
-			new ClaimsIdentity(new[] {
-			new Claim(ClaimTypes.PrimarySid, otp.UserId.ToString()!),
-			new Claim(JwtCustomClaims.XDigitsCode, otp.Password)
-			}),
-			otp.Type,
-			otp.ExpiresOn,
-			true
-		);
+		// Generates SUT
+		var sut = GenAndSave(user.Id, MessageTypes.EmailConfirmation, out _);
 		// Builds and sends message
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
-			_posterParams.PasswordRedefinitionEndpoint + token
+			_posterParams.PasswordRedefinitionEndpoint + sut.Token
 		);
 		SendMessage(message);
 	}
-	
+
 	/// <inheritdoc/>
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
-		// Generates OTP
-		var otp = GenAndSave(user.Id, MessageTypes.PasswordRedefinition);
-		// Builds token containing OTP
-		var token = _tokenBuilder.BuildSpecialToken(
-			new ClaimsIdentity(new[] {
-			new Claim(ClaimTypes.PrimarySid, otp.UserId.ToString()!),
-			new Claim(JwtCustomClaims.XDigitsCode, otp.Password)
-			}),
-			otp.Type,
-			otp.ExpiresOn,
-			true
-		);
+		// Generates SUT
+		var sut = GenAndSave(user.Id, MessageTypes.PasswordRedefinition, out _);
 		// Builds and sends message
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
-			_posterParams.PasswordRedefinitionEndpoint + token
+			_posterParams.PasswordRedefinitionEndpoint + sut.Token
 		);
 		SendMessage(message);
 	}
-	
+
 	/// <inheritdoc/>
 	private void SendMessage(MimeMessage message)
 	{
-		using (var client = new SmtpClient()) {
+		using (var client = new SmtpClient())
+		{
 			client.Connect(_posterParams.SmtpUri);
 			client.Authenticate(_posterParams.SmtpCredentials);
 			client.Send(message);

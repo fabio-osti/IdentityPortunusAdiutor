@@ -12,7 +12,7 @@ using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Services.UsersManager;
 
 public class UsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IUsersManager<TUser, TKey>
-where TContext : OtpIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
 where TUser : IdentityUser<TKey>, IManagedUser
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
@@ -80,26 +80,14 @@ where TUserToken : IdentityUserToken<TKey>
 	}
 
 	public Task<TUser> ConfirmEmail(
-		string otp,
-		Expression<Func<TUser, bool>>? userFinder
+		string token
 	)
 	{
-		var user = userFinder is null
-			? null
-			: _context.Users.FirstOrDefault(userFinder);
-		if (user is null) {
-			return Task.FromException<TUser>(new UserNotFoundException());
-		}
-
-		if (
-			!_mailPoster.ConsumeOtp(
-				user.Id,
-				otp,
-				MessageType.EmailConfirmation
-			)
-		) {
-			return Task.FromException<TUser>(new UnauthorizedAccessException());
-		}
+		var userId = _mailPoster.ConsumeSut(
+			token,
+			MessageType.EmailConfirmation
+		);
+		var user = _context.Users.Find(userId);
 
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
@@ -120,27 +108,15 @@ where TUserToken : IdentityUserToken<TKey>
 	}
 
 	public Task<TUser> RedefinePassword(
-		string otp,
-		string newPassword,
-		Expression<Func<TUser, bool>>? userFinder
+		string token,
+		string newPassword
 	)
 	{
-		var user = userFinder is null
-			? null
-			: _context.Users.FirstOrDefault(userFinder);
-		if (user is null) {
-			return Task.FromException<TUser>(new UserNotFoundException());
-		}
-
-		if (
-			!_mailPoster.ConsumeOtp(
-				user.Id,
-				otp,
-				MessageType.PasswordRedefinition
-			)
-		) {
-			return Task.FromException<TUser>(new UnauthorizedAccessException());
-		}
+		var userId = _mailPoster.ConsumeSut(
+				token,
+				MessageType.EmailConfirmation
+		);
+		var user = _context.Users.Find(userId);
 
 		user.SetPassword(newPassword);
 		_context.SaveChanges();

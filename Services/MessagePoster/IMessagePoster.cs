@@ -28,13 +28,11 @@ where TKey : IEquatable<TKey>
 	/// <summary>
 	/// 	Consumes a sent message.
 	/// </summary>
-	/// <param name="userId">The <see cref="IdentityUser{TKey}.Id"/> of the message receiver.</param>
-	/// <param name="otp">The access key sent by the message.</param>
+	/// <param name="token">The access key sent by the message.</param>
 	/// <param name="messageType">The type of message that was sent.</param>
 	/// <returns>True if successful, else false.</returns>
-	bool ConsumeOtp(
-		TKey? userId,
-		string otp,
+	TKey ConsumeSut(
+		string token,
 		MessageType messageType
 	);
 }
