@@ -8,9 +8,10 @@ using Microsoft.AspNetCore.Identity;
 namespace PortunusAdiutor.Models;
 
 /// <summary>
-/// 	Implementation of <see cref="IManagedUser"/> using PBKDF2 as derivation algorithm.
+/// 	Implementation of <see cref="IManagedUser{TUser, TKey}"/> using PBKDF2 as derivation algorithm.
 /// </summary>
-/// <typeparam name="TKey"></typeparam>
+/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
+/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
 public class Pbkdf2IdentityUser<TUser, TKey> : IdentityUser<TKey>, IManagedUser<TUser, TKey>
 where TUser : Pbkdf2IdentityUser<TUser, TKey>
 where TKey : IEquatable<TKey>

@@ -7,6 +7,8 @@ namespace PortunusAdiutor.Models;
 /// <summary>
 /// 	Defines all necessary methods for managing an user.
 /// </summary>
+/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
+/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
 public interface IManagedUser<TUser, TKey>
 where TUser : IdentityUser<TKey>
 where TKey : IEquatable<TKey>
@@ -31,5 +33,8 @@ where TKey : IEquatable<TKey>
 	/// </summary>
 	/// <returns>An <see cref="Array"/> where every element is an user <see cref="Claim"/>.</returns>
 	Claim[] GetClaims();
+	/// <summary>
+	/// 	Gets or sets <see cref="SingleUseToken{TUser, TKey}"/> related to this.
+	/// </summary>
 	ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
 }
