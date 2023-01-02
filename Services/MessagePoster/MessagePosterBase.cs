@@ -58,7 +58,6 @@ where TKey : IEquatable<TKey>
 		MessageType messageType
 	)
 	{
-		var type = messageType.ToJwtTypeString();
 		var userSut =
 			_context.SingleUseTokens.Find(token);
 
@@ -67,7 +66,8 @@ where TKey : IEquatable<TKey>
 			throw new SingleUseTokenNotFoundException();
 		}
 
-		if (userSut.ExpiresOn < DateTime.UtcNow)
+		var type = messageType.ToJwtTypeString();
+		if (userSut.ExpiresOn < DateTime.UtcNow || userSut.Type != type)
 		{
 			throw new InvalidPasswordException();
 		}
