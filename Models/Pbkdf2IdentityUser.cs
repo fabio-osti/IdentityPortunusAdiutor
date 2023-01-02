@@ -92,7 +92,6 @@ where TKey : IEquatable<TKey>
 	public bool EmailConfirmed { get; set; }
 	/// <inheritdoc/>
 	public byte[] Salt { get; set; }
-
 	/// <inheritdoc/>
 	public ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
 
