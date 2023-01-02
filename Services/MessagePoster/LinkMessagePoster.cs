@@ -43,10 +43,10 @@ where TKey : IEquatable<TKey>
 	/// <inheritdoc/>
 	public void SendEmailConfirmationMessage(TUser user)
 	{
+		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		// Generates SUT
 		var sut = GenAndSave(user.Id, MessageTypes.EmailConfirmation, out _);
 		// Builds and sends message
-		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		var message = _posterParams.EmailConfirmationMessageBuilder(
 			user.Email,
 			_posterParams.EmailConfirmationEndpoint + sut.Token
@@ -57,10 +57,10 @@ where TKey : IEquatable<TKey>
 	/// <inheritdoc/>
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
+		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		// Generates SUT
 		var sut = GenAndSave(user.Id, MessageTypes.PasswordRedefinition, out _);
 		// Builds and sends message
-		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
 			_posterParams.PasswordRedefinitionEndpoint + sut.Token

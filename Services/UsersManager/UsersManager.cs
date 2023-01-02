@@ -1,14 +1,9 @@
 using System.Linq.Expressions;
-using System.Security.Cryptography;
-
-
-
 
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MessagePoster;
-using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Services.UsersManager;
 
 /// <summary>

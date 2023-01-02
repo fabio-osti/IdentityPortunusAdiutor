@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 
 using PortunusAdiutor.Data;
+using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
 
 namespace PortunusAdiutor.Services.MessagePoster;
@@ -63,12 +64,12 @@ where TKey : IEquatable<TKey>
 
 		if (userSut is null)
 		{
-			throw new UnauthorizedAccessException("Single Token not found.");
+			throw new SingleUseTokenNotFoundException();
 		}
 
 		if (userSut.ExpiresOn < DateTime.UtcNow)
 		{
-			throw new UnauthorizedAccessException("Token already expired.");
+			throw new InvalidPasswordException();
 		}
 
 		var code = _context.SingleUseTokens.Remove(userSut);
