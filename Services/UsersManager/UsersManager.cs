@@ -67,7 +67,7 @@ where TUserToken : IdentityUserToken<TKey>
 			throw new EmailAlreadyConfirmedException();
 		}
 
-		_mailPoster.SendPasswordRedefinitionMessage(user);
+		_mailPoster.SendEmailConfirmationMessage(user);
 
 		return user;
 	}
