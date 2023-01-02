@@ -56,7 +56,7 @@ public class LinkMessagePosterParams
 	public LinkMessagePosterParams() {	}
 
 	/// <summary>
-	/// 	Iniatialize an instance of <see cref="LinkMessagePosterParams"/> 
+	/// 	Initialize an instance of <see cref="LinkMessagePosterParams"/> 
 	/// 	using an <see cref="IConfiguration"/> object and
 	/// 	the defaults as base.
 	/// </summary>
