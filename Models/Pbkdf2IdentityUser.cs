@@ -80,7 +80,7 @@ where TKey : IEquatable<TKey>
 	public ICollection<SingleUseToken<Pbkdf2IdentityUser<TKey>, TKey>>? SingleUseTokens { get; set; }
 
 	/// <inheritdoc/>
-	public Claim[] GetClaims()
+	virtual public Claim[] GetClaims()
 	{
 		var id = Id.ToString();
 		ArgumentNullException.ThrowIfNull(id);
