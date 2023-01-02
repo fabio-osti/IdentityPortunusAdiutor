@@ -36,49 +36,49 @@ where TUserToken : IdentityUserToken<TKey>
 		_context = context;
 	}
 
-	public Task<TUser> CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
+	public TUser CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
 	{
 		if (_context.Users.FirstOrDefault(userFinder) is not null) {
-			return Task.FromException<TUser>(new UserAlreadyExistsException());
+			throw new UserAlreadyExistsException();
 		}
 
 		var user = _context.Users.Add(userBuilder()).Entity;
 		_mailPoster.SendEmailConfirmationMessage(user);
 		_context.SaveChanges();
-		return Task.FromResult(user);
+		return user;
 	}
 
-	public Task<TUser> ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
+	public TUser ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
 		if (user is null) {
-			return Task.FromException<TUser>(new UserNotFoundException());
+			throw new UserNotFoundException();
 		}
 
 		if (!user.ValidatePassword(userPassword)) {
-			return Task.FromException<TUser>(new UnauthorizedAccessException());
+			throw new UnauthorizedAccessException();
 		}
 
-		return Task.FromResult(user);
+		return user;
 	}
 
-	public Task<TUser> SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
+	public TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
 		if (user is null) {
-			return Task.FromException<TUser>(new UserNotFoundException());
+			throw new UserNotFoundException();
 		}
 
 		if (user.EmailConfirmed) {
-			return Task.FromException<TUser>(new UnauthorizedAccessException());
+			throw new UnauthorizedAccessException();
 		}
 
 		_mailPoster.SendPasswordRedefinitionMessage(user);
 
-		return Task.FromResult(user);
+		return user;
 	}
 
-	public Task<TUser> ConfirmEmail(
+	public TUser ConfirmEmail(
 		string token
 	)
 	{
@@ -91,22 +91,22 @@ where TUserToken : IdentityUserToken<TKey>
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
 
-		return Task.FromResult(user);
+		return user;
 	}
 
-	public Task<TUser> SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
+	public TUser SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
 		if (user is null) {
-			return Task.FromException<TUser>(new UserNotFoundException());
+			throw new UserNotFoundException();
 		}
 
 		_mailPoster.SendPasswordRedefinitionMessage(user);
 
-		return Task.FromResult(user);
+		return user;
 	}
 
-	public Task<TUser> RedefinePassword(
+	public TUser RedefinePassword(
 		string token,
 		string newPassword
 	)
@@ -120,6 +120,6 @@ where TUserToken : IdentityUserToken<TKey>
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
 
-		return Task.FromResult(user);
+		return user;
 	}
 }
