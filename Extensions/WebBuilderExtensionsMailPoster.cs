@@ -29,9 +29,8 @@ static public partial class WebBuilderExtensions
 		this WebApplicationBuilder builder,
 		CodeMessagePosterParams mailParams
 	)
-	where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-	where TUser : IdentityUser<TKey>, IManagedUser
-	where TRole : IdentityRole<TKey>
+	where TContext : ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+	where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>	where TRole : IdentityRole<TKey>
 	where TKey : IEquatable<TKey>
 	where TUserClaim : IdentityUserClaim<TKey>
 	where TUserRole : IdentityUserRole<TKey>
@@ -65,9 +64,8 @@ static public partial class WebBuilderExtensions
 		this WebApplicationBuilder builder,
 		LinkMessagePosterParams mailParams
 	)
-	where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-	where TUser : IdentityUser<TKey>, IManagedUser
-	where TRole : IdentityRole<TKey>
+	where TContext : ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+	where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>	where TRole : IdentityRole<TKey>
 	where TKey : IEquatable<TKey>
 	where TUserClaim : IdentityUserClaim<TKey>
 	where TUserRole : IdentityUserRole<TKey>

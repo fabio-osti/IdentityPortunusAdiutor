@@ -12,9 +12,8 @@ using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Services.UsersManager;
 
 public class UsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IUsersManager<TUser, TKey>
-where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TUser : IdentityUser<TKey>, IManagedUser
-where TRole : IdentityRole<TKey>
+where TContext : ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
 where TUserClaim : IdentityUserClaim<TKey>
 where TUserRole : IdentityUserRole<TKey>

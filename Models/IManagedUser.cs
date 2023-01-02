@@ -1,12 +1,15 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace PortunusAdiutor.Models;
 
 /// <summary>
 /// 	Defines all necessary methods for managing an user.
 /// </summary>
-public interface IManagedUser
+public interface IManagedUser<TUser, TKey>
+where TUser : IdentityUser<TKey>
+where TKey : IEquatable<TKey>
 {
 	/// <summary>
 	/// 	Sets an user password to <paramref name="password"/>.
@@ -28,4 +31,5 @@ public interface IManagedUser
 	/// </summary>
 	/// <returns>An <see cref="Array"/> where every element is an user <see cref="Claim"/>.</returns>
 	Claim[] GetClaims();
+	ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
 }

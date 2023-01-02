@@ -22,8 +22,8 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 /// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
 public class CodeMessagePoster<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IMessagePoster<TUser, TKey>
-where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TUser : IdentityUser<TKey>
+where TContext : ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
 where TUserClaim : IdentityUserClaim<TKey>

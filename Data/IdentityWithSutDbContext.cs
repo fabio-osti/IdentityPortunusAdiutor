@@ -17,8 +17,8 @@ namespace PortunusAdiutor.Data;
 /// <typeparam name="TUserLogin">Represents a login and its associated provider for an user.</typeparam>
 /// <typeparam name="TRoleClaim">Represents a claim that is granted to all users within a role.</typeparam>
 /// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
-public class IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TUser : IdentityUser<TKey>
+public class ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
 where TUserClaim : IdentityUserClaim<TKey>
@@ -32,7 +32,7 @@ where TUserToken : IdentityUserToken<TKey>
 	/// 	Initializes a new instance of the class.
 	/// </summary>
 	/// <param name="options">Options to be used by a <see cref="DbContext"/>.</param>
-	public IdentityWithSutDbContext(DbContextOptions options) : base(options)
+	public ManagedIdentityDbContext(DbContextOptions options) : base(options)
 	{
 	}
 #pragma warning restore CS8618
@@ -57,7 +57,7 @@ where TUserToken : IdentityUserToken<TKey>
 
 		entityTypeBuilder
 			.HasOne<TUser>(e => e.User)
-			.WithMany();
+			.WithMany(e => e.SingleUseTokens);
 
 	}
 }

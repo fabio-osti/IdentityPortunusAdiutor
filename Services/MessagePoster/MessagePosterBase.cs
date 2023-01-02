@@ -8,7 +8,7 @@ using PortunusAdiutor.Models;
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
-/// 	Defines a common method for OTP generation and consumption.
+/// 	Defines a common method for SUT generation and consumption.
 /// </summary>
 /// <typeparam name="TContext"></typeparam>
 /// <typeparam name="TUser"></typeparam>
@@ -20,8 +20,8 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TRoleClaim"></typeparam>
 /// <typeparam name="TUserToken"></typeparam>
 public class MessagePosterBase<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-where TUser : IdentityUser<TKey>
+where TContext : ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>
 where TRole : IdentityRole<TKey>
 where TKey : IEquatable<TKey>
 where TUserClaim : IdentityUserClaim<TKey>
@@ -42,12 +42,12 @@ where TUserToken : IdentityUserToken<TKey>
 	}
 
 	/// <summary>
-	/// 	Generates an OTP for an <see cref="IdentityUser{TKey}"/> for an access of type <paramref name="type"/> and saves it on the database.
+	/// 	Generates an SUT for an <see cref="IdentityUser{TKey}"/> for an access of type <paramref name="type"/> and saves it on the database.
 	/// </summary>
 	/// <param name="userId">Id of the <see cref="IdentityUser{TKey}"/>.</param>
-	/// <param name="type">Type of access granted by the the returning OTP.</param>
+	/// <param name="type">Type of access granted by the the returning SUT.</param>
 	/// <param name="xdc"></param>
-	/// <returns>The OTP.</returns>
+	/// <returns>The SUT.</returns>
 	protected SingleUseToken<TUser, TKey> GenAndSave(TKey userId, string type, out string xdc)
 	{
 		xdc = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
@@ -72,22 +72,22 @@ where TUserToken : IdentityUserToken<TKey>
 	)
 	{
 		var type = messageType.ToJwtTypeString();
-		var userOtp =
+		var userSut =
 			_context.UserSingleUseTokens.Find(token);
 
-		if (userOtp is null)
+		if (userSut is null)
 		{
 			throw new UnauthorizedAccessException("Single Token not found.");
 		}
 
-		if (userOtp.ExpiresOn < DateTime.UtcNow)
+		if (userSut.ExpiresOn < DateTime.UtcNow)
 		{
 			throw new UnauthorizedAccessException("Token already expired.");
 		}
 
-		var code = _context.UserSingleUseTokens.Remove(userOtp);
+		var code = _context.UserSingleUseTokens.Remove(userSut);
 		_context.SaveChanges();
 
-		return userOtp.UserId;
+		return userSut.UserId;
 	}
 }

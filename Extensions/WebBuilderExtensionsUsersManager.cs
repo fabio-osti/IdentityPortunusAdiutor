@@ -27,9 +27,8 @@ static public partial class WebBuilderExtensions
 	/// <typeparam name="TUserToken">Represents an authentication token for an user.</typeparam>
 	/// <param name="builder">The web app builder.</param>
 	public static void AddUsersManager<TContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>(this WebApplicationBuilder builder)
-	where TContext : IdentityWithSutDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-	where TUser : IdentityUser<TKey>, IManagedUser
-	where TRole : IdentityRole<TKey>
+	where TContext : ManagedIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+	where TUser : IdentityUser<TKey>, IManagedUser<TUser, TKey>	where TRole : IdentityRole<TKey>
 	where TKey : IEquatable<TKey>
 	where TUserClaim : IdentityUserClaim<TKey>
 	where TUserRole : IdentityUserRole<TKey>

@@ -11,7 +11,7 @@ namespace PortunusAdiutor.Models;
 /// 	Implementation of <see cref="IManagedUser"/> using PBKDF2 as derivation algorithm.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
-public class Pbkdf2IdentityUser<TKey> : IdentityUser<TKey>, IManagedUser
+public class Pbkdf2IdentityUser<TKey> : IdentityUser<TKey>, IManagedUser<Pbkdf2IdentityUser<TKey>, TKey>
 where TKey : IEquatable<TKey>
 {
 	private const KeyDerivationPrf defaultPrf = KeyDerivationPrf.HMACSHA512;
@@ -75,6 +75,9 @@ where TKey : IEquatable<TKey>
 
 	/// <inheritdoc/>
 	public byte[] Salt { get; set; }
+
+	/// <inheritdoc/>
+	public ICollection<SingleUseToken<Pbkdf2IdentityUser<TKey>, TKey>>? SingleUseTokens { get; set; }
 
 	/// <inheritdoc/>
 	public Claim[] GetClaims()
