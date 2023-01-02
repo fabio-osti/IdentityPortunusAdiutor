@@ -9,6 +9,9 @@ namespace PortunusAdiutor.Exceptions;
 /// </summary>
 public class UserNotFoundException : PortunusException
 {
+	/// <summary>
+	/// 	Initializes the exception.
+	/// </summary>
 	public UserNotFoundException() : base("User not found.") { }
 
 	/// <summary>

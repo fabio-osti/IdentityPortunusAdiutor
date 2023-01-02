@@ -5,5 +5,8 @@ namespace PortunusAdiutor.Exceptions;
 /// </summary>
 public class EmailAlreadyConfirmedException : PortunusException
 {
+	/// <summary>
+	/// 	Initializes the exception.
+	/// </summary>
 	public EmailAlreadyConfirmedException() : base("This user have already confirmed its password.") { }
 }
